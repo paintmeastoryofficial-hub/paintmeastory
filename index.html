@@ -2,15 +2,72 @@
 <html>
 <head>
   <title>Paint Me A Story</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      color: white;
+      text-align: center;
+      background: linear-gradient(to bottom, #0b1d3a, #000000);
+    }
+
+    .container {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    h1 {
+      font-size: 48px;
+      margin: 0;
+    }
+
+    p {
+      font-size: 18px;
+      margin: 15px 0 25px;
+      opacity: 0.9;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      font-size: 16px;
+      border: none;
+      background: #ffcc00;
+      color: black;
+      cursor: pointer;
+      border-radius: 6px;
+      transition: 0.3s;
+    }
+
+    .btn:hover {
+      background: #ffd633;
+    }
+
+    .footer {
+      position: absolute;
+      bottom: 10px;
+      font-size: 12px;
+      opacity: 0.6;
+    }
+  </style>
 </head>
-<body style="text-align:center; font-family:sans-serif; background:#0b1d3a; color:white;">
 
-  <h1>Paint Me A Story 🎨</h1>
-  <p>Watch art come to life in minutes</p>
+<body>
+  <div class="container">
+    <h1>Paint Me A Story 🎨</h1>
+    <p>watching art come to life...</p>
 
-  <a href="https://youtube.com/@paintmeastoryofficial" target="_blank">
-    <button style="padding:10px 20px; font-size:16px;">Watch on YouTube</button>
-  </a>
+    <a href="https://youtube.com/@paintmeastoryofficial" target="_blank">
+      <button class="btn">Watch on YouTube</button>
+    </a>
+  </div>
 
+  <div class="footer">
+    © 2026 Paint Me A Story
+  </div>
 </body>
 </html>
