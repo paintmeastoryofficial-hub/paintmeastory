@@ -7,7 +7,7 @@
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 
-  <!-- Icons (Font Awesome) -->
+  <!-- Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
   <style>
@@ -20,7 +20,7 @@
       min-height: 100vh;
     }
 
-    /* TOP SECTION */
+    /* TOP */
     .top {
       background: #FFDCEB;
       padding: 90px 20px 50px;
@@ -51,9 +51,15 @@
       height: 28px;
       border-radius: 50%;
       box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      cursor: pointer;
+      transition: transform 0.2s;
     }
 
-    /* BOTTOM SECTION */
+    .color:hover {
+      transform: scale(1.2);
+    }
+
+    /* BOTTOM */
     .bottom {
       background: #DCEBFF;
       flex: 1;
@@ -70,12 +76,12 @@
       align-items: center;
     }
 
+    /* BUTTON AS LINK (FIXED UNDERLINE ISSUE) */
     .btn {
       width: 280px;
       padding: 18px;
       font-size: 17px;
       border-radius: 32px;
-      border: none;
       background: #ffffff;
       color: #2b2b2b;
       font-weight: 500;
@@ -87,6 +93,8 @@
       align-items: center;
       justify-content: center;
       gap: 10px;
+
+      text-decoration: none;   /* 🔥 removes underline */
     }
 
     .btn i {
@@ -96,10 +104,6 @@
     .btn:hover {
       transform: translateY(-4px);
       background: #ffb6d9;
-    }
-
-    .btn:hover i {
-      transform: scale(1.1);
     }
 
     /* FOOTER */
@@ -112,13 +116,8 @@
     }
 
     @media (max-width: 600px) {
-      .title {
-        font-size: 42px;
-      }
-
-      .btn {
-        width: 230px;
-      }
+      .title { font-size: 42px; }
+      .btn { width: 230px; }
     }
 
   </style>
@@ -130,6 +129,7 @@
   <div class="top">
     <div class="title">Paint Me A Story</div>
 
+    <!-- PALETTE -->
     <div class="palette">
       <div class="color" style="background:#FF8FAB;"></div>
       <div class="color" style="background:#FFC6A0;"></div>
@@ -146,28 +146,21 @@
   <div class="bottom">
     <div class="links">
 
-      <a href="https://youtube.com/@paintmeastoryofficial" target="_blank">
-        <button class="btn">
-          <i class="fa-brands fa-youtube"></i> YouTube
-        </button>
+      <a href="https://youtube.com/@paintmeastoryofficial" target="_blank" class="btn">
+        <i class="fa-brands fa-youtube"></i> YouTube
       </a>
 
-      <a href="https://www.artstation.com/ashwiniiyer" target="_blank">
-        <button class="btn">
-          <i class="fa-brands fa-artstation"></i> ArtStation
-        </button>
+      <a href="https://instagram.com/_paintmeastory_" target="_blank" class="btn">
+        <i class="fa-brands fa-instagram"></i> Instagram
       </a>
 
-      <a href="https://themoonlightmemoirs.wordpress.com/" target="_blank">
-        <button class="btn">
-          <i class="fa-solid fa-pen-nib"></i> WordPress
-        </button>
+      <a href="https://www.artstation.com/ashwiniiyer" target="_blank" class="btn">
+        <i class="fa-brands fa-artstation"></i> ArtStation
       </a>
 
-      <a href="https://instagram.com/_paintmeastory_" target="_blank">
-        <button class="btn">
-          <i class="fa-brands fa-instagram"></i> Instagram
-        </button>
+      <!-- WORDPRESS MOVED BELOW ARTSTATION -->
+      <a href="https://themoonlightmemoirs.wordpress.com/" target="_blank" class="btn">
+        <i class="fa-solid fa-pen-nib"></i> Blog (WordPress)
       </a>
 
     </div>
