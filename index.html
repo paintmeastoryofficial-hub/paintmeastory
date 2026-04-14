@@ -4,16 +4,17 @@
   <title>Paint Me A Story</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <!-- ARTSY FONTS -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Quicksand:wght@300;400;500&display=swap" rel="stylesheet">
 
-  <!-- Icons -->
+  <!-- ICONS -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
   <style>
+    /* GLOBAL FONT (ARTSY) */
     body {
       margin: 0;
-      font-family: 'Inter', sans-serif;
+      font-family: 'Quicksand', sans-serif;
       color: #2b2b2b;
       display: flex;
       flex-direction: column;
@@ -27,9 +28,11 @@
       text-align: center;
     }
 
+    /* TITLE (ARTSY HEADER FONT) */
     .title {
-      font-family: 'Fraunces', serif;
+      font-family: 'Playfair Display', serif;
       font-size: 56px;
+      letter-spacing: 1px;
     }
 
     .subtitle {
@@ -38,25 +41,27 @@
       opacity: 0.75;
     }
 
-    /* PALETTE */
+    /* PALETTE (FIXED VISIBILITY) */
     .palette {
       display: flex;
       justify-content: center;
       gap: 14px;
       margin: 30px 0 15px;
+      flex-wrap: wrap;
     }
 
     .color {
-      width: 28px;
-      height: 28px;
+      width: 32px;
+      height: 32px;
       border-radius: 50%;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      border: 2px solid white;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.18);
       cursor: pointer;
-      transition: transform 0.2s;
+      transition: transform 0.2s ease;
     }
 
     .color:hover {
-      transform: scale(1.2);
+      transform: scale(1.25);
     }
 
     /* BOTTOM */
@@ -76,7 +81,7 @@
       align-items: center;
     }
 
-    /* BUTTON AS LINK (FIXED UNDERLINE ISSUE) */
+    /* BUTTONS */
     .btn {
       width: 280px;
       padding: 18px;
@@ -94,7 +99,7 @@
       justify-content: center;
       gap: 10px;
 
-      text-decoration: none;   /* 🔥 removes underline */
+      text-decoration: none;
     }
 
     .btn i {
@@ -119,7 +124,6 @@
       .title { font-size: 42px; }
       .btn { width: 230px; }
     }
-
   </style>
 </head>
 
@@ -158,9 +162,13 @@
         <i class="fa-brands fa-artstation"></i> ArtStation
       </a>
 
-      <!-- WORDPRESS MOVED BELOW ARTSTATION -->
       <a href="https://themoonlightmemoirs.wordpress.com/" target="_blank" class="btn">
-        <i class="fa-solid fa-pen-nib"></i> WordPress
+        <i class="fa-solid fa-pen-nib"></i> Blog (WordPress)
+      </a>
+
+      <!-- LINKEDIN -->
+      <a href="https://www.linkedin.com/in/ashwini-srinivasan-iyer" target="_blank" class="btn">
+        <i class="fa-brands fa-linkedin"></i> LinkedIn
       </a>
 
     </div>
