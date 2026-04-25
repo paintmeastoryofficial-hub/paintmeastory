@@ -4,157 +4,40 @@
   <title>Paint Me A Story</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- ARTSY FONTS -->
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Quicksand:wght@300;400;500&display=swap" rel="stylesheet">
-
+  <!-- FONTS -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+  
   <!-- ICONS -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-  <style>
-    /* GLOBAL FONT (ARTSY) */
-    body {
-      margin: 0;
-      font-family: 'Quicksand', sans-serif;
-      color: #2b2b2b;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-    }
-
-    /* TOP */
-    .top {
-      background: #FFDCEB;
-      padding: 90px 20px 50px;
-      text-align: center;
-    }
-
-    /* TITLE (ARTSY HEADER FONT) */
-    .title {
-      font-family: 'Playfair Display', serif;
-      font-size: 56px;
-      letter-spacing: 1px;
-    }
-
-    .subtitle {
-      margin-top: 14px;
-      font-size: 16px;
-      opacity: 0.75;
-    }
-
-    /* PALETTE (FIXED VISIBILITY) */
-    .palette {
-      display: flex;
-      justify-content: center;
-      gap: 14px;
-      margin: 30px 0 15px;
-      flex-wrap: wrap;
-    }
-
-    .color {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      border: 2px solid white;
-      box-shadow: 0 6px 14px rgba(0,0,0,0.18);
-      cursor: pointer;
-      transition: transform 0.2s ease;
-    }
-
-    .color:hover {
-      transform: scale(1.25);
-    }
-
-    /* BOTTOM */
-    .bottom {
-      background: #DCEBFF;
-      flex: 1;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 40px 20px;
-    }
-
-    .links {
-      display: flex;
-      flex-direction: column;
-      gap: 18px;
-      align-items: center;
-    }
-
-    /* BUTTONS */
-    .btn {
-      width: 280px;
-      padding: 18px;
-      font-size: 17px;
-      border-radius: 32px;
-      background: #ffffff;
-      color: #2b2b2b;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.25s ease;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.12);
-
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-
-      text-decoration: none;
-    }
-
-    .btn i {
-      font-size: 18px;
-    }
-
-    .btn:hover {
-      transform: translateY(-4px);
-      background: #ffb6d9;
-    }
-
-    /* FOOTER */
-    .footer {
-      text-align: center;
-      font-size: 12px;
-      padding: 14px;
-      background: #f7f7f7;
-      color: #888;
-    }
-
-    @media (max-width: 600px) {
-      .title { font-size: 42px; }
-      .btn { width: 230px; }
-    }
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-  <!-- TOP -->
-  <div class="top">
+  <div class="top" id="topSection">
     <div class="title">Paint Me A Story</div>
 
-    <!-- PALETTE -->
     <div class="palette">
-      <div class="color" style="background:#FF8FAB;"></div>
-      <div class="color" style="background:#FFC6A0;"></div>
-      <div class="color" style="background:#FFF3A3;"></div>
-      <div class="color" style="background:#B9FBC0;"></div>
-      <div class="color" style="background:#A0C4FF;"></div>
-      <div class="color" style="background:#CDB4DB;"></div>
+      <div class="color" data-color="#FF8FAB" style="background:#FF8FAB;"></div>
+      <div class="color" data-color="#FFC6A0" style="background:#FFC6A0;"></div>
+      <div class="color" data-color="#FFF3A3" style="background:#FFF3A3;"></div>
+      <div class="color" data-color="#B9FBC0" style="background:#B9FBC0;"></div>
+      <div class="color" data-color="#A0C4FF" style="background:#A0C4FF;"></div>
+      <div class="color" data-color="#CDB4DB" style="background:#CDB4DB;"></div>
     </div>
 
-    <div class="subtitle">watching art come to life...</div>
+    <div class="subtitle">art. emotion. storytelling.</div>
   </div>
 
-  <!-- BOTTOM -->
-  <div class="bottom">
+  <div class="bottom" id="bottomSection">
     <div class="links">
 
       <a href="https://youtube.com/@paintmeastoryofficial" target="_blank" class="btn">
         <i class="fa-brands fa-youtube"></i> YouTube
       </a>
 
-      <a href="https://instagram.com/_paintmeastory_" target="_blank" class="btn">
+      <a href="https://instagram.com/paintmeastoryofficial" target="_blank" class="btn">
         <i class="fa-brands fa-instagram"></i> Instagram
       </a>
 
@@ -166,18 +49,17 @@
         <i class="fa-solid fa-pen-nib"></i> WordPress
       </a>
 
-      <!-- LINKEDIN -->
-      <a href="https://www.linkedin.com/in/ashwini-srinivasan-iyer" target="_blank" class="btn">
-        <i class="fa-brands fa-linkedin"></i> LinkedIn
+      <a href="https://x.com/paintmeastory" target="_blank" class="btn">
+        <i class="fa-brands fa-x-twitter"></i>
       </a>
 
     </div>
   </div>
 
-  <!-- FOOTER -->
   <div class="footer">
-    © 2026 Paint Me A Story
+    © 2026 Paint Me A Story.
   </div>
 
+  <script src="script.js"></script>
 </body>
 </html>
