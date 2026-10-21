@@ -210,7 +210,12 @@
     .tx-feature .tx-cap { position: absolute; left: 0; right: 0; bottom: 0; padding: 2.5rem 1.25rem 1rem; background: linear-gradient(to top, rgba(28,21,16,.72), transparent); color: var(--cream); display: flex; justify-content: space-between; align-items: flex-end; gap: 1rem; }
     .tx-cap strong { font-family: var(--serif); font-style: italic; font-weight: 400; font-size: 1.5rem; }
     .tx-cap span { font-size: .62rem; letter-spacing: .18em; text-transform: uppercase; opacity: .85; white-space: nowrap; }
-    .tx-mosaic { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; align-content: start; }
+    .tx-mosaic { display: grid; grid-template-columns: repeat(4, 1fr); grid-auto-flow: dense; gap: 8px; align-content: start; }
+    .tx-tile.set { grid-column: span 2; grid-row: span 2; aspect-ratio: auto; }
+    .tx-tile.set.a { grid-column: 1 / 3; grid-row: 1 / 3; }
+    .tx-tile.set.b { grid-column: 3 / 5; grid-row: 3 / 5; }
+    .tx-tile.set img { position: absolute; inset: 0; object-position: 50% 55%; }
+    .tx-tile.set .tx-name { opacity: 1; font-size: .95rem; }
     .tx-tile { position: relative; aspect-ratio: 1/1; overflow: hidden; background: #e8e0d5; display: block; }
     .tx-tile img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 60%; display: block; transition: transform .5s, opacity .6s; }
     .tx-tile.land img { position: absolute; left: 0; top: -16.67%; width: 200%; height: 133.34%; max-width: none; object-fit: fill; }
@@ -220,7 +225,7 @@
     .tx-tile:hover .tx-name { opacity: 1; }
     .tx-foot { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-top: 1.75rem; padding-top: 1.25rem; border-top: 1px solid var(--rule); }
     .tx-stats { font-size: .7rem; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); }
-    @media (max-width: 860px) { .tx-grid { grid-template-columns: 1fr; } .tx-feature { aspect-ratio: 3/2; } .tx-mosaic { grid-template-columns: repeat(4, 1fr); } .tx-mosaic .tx-tile:nth-child(9) { display: none; } }
+    @media (max-width: 860px) { .tx-grid { grid-template-columns: 1fr; } .tx-feature { aspect-ratio: 3/2; } }
     /* BACK TO TOP */
     .to-top { position: fixed; right: clamp(1rem, 3vw, 2rem); bottom: clamp(1rem, 3vw, 2rem); z-index: 150; display: flex; align-items: center; gap: .5rem; background: var(--ink); color: var(--cream); border: none; padding: .75rem 1.1rem .75rem .95rem; font-family: var(--sans); font-size: .62rem; letter-spacing: .18em; text-transform: uppercase; cursor: pointer; box-shadow: 0 10px 28px rgba(28,21,16,.25); opacity: 0; visibility: hidden; transform: translateY(12px); transition: opacity .3s, transform .3s, visibility .3s, background .2s; }
     .to-top.show { opacity: 1; visibility: visible; transform: none; }
@@ -300,7 +305,7 @@
     <div class="tx-head reveal">
       <div>
         <p class="section-label">New · Textured Art</p>
-        <h2 class="section-title">Paintings you can <em>almost feel</em></h2>
+        <h2 class="section-title">Stories in <em>texture</em></h2>
       </div>
       <p class="tx-sub">Layered, hand-sculpted originals — each one ready for a wall, a desk, or a gift.</p>
     </div>
@@ -613,21 +618,29 @@
     if (!files.length) { document.getElementById('textured').style.display = 'none'; return; }
     const src = f => TX_FOLDER + '/' + encodeURIComponent(f);
     const link = f => 'shop.html#view=' + encodeURIComponent(f);
-    const pool = txShuffle(files);
+    // the sets of three get their own large tiles in the mosaic
+    const TX_SETS = ['08', '10'];
+    const num = f => (f.match(/^(\d+)/) || [])[1];
+    const isSet3 = f => TX_SETS.some(x => num(f) && Number(num(f)) === Number(x)) || /(^|[-_\s])set([-_.\s]|$)/i.test(f);
+    const setFiles = txShuffle(files.filter(isSet3)).slice(0, 2);
+    const pool = txShuffle(files.filter(f => !setFiles.includes(f)));
     // featured: a landscape promo card shows best here
     const feat = document.getElementById('tx-feature'), featImg = feat.querySelector('img');
     const setFeature = f => { featImg.src = src(f); featImg.alt = txTitle(f); feat.href = link(f); document.getElementById('tx-feature-name').textContent = txTitle(f); };
     setFeature(pool[0]);
     // mosaic of squares
     const box = document.getElementById('tx-mosaic');
-    const shown = pool.slice(1, 10), spare = pool.slice(10);
+    const singles = 16 - setFiles.length * 4;                 // 4 × 4 grid; each set fills 2 × 2
+    const shown = pool.slice(1, 1 + singles), spare = pool.slice(1 + singles);
     const fill = (a, f) => {
       a.href = link(f); a.title = txTitle(f); a.setAttribute('aria-label', 'View ' + txTitle(f));
       const im = a.querySelector('img');
-      im.onload = () => { a.classList.toggle('land', im.naturalWidth / im.naturalHeight > 1.2); a.classList.remove('swap'); };
+      im.onload = () => { a.classList.toggle('land', !a.classList.contains('set') && im.naturalWidth / im.naturalHeight > 1.2); a.classList.remove('swap'); };
       im.src = src(f); a.querySelector('.tx-name').textContent = txTitle(f); a._f = f;
     };
-    shown.forEach(f => { const a = document.createElement('a'); a.className = 'tx-tile'; a.innerHTML = '<img alt="" loading="lazy" /><span class="tx-name"></span>'; fill(a, f); box.appendChild(a); });
+    const addTile = (f, cls) => { const a = document.createElement('a'); a.className = 'tx-tile' + (cls ? ' ' + cls : ''); a.innerHTML = '<img alt="" loading="lazy" /><span class="tx-name"></span>'; fill(a, f); box.appendChild(a); return a; };
+    setFiles.forEach((f, i) => addTile(f, 'set ' + (i ? 'b' : 'a')));
+    shown.forEach(f => addTile(f));
     const n = files.length;
     document.getElementById('tx-stats').textContent = n + ' original' + (n > 1 ? 's' : '') + ' · sets and single canvases · new pieces added often';
     // gently swap pictures now and then
@@ -642,7 +655,7 @@
         return;
       }
       if (box.matches(':hover')) return;
-      const tiles = [...box.children], t = tiles[Math.floor(Math.random() * tiles.length)];
+      const tiles = [...box.children].filter(x => !x.classList.contains('set')), t = tiles[Math.floor(Math.random() * tiles.length)];
       const next = spare.shift(); spare.push(t._f);
       t.classList.add('swap'); setTimeout(() => fill(t, next), 600);
     }, 3500);
