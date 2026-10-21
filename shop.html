@@ -96,7 +96,7 @@
     .index ul { list-style: none; display: flex; flex-direction: column; gap: .05rem; }
     .ix-div { font-size: .58rem; letter-spacing: .22em; text-transform: uppercase; color: var(--muted); padding: .8rem .4rem .35rem; margin-top: .35rem; border-top: 1px solid var(--rule); }
     .ix-colour-block { background: var(--paper); border: 1px solid var(--rule); padding: .85rem .8rem .95rem; margin: 0 0 1.1rem; box-shadow: 0 4px 14px rgba(28,21,16,.05); }
-    .ix-colour-block .index-title { margin: 0 0 .65rem .1rem; display: flex; justify-content: space-between; align-items: baseline; }
+    .ix-colour-block .index-title { margin: 0 0 .7rem .1rem; display: flex; justify-content: space-between; align-items: baseline; font-family: var(--serif); font-style: italic; font-weight: 400; font-size: 1.02rem; color: var(--muted); }
     .ix-size-title { margin-bottom: .55rem !important; }
     .ix-colours { display: grid; grid-template-columns: repeat(5, 26px); justify-content: space-between; row-gap: .6rem; padding: 0 .1rem; }
     .swatch { position: relative; width: 26px; height: 26px; border-radius: 50%; border: 2.5px solid #fff; box-shadow: 0 0 0 1px rgba(28,21,16,.12); cursor: pointer; padding: 0; transition: transform .2s, box-shadow .2s; }
@@ -105,7 +105,9 @@
     .swatch.active::after { content: '✓'; position: absolute; inset: 0; display: grid; place-items: center; color: #fff; font-size: .75rem; text-shadow: 0 0 3px rgba(0,0,0,.5); }
     .swatch.pale.active::after { color: var(--ink); text-shadow: none; }
     .swatch.dim { opacity: .35; }
-    .ix-colour-clear { font: 400 .58rem var(--sans); letter-spacing: .16em; text-transform: uppercase; color: var(--warm); background: none; border: none; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+    .ix-colour-clear { font: 400 1rem/1 var(--sans); color: var(--warm); background: none; border: 1px solid var(--rule); border-radius: 50%; width: 22px; height: 22px; display: grid; place-items: center; cursor: pointer; padding: 0; font-style: normal; }
+    .ix-colour-clear:hover { background: var(--warm); color: var(--cream); }
+    .ix-colour-block .index-title span { white-space: nowrap; }
     .swatch.active { transform: scale(1.1); box-shadow: 0 0 0 2px var(--paper), 0 0 0 4px var(--warm); }
     .peek-dot { display: inline-block; width: 20px; height: 20px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 0 1px rgba(28,21,16,.2); vertical-align: middle; }
     .count-dot { display: inline-block; width: 11px; height: 11px; border-radius: 50%; margin-right: .5rem; vertical-align: -1px; box-shadow: 0 0 0 1px rgba(28,21,16,.2); }
@@ -291,7 +293,7 @@
       .index { background: none; border: none; padding: 0; }
       .index-sub, .ix-size-title { display: none; }
       .ix-colour-block { background: none; border: none; box-shadow: none; padding: 0; margin: 0 0 .7rem; display: flex; align-items: center; gap: .8rem; }
-      .ix-colour-block .index-title { font-size: 1rem; margin: 0; white-space: nowrap; }
+      .ix-colour-block .index-title { font-size: .95rem; margin: 0; white-space: nowrap; }
       .ix-colours { display: flex; gap: .5rem; overflow-x: auto; padding: .35rem .2rem; scrollbar-width: none; }
       .swatch { flex: 0 0 auto; width: 28px; height: 28px; }
       .index ul { flex-direction: row; gap: .5rem; }
@@ -343,7 +345,7 @@
   <aside class="index" aria-label="Browse by canvas size">
     <p class="index-sub">Browse by</p>
     <div class="ix-colour-block">
-      <p class="index-title">Colour</p>
+      <p class="index-title ix-colour-title"><span>pick your colour</span></p>
       <div class="ix-colours" id="colour-index" role="group" aria-label="Filter by colour"></div>
     </div>
     <p class="index-title ix-size-title">Canvas size</p>
@@ -830,7 +832,7 @@ function renderColours() {
   box.innerHTML = '';
   // a "clear" link beside the heading while a colour is chosen
   const head = block.querySelector('.index-title');
-  head.innerHTML = 'Colour' + (colourFilter ? ' <button type="button" class="ix-colour-clear">clear</button>' : '');
+  head.innerHTML = '<span>pick your colour</span>' + (colourFilter ? ' <button type="button" class="ix-colour-clear" aria-label="Clear colour" title="Clear colour">×</button>' : '');
   if (colourFilter) head.querySelector('button').addEventListener('click', () => setColour(''));
   fams.forEach(f => {
     const list = everything().filter(it => (it.colours || []).includes(f));
