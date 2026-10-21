@@ -40,18 +40,35 @@
     .intro strong { color: var(--ink); font-weight: 400; }
 
     /* GRID */
-    main { max-width: var(--max); margin: 0 auto; padding: 0 var(--gap) 5rem; }
+    main { max-width: var(--max); margin: 0 auto; padding: 0 var(--gap) 5rem; display: grid; grid-template-columns: 210px minmax(0, 1fr); gap: 3rem; align-items: start; }
+
+    /* SIZE INDEX (left) */
+    .index { position: sticky; top: 5.5rem; max-height: calc(100vh - 7rem); overflow-y: auto; padding-right: .5rem; scrollbar-width: thin; }
+    .index-title { font-size: .65rem; letter-spacing: .28em; text-transform: uppercase; color: var(--accent); margin-bottom: .9rem; }
+    .index ul { list-style: none; }
+    .ix-size { width: 100%; display: flex; justify-content: space-between; align-items: baseline; gap: .5rem; background: none; border: none; border-top: 1px solid var(--rule); padding: .7rem 0 .5rem; cursor: pointer; font-family: var(--serif); font-size: 1.2rem; color: var(--ink); text-align: left; transition: color .2s; }
+    .ix-size:hover { color: var(--warm); }
+    .ix-size .n { font-family: var(--sans); font-size: .7rem; color: var(--muted); letter-spacing: .08em; }
+    .ix-size.active { color: var(--warm); font-style: italic; }
+    .ix-size.active .n { color: var(--warm); }
+    .ix-names { padding: 0 0 .6rem .1rem; }
+    .ix-names button { display: block; width: 100%; text-align: left; background: none; border: none; padding: .18rem 0; font-family: var(--sans); font-size: .8rem; font-weight: 300; color: var(--muted); cursor: pointer; line-height: 1.4; transition: color .2s, padding .2s; }
+    .ix-names button:hover { color: var(--ink); padding-left: .3rem; }
+    .ix-names button.sold { text-decoration: line-through; opacity: .7; }
+    .ix-note { font-size: .72rem; color: var(--muted); margin-top: 1rem; line-height: 1.5; }
+    .content { min-width: 0; }
+    .clear-filter { background: none; border: none; font: inherit; letter-spacing: inherit; text-transform: inherit; color: var(--warm); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; margin-left: .6rem; }
     .toolbar { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; padding: 1rem 0; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); margin-bottom: 2.5rem; font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
     .toolbar label { display: inline-flex; align-items: center; gap: .5rem; cursor: pointer; }
     .toolbar input { accent-color: var(--warm); }
-    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 460px), 1fr)); gap: 2.75rem 1.75rem; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 400px), 1fr)); gap: 2.75rem 1.75rem; }
     .card { display: flex; flex-direction: column; animation: fadeUp .6s both; }
     .sets { margin-bottom: 3.5rem; }
-    .sets-head { max-width: 860px; margin-left: auto; margin-right: auto; display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+    .sets-head { max-width: 820px; margin-left: auto; margin-right: auto; display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
     .sets-head h2 { font-family: var(--serif); font-weight: 300; font-size: clamp(1.8rem, 4vw, 2.6rem); line-height: 1.1; }
     .sets-head h2 em { font-style: italic; color: var(--warm); }
     .sets-head p { color: var(--muted); font-size: .95rem; }
-    .sets-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); max-width: 860px; margin: 0 auto; gap: 2.75rem 1.75rem; }
+    .sets-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); max-width: 820px; margin: 0 auto; gap: 2.75rem 1.75rem; }
     .sets:empty, .sets[hidden] { display: none; }
     .frame.square { aspect-ratio: 1/1; }
     .frame { position: relative; overflow: hidden; aspect-ratio: 3/2; background: linear-gradient(135deg,#e8e0d5,#d5c9b8); cursor: zoom-in; border: none; padding: 0; display: block; width: 100%; }
@@ -128,6 +145,16 @@
     @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: none; } }
     @keyframes spin { to { transform: rotate(360deg); } }
 
+    @media (max-width: 900px) {
+      main { grid-template-columns: minmax(0, 1fr); gap: 1.5rem; }
+      .index { position: static; max-height: none; overflow: visible; padding: 0; min-width: 0; }
+      .index ul { display: flex; gap: .5rem; overflow-x: auto; padding-bottom: .4rem; scrollbar-width: none; }
+      .index li { flex: 0 0 auto; }
+      .ix-size { border: 1px solid var(--rule); padding: .45rem .9rem; font-size: 1rem; white-space: nowrap; gap: .6rem; }
+      .ix-size.active { background: var(--ink); color: var(--cream); border-color: var(--ink); font-style: normal; }
+      .ix-size.active .n { color: var(--cream); }
+      .ix-names, .ix-note { display: none; }
+    }
     @media (max-width: 820px) {
       header { grid-template-columns: 1fr; padding-top: 7rem; }
       .panel { grid-template-columns: 1fr; overflow-y: auto; }
@@ -155,6 +182,12 @@
 </header>
 
 <main>
+  <aside class="index" aria-label="Browse by canvas size">
+    <p class="index-title">Canvas size</p>
+    <ul id="size-index"></ul>
+    <p class="ix-note">Sizes in inches. Sets list the size of each painting.</p>
+  </aside>
+  <div class="content">
   <section class="sets" id="sets" hidden>
     <div class="sets-head">
       <h2>Sets <em>of three</em></h2>
@@ -168,6 +201,7 @@
   </div>
   <div class="grid" id="grid">
     <div class="state"><div class="spinner"></div>Gathering the collection…</div>
+  </div>
   </div>
 </main>
 
@@ -249,6 +283,32 @@ const isSetFile = n => SETS.some(x => fileNum(n) && Number(fileNum(n)) === Numbe
                        || /(^|[-_\s])set([-_.\s]|$)/i.test(n);
 
 const IMG_EXT = /\.(jpe?g|png|webp|gif|avif)$/i;
+// CANVAS SIZES (inches), by picture number. For new pictures you can also
+// put the size in the file name (e.g. 27-sea-breeze-8x10.png) or set
+// "size" in details.json — either way it appears in the left index.
+const SIZES = {
+  '01': '6x6',  '02': '6x6',  '03': '4x6',  '04': '8x12', '05': '6x6',
+  '06': '4x6',  '07': '4x6',  '08': '5x7',  '09': '4x6',  '10': '8x10',
+  '13': '12x12','14': '12x18','15': '4x6',  '16': '4x6',  '17': '4x6',
+  '18': '8x10', '19': '8x10', '20': '8x10', '21': '4x6',  '24': '8x10',
+  '25': '4x6',  '26': '8x10'
+};
+function sizeKey(str) {                     // '8 x 10 in' -> '8×10'
+  const m = String(str || '').match(/(\d+(?:\.\d+)?)\s*[x×*]\s*(\d+(?:\.\d+)?)/i);
+  return m ? m[1] + '×' + m[2] : '';
+}
+function sizeOf(file, d) {
+  if (d.size) return sizeKey(d.size);
+  const inName = sizeKey(file.replace(/^\d+[-_]/, ''));
+  if (inName) return inName;
+  const num = fileNum(file);
+  const k = num && Object.keys(SIZES).find(x => Number(x) === Number(num));
+  return k ? sizeKey(SIZES[k]) : '';
+}
+const sizeArea = k => k ? k.split('×').reduce((a, b) => a * b, 1) : 1e9;
+const sizeLabel = k => k ? k.replace('×', ' × ') + ' in' : 'Other';
+let sizeFilter = '';
+
 let items = [], visible = [], picks = [], sets = [], viewList = [], cur = 0;
 
 function esc(t) { return String(t ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
@@ -291,24 +351,71 @@ async function init() {
       file: n, src: FOLDER + '/' + encodeURIComponent(n),
       title: d.title || prettyName(n),
       price: sold ? 'Sold' : (d.price || 'Price on request'),
-      size: d.size || '', medium: d.medium || DEFAULT_MEDIUM, year: d.year || '',
+      sizeKey: sizeOf(n, d), size: '', medium: d.medium || DEFAULT_MEDIUM, year: d.year || '',
       desc: d.desc || '', sold, featured: !!d.featured,
       isSet: !!d.set || isSetFile(n)
     };
   });
+  items.forEach(i => { i.size = i.sizeKey ? sizeLabel(i.sizeKey) : ''; });
   // pick the 3 for "made for your home" ("featured" first, else first three
   // in folder order) and keep them out of the main list so nothing repeats
   sets = items.filter(i => i.isSet);
-  sets.forEach(i => { if (!i.size && i.medium === DEFAULT_MEDIUM) i.medium = 'Set of 3 original paintings'; });
+  sets.forEach(i => {
+    if (i.medium === DEFAULT_MEDIUM) i.medium = 'Set of 3 original paintings';
+    if (i.size) i.size += ' each';
+  });
   items = items.filter(i => !i.isSet);
   const avail = items.filter(i => !i.sold);
   picks = [...avail.filter(i => i.featured), ...avail.filter(i => !i.featured)].slice(0, 3);
   items = items.filter(i => !picks.includes(i));
   // available first, sold at the end
   items.sort((a, b) => a.sold - b.sold);
+  renderIndex();
   renderSets();
   render();
   renderShowcase();
+}
+
+const byNum = (a, b) => (Number(fileNum(a.file)) || 0) - (Number(fileNum(b.file)) || 0) || a.file.localeCompare(b.file);
+const everything = () => [...sets, ...items, ...picks].sort(byNum);
+const matches = it => !sizeFilter || it.sizeKey === sizeFilter;
+
+function renderIndex() {
+  const ul = document.getElementById('size-index');
+  const groups = {};
+  everything().forEach(it => (groups[it.sizeKey] = groups[it.sizeKey] || []).push(it));
+  const keys = Object.keys(groups).sort((a, b) => sizeArea(a) - sizeArea(b));
+  ul.innerHTML = '';
+  const add = (key, label, list) => {
+    const li = document.createElement('li');
+    const b = document.createElement('button');
+    b.className = 'ix-size' + (sizeFilter === key ? ' active' : '');
+    b.innerHTML = '<span>' + esc(label) + '</span><span class="n">' + list.length + '</span>';
+    b.addEventListener('click', () => setSize(sizeFilter === key ? '' : key));
+    li.appendChild(b);
+    if (key) {
+      const names = document.createElement('div');
+      names.className = 'ix-names';
+      list.forEach((it, i) => {
+        const nb = document.createElement('button');
+        nb.textContent = it.title + (it.isSet ? ' (set of 3)' : '');
+        if (it.sold) nb.className = 'sold';
+        nb.addEventListener('click', () => openViewer(i, list));
+        names.appendChild(nb);
+      });
+      li.appendChild(names);
+    }
+    ul.appendChild(li);
+  };
+  add('', 'All sizes', everything());
+  keys.forEach(k => add(k, sizeLabel(k), groups[k]));
+}
+
+function setSize(key) {
+  sizeFilter = key;
+  renderIndex(); renderSets(); render();
+  const top = document.querySelector('main').getBoundingClientRect().top + window.scrollY - 80;
+  if (window.scrollY > top) window.scrollTo({ top, behavior: 'smooth' });
 }
 
 function fitFrame(img) {
@@ -344,21 +451,30 @@ function makeCard(it, i, list, square) {
 function renderSets() {
   const box = document.getElementById('sets-grid');
   box.innerHTML = '';
-  document.getElementById('sets').hidden = !sets.length;
-  sets.forEach((it, i) => box.appendChild(makeCard(it, i, sets, true)));
+  const shown = sets.filter(matches);
+  document.getElementById('sets').hidden = !shown.length;
+  shown.forEach((it, i) => box.appendChild(makeCard(it, i, shown, true)));
 }
 
 function render() {
   const grid = document.getElementById('grid');
   const onlyAvail = document.getElementById('only-available').checked;
-  visible = items.filter(i => !onlyAvail || !i.sold);
-  const all = items.length + picks.length + sets.length;
-  const avail = items.filter(i => !i.sold).length + picks.length + sets.filter(i => !i.sold).length;
-  document.getElementById('count').textContent = all
-    ? all + ' piece' + (all > 1 ? 's' : '') + ' · ' + avail + ' available'
+  const pool = sizeFilter ? [...items, ...picks].filter(matches).sort(byNum).sort((a, b) => a.sold - b.sold) : items;
+  visible = pool.filter(i => !onlyAvail || !i.sold);
+  const scope = everything().filter(matches);
+  const all = scope.length, avail = scope.filter(i => !i.sold).length;
+  const countEl = document.getElementById('count');
+  countEl.textContent = all
+    ? (sizeFilter ? sizeLabel(sizeFilter) + ' · ' : '') + all + ' piece' + (all > 1 ? 's' : '') + ' · ' + avail + ' available'
     : 'New collection';
+  if (sizeFilter) {
+    const c = document.createElement('button');
+    c.className = 'clear-filter'; c.textContent = 'show all sizes';
+    c.addEventListener('click', () => setSize(''));
+    countEl.appendChild(c);
+  }
   if (!visible.length) {
-    grid.innerHTML = '<p class="state">' + (all ? 'Everything here has found a home — commission your own below.' : 'New textured pieces are on their way. Check back soon.') + '</p>';
+    grid.innerHTML = '<p class="state">' + (sizeFilter && all ? 'The ' + sizeLabel(sizeFilter) + ' pieces are in the sets above.' : all ? 'Everything here has found a home — commission your own below.' : 'New textured pieces are on their way. Check back soon.') + '</p>';
     return;
   }
   grid.innerHTML = '';
