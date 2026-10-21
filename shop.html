@@ -42,19 +42,56 @@
     /* GRID */
     main { max-width: 1440px; margin: 0 auto; padding: 0 clamp(1.25rem, 6vw, 6rem) 5rem; display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: clamp(2rem, 4vw, 4.5rem); align-items: start; }
 
+    /* SLIDING STRIP */
+    .strip { position: relative; overflow: hidden; padding: .5rem 0 3rem; -webkit-mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent); mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent); }
+    .strip:empty { display: none; }
+    .strip-track { display: flex; gap: 14px; width: max-content; animation: slideRight var(--dur, 90s) linear infinite; }
+    .strip:hover .strip-track { animation-play-state: paused; }
+    .strip-item { flex: 0 0 auto; width: 170px; aspect-ratio: 3/4; overflow: hidden; border: none; padding: 0; cursor: zoom-in; background: linear-gradient(135deg,#e8e0d5,#d5c9b8); position: relative; }
+    .strip-item img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 60%; display: block; transition: transform .5s; }
+    .strip-item.land img { object-position: 0% 55%; }
+    .strip-item:hover img { transform: scale(1.06); }
+    .strip-item span { position: absolute; left: 0; right: 0; bottom: 0; padding: 1.4rem .6rem .5rem; font-family: var(--serif); font-style: italic; font-size: .95rem; color: var(--cream); background: linear-gradient(to top, rgba(28,21,16,.7), transparent); opacity: 0; transition: opacity .3s; text-align: left; }
+    .strip-item:hover span { opacity: 1; }
+    @keyframes slideRight { from { transform: translateX(-50%); } to { transform: translateX(0); } }
+    @media (prefers-reduced-motion: reduce) { .strip-track { animation: none; } .strip { overflow-x: auto; } }
+    @media (max-width: 640px) { .strip-item { width: 120px; } .strip { padding-bottom: 2rem; } }
+
     /* SIZE INDEX (left) */
-    .index { position: sticky; top: 6rem; }
-    .index-title { font-size: .65rem; letter-spacing: .28em; text-transform: uppercase; color: var(--accent); margin-bottom: .9rem; }
-    .index ul { list-style: none; }
-    .ix-size { position: relative; width: 100%; display: flex; justify-content: space-between; align-items: baseline; gap: .5rem; background: none; border: none; border-bottom: 1px solid var(--rule); padding: .55rem .25rem .55rem .9rem; cursor: pointer; font-family: var(--serif); font-size: 1.15rem; color: var(--ink); text-align: left; transition: color .2s, background .2s; }
-    .ix-size::before { content: ''; position: absolute; left: 0; top: 50%; width: 3px; height: 0; background: var(--accent); transform: translateY(-50%); transition: height .25s; }
-    .ix-size:hover { background: rgba(196,149,106,.07); }
-    .ix-size:hover { color: var(--warm); }
-    .ix-size .n { font-family: var(--sans); font-size: .7rem; color: var(--muted); letter-spacing: .08em; }
-    .ix-size.active { color: var(--warm); font-style: italic; background: rgba(196,149,106,.09); }
-    .ix-size.active::before { height: 60%; }
-    .index li:first-child .ix-size { border-top: 1px solid var(--rule); }
-    .ix-size.active .n { color: var(--warm); }
+    .side { position: sticky; top: 6rem; z-index: 30; display: flex; flex-direction: column; gap: 1.2rem; }
+    .side.tall { position: static; }
+    .index { position: relative; }
+
+    /* COLLAGE under the index */
+    .collage { display: grid; grid-template-columns: repeat(3, 1fr); grid-auto-rows: 1fr; grid-auto-flow: dense; gap: 5px; }
+    .collage:empty { display: none; }
+    .col-tile { aspect-ratio: 1/1; overflow: hidden; border: none; padding: 0; cursor: zoom-in; background: #e8e0d5; position: relative; }
+    .col-tile.big { grid-column: span 2; grid-row: span 2; aspect-ratio: auto; }
+    .col-tile img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 62%; display: block; transition: transform .5s, opacity .6s; }
+    /* landscape promo cards: show only the left half (the painting in its room) */
+    .col-tile.land img { position: absolute; left: 0; top: -16.67%; width: 200%; height: 133.34%; max-width: none; object-fit: fill; transform-origin: 25% 50%; }
+    .col-tile:hover img { transform: scale(1.12); }
+    .col-tile.swap img { opacity: 0; }
+    .col-cap { font-size: .6rem; letter-spacing: .22em; text-transform: uppercase; color: var(--accent); margin: 0 0 -.6rem .1rem; }
+    .index { background: #f3ece2; border: 1px solid var(--rule); padding: 1.1rem .9rem .9rem; }
+    .index-title { font-family: var(--serif); font-size: 1.35rem; font-weight: 400; color: var(--ink); margin: 0 0 .2rem .3rem; letter-spacing: 0; text-transform: none; }
+    .index-sub { font-size: .6rem; letter-spacing: .24em; text-transform: uppercase; color: var(--accent); margin: 0 0 .9rem .3rem; }
+    .index ul { list-style: none; display: flex; flex-direction: column; gap: .05rem; }
+    .ix-div { font-size: .58rem; letter-spacing: .22em; text-transform: uppercase; color: var(--muted); padding: .8rem .4rem .35rem; margin-top: .35rem; border-top: 1px solid var(--rule); }
+    .ix-icon.trio { display: flex; gap: 2px; align-items: flex-end; justify-content: center; }
+    .ix-icon.trio i { width: 6px; height: 13px; border-width: 1.3px; }
+    .ix-icon.trio i:nth-child(2) { height: 16px; }
+    .ix-size { width: 100%; display: grid; grid-template-columns: 30px 1fr auto; align-items: center; gap: .6rem; background: none; border: none; padding: .36rem .4rem; cursor: pointer; font-family: var(--serif); font-size: 1.05rem; color: var(--ink); text-align: left; transition: background .2s, color .2s; }
+    .ix-size:hover { background: rgba(250,247,242,.85); color: var(--warm); }
+    .ix-icon { display: grid; place-items: center; width: 30px; height: 22px; }
+    .ix-icon i { display: block; border: 1.5px solid var(--warm); background: transparent; transition: background .25s, transform .25s, border-color .25s; }
+    .ix-icon.all { grid-template-columns: repeat(2, 9px); gap: 3px; place-content: center; }
+    .ix-icon.all i { width: 9px; height: 9px; border-width: 1.3px; }
+    .ix-size:hover .ix-icon i { transform: rotate(-4deg); background: rgba(196,149,106,.2); }
+    .ix-size .n { font-family: var(--sans); font-size: .66rem; min-width: 1.7rem; text-align: center; padding: .15rem .45rem; border-radius: 999px; border: 1px solid var(--rule); color: var(--muted); transition: all .2s; }
+    .ix-size.active { background: var(--paper); color: var(--warm); font-style: italic; box-shadow: 0 2px 10px rgba(28,21,16,.06); }
+    .ix-size.active .ix-icon i { background: var(--accent); border-color: var(--accent); }
+    .ix-size.active .n { background: var(--accent); border-color: var(--accent); color: var(--ink); }
     /* hover preview of the paintings in a size */
     .index { z-index: 20; }
     .ix-peek { position: absolute; left: calc(100% + 18px); top: 0; width: 400px; background: var(--paper); border: 1px solid var(--rule); box-shadow: 0 18px 50px rgba(28,21,16,.16); padding: 1.1rem 1.1rem 1rem; opacity: 0; visibility: hidden; transform: translateX(-8px); transition: opacity .2s, transform .2s, visibility .2s, top .2s; }
@@ -66,14 +103,14 @@
     .peek-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: .7rem .6rem; }
     .peek-item { background: none; border: none; padding: 0; cursor: pointer; text-align: left; }
     .peek-item .th { aspect-ratio: 3/4; overflow: hidden; background: linear-gradient(135deg,#e8e0d5,#d5c9b8); }
-    .peek-item img { width: 100%; height: 100%; object-fit: cover; object-position: 0% 55%; display: block; transition: transform .4s; }
-    .peek-item.set img { object-position: 50% 60%; }
+    .peek-item img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 60%; display: block; transition: transform .4s; }
+    .peek-item.land img { object-position: 0% 55%; }
     .peek-item:hover img { transform: scale(1.06); }
     .peek-item .nm { display: block; font-size: .7rem; line-height: 1.3; color: var(--muted); margin-top: .35rem; transition: color .2s; }
     .peek-item:hover .nm { color: var(--ink); }
     .peek-item.sold .th { opacity: .55; }
     .peek-foot { margin-top: .9rem; padding-top: .7rem; border-top: 1px solid var(--rule); font-size: .62rem; letter-spacing: .14em; text-transform: uppercase; color: var(--warm); }
-    .ix-note { font-size: .72rem; color: var(--muted); margin-top: 1rem; line-height: 1.5; padding-left: .9rem; }
+    .ix-note { font-size: .7rem; color: var(--muted); margin: .9rem .3rem 0; line-height: 1.5; }
     .content { min-width: 0; }
     .clear-filter { background: none; border: none; font: inherit; letter-spacing: inherit; text-transform: inherit; color: var(--warm); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; margin-left: .6rem; }
     .toolbar { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; padding: 1rem 0; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); margin-bottom: 2.5rem; font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
@@ -165,13 +202,17 @@
 
     @media (max-width: 900px) {
       main { grid-template-columns: minmax(0, 1fr); gap: 1.5rem; }
+      .side { position: static; min-width: 0; }
+      .collage, .col-cap, .ix-div { display: none; }
       .index { position: static; max-height: none; overflow: visible; padding: 0; min-width: 0; }
       .index ul { display: flex; gap: .5rem; overflow-x: auto; padding-bottom: .4rem; scrollbar-width: none; }
       .index li { flex: 0 0 auto; }
-      .ix-size, .index li:first-child .ix-size { border: 1px solid var(--rule); padding: .45rem .9rem; font-size: 1rem; white-space: nowrap; gap: .6rem; }
-      .ix-size::before { display: none; }
+      .index { background: none; border: none; padding: 0; }
+      .index-title, .index-sub { display: none; }
+      .index ul { flex-direction: row; gap: .5rem; }
+      .ix-size { display: flex; border: 1px solid var(--rule); padding: .4rem .8rem; font-size: 1rem; white-space: nowrap; gap: .5rem; background: var(--paper); }
+      .ix-icon { width: 20px; height: 18px; }
       .ix-size.active { background: var(--ink); color: var(--cream); border-color: var(--ink); font-style: normal; }
-      .ix-size.active .n { color: var(--cream); }
       .ix-peek, .ix-note { display: none !important; }
     }
     @media (max-width: 640px) {
@@ -203,18 +244,25 @@
   <p class="intro">Layered, hand-sculpted pieces you can almost feel through the screen. Each one is an original — <strong>tap any piece to see it up close</strong>, and enquire to make it yours.</p>
 </header>
 
+<section class="strip" id="strip" aria-label="Paintings sliding past"></section>
+
 <main>
+  <div class="side" id="side">
   <aside class="index" aria-label="Browse by canvas size">
+    <p class="index-sub">Browse by</p>
     <p class="index-title">Canvas size</p>
     <ul id="size-index"></ul>
     <div class="ix-peek" id="ix-peek" aria-hidden="true"></div>
-    <p class="ix-note">Hover over a size to preview its paintings; click to show only that size. Sizes in inches.</p>
+    <p class="ix-note">Hover to preview · click to filter. Shapes show each canvas’s proportions.</p>
   </aside>
+  <p class="col-cap">A little of everything</p>
+  <div class="collage" id="collage" aria-label="Shuffled paintings"></div>
+  </div>
   <div class="content">
   <section class="sets" id="sets" hidden>
     <div class="sets-head">
-      <h2>Sets <em>of three</em></h2>
-      <p>Made to hang together — three pieces, one story.</p>
+      <h2>Paintings <em>in sets</em></h2>
+      <p>Made to hang together — two or three pieces, one story.</p>
     </div>
     <div class="sets-grid" id="sets-grid"></div>
   </section>
@@ -296,14 +344,15 @@ const EMAIL     = 'paintmeastoryofficial@gmail.com';
 const WHATSAPP  = '';   // optional, e.g. '919876543210'
 const DEFAULT_MEDIUM = 'Textured art, original';
 
-// SETS OF 3 — shown square, in their own section at the top of the shop.
-// List them by their number (the start of the file name), so renaming the
-// rest of the file name doesn't matter. You can also put "set" in the file
-// name (e.g. 27-ocean-set.jpg) or "set": true in details.json.
-const SETS = ['08', '10'];
+// SETS — shown in their own section at the top of the shop and as their
+// own segment in the index. Listed by picture number : how many paintings.
+// You can also put "set" in the file name (e.g. 27-ocean-set.jpg) or
+// "set": 2 / 3 in details.json.
+const SETS = { '08': 3, '10': 3, '22': 2 };
 const fileNum = n => (n.match(/^(\d+)/) || [])[1];
-const isSetFile = n => SETS.some(x => fileNum(n) && Number(fileNum(n)) === Number(x))
-                       || /(^|[-_\s])set([-_.\s]|$)/i.test(n);
+const setKey = n => Object.keys(SETS).find(x => fileNum(n) && Number(fileNum(n)) === Number(x));
+const isSetFile = n => !!setKey(n) || /(^|[-_\s])set([-_.\s]|$)/i.test(n);
+const setPieces = (n, d) => Number(d.set) > 1 ? Number(d.set) : (SETS[setKey(n)] || 3);
 
 const IMG_EXT = /\.(jpe?g|png|webp|gif|avif)$/i;
 // CANVAS SIZES (inches), by picture number. For new pictures you can also
@@ -311,7 +360,7 @@ const IMG_EXT = /\.(jpe?g|png|webp|gif|avif)$/i;
 // "size" in details.json — either way it appears in the left index.
 const SIZES = {
   '01': '6x6',  '02': '6x6',  '03': '4x6',  '04': '8x12', '05': '6x6',
-  '06': '4x6',  '07': '4x6',  '08': '5x7',  '09': '4x6',  '10': '8x10',  '23': '6x10',
+  '06': '4x6',  '07': '4x6',  '08': '5x7',  '09': '4x6',  '10': '8x10',  '22': '4x4',  '23': '6x10',
   '13': '12x12','14': '12x18','15': '4x6',  '16': '4x6',  '17': '4x6',
   '18': '8x10', '19': '8x10', '20': '8x10', '21': '4x6',  '24': '8x10',
   '25': '4x6',  '26': '8x10'
@@ -328,8 +377,8 @@ function sizeOf(file, d) {
   const k = num && Object.keys(SIZES).find(x => Number(x) === Number(num));
   return k ? sizeKey(SIZES[k]) : '';
 }
-const sizeArea = k => k ? k.split('×').reduce((a, b) => a * b, 1) : 1e9;
-const sizeLabel = k => k ? k.replace('×', ' × ') + ' in' : 'Other';
+const sizeArea = k => /×/.test(k) ? k.split('×').reduce((a, b) => a * b, 1) : 1e9;
+const sizeLabel = k => k === 'sets' ? 'Sets' : k === 'other' || !k ? 'Other' : k.replace('×', ' × ') + ' in';
 let sizeFilter = '';
 
 let items = [], visible = [], picks = [], sets = [], viewList = [], cur = 0;
@@ -376,7 +425,7 @@ async function init() {
       price: sold ? 'Sold' : (d.price || 'Price on request'),
       sizeKey: sizeOf(n, d), size: '', medium: d.medium || DEFAULT_MEDIUM, year: d.year || '',
       desc: d.desc || '', sold, featured: !!d.featured,
-      isSet: !!d.set || isSetFile(n)
+      isSet: !!d.set || isSetFile(n), pieces: setPieces(n, d)
     };
   });
   items.forEach(i => { i.size = i.sizeKey ? sizeLabel(i.sizeKey) : ''; });
@@ -384,7 +433,7 @@ async function init() {
   // in folder order) and keep them out of the main list so nothing repeats
   sets = items.filter(i => i.isSet);
   sets.forEach(i => {
-    if (i.medium === DEFAULT_MEDIUM) i.medium = 'Set of 3 original paintings';
+    if (i.medium === DEFAULT_MEDIUM) i.medium = 'Set of ' + i.pieces + ' original paintings';
     if (i.size) i.size += ' each';
   });
   items = items.filter(i => !i.isSet);
@@ -393,7 +442,9 @@ async function init() {
   items = items.filter(i => !picks.includes(i));
   // available first, sold at the end
   items.sort((a, b) => a.sold - b.sold);
+  renderStrip();
   renderIndex();
+  renderCollage();
   renderSets();
   render();
   renderShowcase();
@@ -401,19 +452,20 @@ async function init() {
 
 const byNum = (a, b) => (Number(fileNum(a.file)) || 0) - (Number(fileNum(b.file)) || 0) || a.file.localeCompare(b.file);
 const everything = () => [...sets, ...items, ...picks].sort(byNum);
-const matches = it => !sizeFilter || it.sizeKey === sizeFilter;
+const groupOf = it => it.isSet ? 'sets' : (it.sizeKey || 'other');
+const matches = it => !sizeFilter || groupOf(it) === sizeFilter;
 
 function renderIndex() {
   const ul = document.getElementById('size-index');
   const groups = {};
-  everything().forEach(it => (groups[it.sizeKey] = groups[it.sizeKey] || []).push(it));
+  everything().filter(it => !it.isSet).forEach(it => (groups[groupOf(it)] = groups[groupOf(it)] || []).push(it));
   const keys = Object.keys(groups).sort((a, b) => sizeArea(a) - sizeArea(b));
   ul.innerHTML = '';
   const add = (key, label, list) => {
     const li = document.createElement('li');
     const b = document.createElement('button');
     b.className = 'ix-size' + (sizeFilter === key ? ' active' : '');
-    b.innerHTML = '<span>' + esc(label) + '</span><span class="n">' + list.length + '</span>';
+    b.innerHTML = sizeIcon(key) + '<span>' + esc(label) + '</span><span class="n">' + list.length + '</span>';
     b.addEventListener('click', () => setSize(sizeFilter === key ? '' : key));
     li.appendChild(b);
     if (key) {
@@ -424,9 +476,107 @@ function renderIndex() {
     }
     ul.appendChild(li);
   };
-  add('', 'All sizes', everything());
+  add('', 'Everything', everything());
+  if (sets.length) add('sets', 'Sets', everything().filter(it => it.isSet));
+  const div = document.createElement('li');
+  div.className = 'ix-div'; div.textContent = 'Single canvases';
+  ul.appendChild(div);
   keys.forEach(k => add(k, sizeLabel(k), groups[k]));
 }
+
+// small canvas shape drawn in proportion to the size (portrait)
+function sizeIcon(key) {
+  if (!key) return '<span class="ix-icon all"><i></i><i></i><i></i><i></i></span>';
+  if (key === 'sets') return '<span class="ix-icon trio"><i></i><i></i><i></i></span>';
+  if (key === 'other') return '<span class="ix-icon"><i style="width:13px;height:17px;border-style:dashed"></i></span>';
+  let [w, h] = key.split('×').map(Number);
+  if (w > h) [w, h] = [h, w];
+  const H = Math.round(9 + Math.min(h, 18) / 18 * 13);   // taller for bigger canvases
+  const W = Math.max(6, Math.round(H * w / h));            // true proportions
+  return '<span class="ix-icon"><i style="width:' + W + 'px;height:' + H + 'px"></i></span>';
+}
+
+// mark a thumbnail's box when the picture is a wide promo card
+function markShape(img) {
+  const set = () => img.parentElement && img.parentElement.closest('.strip-item, .col-tile, .peek-item')
+    ?.classList.toggle('land', img.naturalWidth / img.naturalHeight > 1.2);
+  if (img.complete && img.naturalWidth) set(); else img.addEventListener('load', set);
+}
+
+/* Sliding strip under the heading (moves left to right, pauses on hover) */
+function renderStrip() {
+  const strip = document.getElementById('strip');
+  const list = everything();
+  if (!list.length) { strip.innerHTML = ''; return; }
+  const track = document.createElement('div');
+  track.className = 'strip-track';
+  const make = (it, i) => {
+    const b = document.createElement('button');
+    b.className = 'strip-item';
+    b.setAttribute('aria-label', 'View ' + it.title);
+    b.innerHTML = '<img src="' + it.src + '" alt="" loading="lazy" /><span>' + esc(it.title) + '</span>';
+    markShape(b.querySelector('img'));
+    b.addEventListener('click', () => openViewer(i, list));
+    return b;
+  };
+  // two copies back to back so the loop is seamless
+  list.forEach((it, i) => track.appendChild(make(it, i)));
+  list.forEach((it, i) => { const c = make(it, i); c.setAttribute('aria-hidden', 'true'); c.tabIndex = -1; track.appendChild(c); });
+  track.style.setProperty('--dur', Math.max(40, list.length * 4.5) + 's');
+  strip.innerHTML = '';
+  strip.appendChild(track);
+}
+
+/* Shuffled collage of small squares under the index.
+   A new random mix on every visit, and one tile changes every few seconds. */
+const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+let collageTimer = null;
+function renderCollage() {
+  const box = document.getElementById('collage');
+  const all = everything();
+  box.innerHTML = '';
+  clearInterval(collageTimer);
+  if (all.length < 4) { fitSide(); return; }
+  const pool = shuffle(all);
+  const n = Math.min(6, pool.length);           // 1 big + 5 small = 3 rows of 3
+  const spare = pool.slice(n);
+  const tile = (it, k) => {
+    const t = document.createElement('button');
+    t.className = 'col-tile' + (k === 0 ? ' big' : '');
+    t.title = it.title;
+    t.setAttribute('aria-label', 'View ' + it.title);
+    t.innerHTML = '<img src="' + it.src + '" alt="" loading="lazy" />';
+    markShape(t.querySelector('img'));
+    t._item = it;
+    t.addEventListener('click', () => openViewer(all.indexOf(t._item), all));
+    return t;
+  };
+  pool.slice(0, n).forEach((it, k) => box.appendChild(tile(it, k)));
+  fitSide();
+  if (!spare.length || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  collageTimer = setInterval(() => {
+    if (document.hidden || box.matches(':hover')) return;
+    const tiles = [...box.children];
+    const t = tiles[Math.floor(Math.random() * tiles.length)];
+    const next = spare.shift();
+    spare.push(t._item);
+    t.classList.add('swap');
+    setTimeout(() => {
+      t._item = next;
+      t.title = next.title;
+      t.setAttribute('aria-label', 'View ' + next.title);
+      const img = t.querySelector('img');
+      img.onload = () => { t.classList.toggle('land', img.naturalWidth / img.naturalHeight > 1.2); t.classList.remove('swap'); };
+      img.src = next.src;
+    }, 600);
+  }, 3500);
+}
+// keep the left column pinned while scrolling only if it fits on screen
+function fitSide() {
+  const side = document.getElementById('side');
+  side.classList.toggle('tall', side.offsetHeight > window.innerHeight - 110);
+}
+window.addEventListener('resize', fitSide);
 
 /* Hover preview */
 const peek = document.getElementById('ix-peek');
@@ -442,10 +592,11 @@ function showPeek(li, key, label, list) {
   const grid = peek.querySelector('.peek-grid');
   list.forEach((it, i) => {
     const t = document.createElement('button');
-    t.className = 'peek-item' + (it.isSet ? ' set' : '') + (it.sold ? ' sold' : '');
+    t.className = 'peek-item' + (it.sold ? ' sold' : '');
     t.innerHTML = '<div class="th"><img src="' + it.src + '" alt="" loading="lazy" /></div>' +
-                  '<span class="nm">' + esc(it.title) + (it.isSet ? ' · set of 3' : '') + (it.sold ? ' · sold' : '') + '</span>';
+                  '<span class="nm">' + esc(it.title) + (it.isSet ? ' · set of ' + it.pieces : '') + (it.sold ? ' · sold' : '') + '</span>';
     t.addEventListener('click', () => { hidePeek(true); openViewer(i, list); });
+    markShape(t.querySelector('img'));
     grid.appendChild(t);
   });
   // line the panel up with the hovered size, but keep it on screen
@@ -479,7 +630,9 @@ function fitFrame(img) {
   if (!frame || !img.naturalWidth) return;
   const r = img.naturalWidth / img.naturalHeight;
   const want = frame.classList.contains('square') ? 1 : 1.5;
-  if (Math.abs(r - want) > 0.08) { img.style.objectFit = 'contain'; frame.style.background = '#efe8dd'; }
+  if (Math.abs(r - want) <= 0.08) return;
+  if (frame.closest('.sets-grid')) frame.style.aspectRatio = String(r);   // sets keep their own shape
+  else { img.style.objectFit = 'contain'; frame.style.background = '#efe8dd'; }
 }
 
 function makeCard(it, i, list, square) {
@@ -530,7 +683,7 @@ function render() {
     countEl.appendChild(c);
   }
   if (!visible.length) {
-    grid.innerHTML = '<p class="state">' + (sizeFilter && all ? 'The ' + sizeLabel(sizeFilter) + ' pieces are in the sets above.' : all ? 'Everything here has found a home — commission your own below.' : 'New textured pieces are on their way. Check back soon.') + '</p>';
+    grid.innerHTML = '<p class="state">' + (sizeFilter === 'sets' && all ? 'All the sets are shown above.' : all ? 'Everything here has found a home — commission your own below.' : 'New textured pieces are on their way. Check back soon.') + '</p>';
     return;
   }
   grid.innerHTML = '';
