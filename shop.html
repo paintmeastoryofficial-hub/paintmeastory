@@ -11,19 +11,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet" />
 
-  <style><!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Shop — Textured Art | Paint Me A Story</title>
-  <meta name="description" content="Original textured art by Ashwini Iyer. Browse the collection and enquire about a piece." />
-
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='16' fill='%231c1510'/%3E%3Ccircle cx='9' cy='15' r='3.5' fill='%23c4956a'/%3E%3Ccircle cx='18' cy='10' r='2.5' fill='%238b6f47'/%3E%3Ccircle cx='23' cy='18' r='3' fill='%23c4956a'/%3E%3Ccircle cx='14' cy='22' r='2' fill='%23f5f0e8'/%3E%3Crect x='15' y='21' width='2' height='7' rx='1' fill='%239e8e7e'/%3E%3C/svg%3E" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet" />
-
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
@@ -68,13 +55,24 @@
     .ix-size.active::before { height: 60%; }
     .index li:first-child .ix-size { border-top: 1px solid var(--rule); }
     .ix-size.active .n { color: var(--warm); }
-    .ix-names { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .3s ease; }
-    .ix-names > div { overflow: hidden; }
-    .ix-names.open { grid-template-rows: 1fr; }
-    .ix-names.open > div { padding: .5rem 0 .7rem .9rem; border-bottom: 1px solid var(--rule); }
-    .ix-names button { display: block; width: 100%; text-align: left; background: none; border: none; border-left: 1px solid var(--rule); padding: .2rem 0 .2rem .75rem; font-family: var(--sans); font-size: .8rem; font-weight: 300; color: var(--muted); cursor: pointer; line-height: 1.4; transition: color .2s, padding .2s; }
-    .ix-names button:hover { color: var(--ink); border-left-color: var(--accent); }
-    .ix-names button.sold { text-decoration: line-through; opacity: .7; }
+    /* hover preview of the paintings in a size */
+    .index { z-index: 20; }
+    .ix-peek { position: absolute; left: calc(100% + 18px); top: 0; width: 400px; background: var(--paper); border: 1px solid var(--rule); box-shadow: 0 18px 50px rgba(28,21,16,.16); padding: 1.1rem 1.1rem 1rem; opacity: 0; visibility: hidden; transform: translateX(-8px); transition: opacity .2s, transform .2s, visibility .2s, top .2s; }
+    .ix-peek.show { opacity: 1; visibility: visible; transform: none; }
+    .ix-peek::before { content: ''; position: absolute; left: -7px; top: var(--arrow, 22px); width: 12px; height: 12px; background: var(--paper); border-left: 1px solid var(--rule); border-bottom: 1px solid var(--rule); transform: rotate(45deg); }
+    .peek-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: .8rem; }
+    .peek-head strong { font-family: var(--serif); font-weight: 400; font-size: 1.25rem; }
+    .peek-head span { font-size: .65rem; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); }
+    .peek-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: .7rem .6rem; }
+    .peek-item { background: none; border: none; padding: 0; cursor: pointer; text-align: left; }
+    .peek-item .th { aspect-ratio: 3/4; overflow: hidden; background: linear-gradient(135deg,#e8e0d5,#d5c9b8); }
+    .peek-item img { width: 100%; height: 100%; object-fit: cover; object-position: 0% 55%; display: block; transition: transform .4s; }
+    .peek-item.set img { object-position: 50% 60%; }
+    .peek-item:hover img { transform: scale(1.06); }
+    .peek-item .nm { display: block; font-size: .7rem; line-height: 1.3; color: var(--muted); margin-top: .35rem; transition: color .2s; }
+    .peek-item:hover .nm { color: var(--ink); }
+    .peek-item.sold .th { opacity: .55; }
+    .peek-foot { margin-top: .9rem; padding-top: .7rem; border-top: 1px solid var(--rule); font-size: .62rem; letter-spacing: .14em; text-transform: uppercase; color: var(--warm); }
     .ix-note { font-size: .72rem; color: var(--muted); margin-top: 1rem; line-height: 1.5; padding-left: .9rem; }
     .content { min-width: 0; }
     .clear-filter { background: none; border: none; font: inherit; letter-spacing: inherit; text-transform: inherit; color: var(--warm); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; margin-left: .6rem; }
@@ -174,7 +172,7 @@
       .ix-size::before { display: none; }
       .ix-size.active { background: var(--ink); color: var(--cream); border-color: var(--ink); font-style: normal; }
       .ix-size.active .n { color: var(--cream); }
-      .ix-names, .ix-note { display: none; }
+      .ix-peek, .ix-note { display: none !important; }
     }
     @media (max-width: 640px) {
       .grid, .sets-grid { grid-template-columns: 1fr; }
@@ -209,7 +207,8 @@
   <aside class="index" aria-label="Browse by canvas size">
     <p class="index-title">Canvas size</p>
     <ul id="size-index"></ul>
-    <p class="ix-note">Choose a size to see its paintings. Sizes in inches; sets show each painting's size.</p>
+    <div class="ix-peek" id="ix-peek" aria-hidden="true"></div>
+    <p class="ix-note">Hover over a size to preview its paintings; click to show only that size. Sizes in inches.</p>
   </aside>
   <div class="content">
   <section class="sets" id="sets" hidden>
@@ -418,18 +417,10 @@ function renderIndex() {
     b.addEventListener('click', () => setSize(sizeFilter === key ? '' : key));
     li.appendChild(b);
     if (key) {
-      const names = document.createElement('div');
-      names.className = 'ix-names' + (sizeFilter === key ? ' open' : '');
-      const inner = document.createElement('div');
-      names.appendChild(inner);
-      list.forEach((it, i) => {
-        const nb = document.createElement('button');
-        nb.textContent = it.title + (it.isSet ? ' (set of 3)' : '');
-        if (it.sold) nb.className = 'sold';
-        nb.addEventListener('click', () => openViewer(i, list));
-        inner.appendChild(nb);
-      });
-      li.appendChild(names);
+      li.addEventListener('mouseenter', () => showPeek(li, key, label, list));
+      b.addEventListener('focus', () => showPeek(li, key, label, list));
+    } else {
+      li.addEventListener('mouseenter', hidePeek);
     }
     ul.appendChild(li);
   };
@@ -437,563 +428,46 @@ function renderIndex() {
   keys.forEach(k => add(k, sizeLabel(k), groups[k]));
 }
 
-function setSize(key) {
-  sizeFilter = key;
-  renderIndex(); renderSets(); render();
-  const top = document.querySelector('main').getBoundingClientRect().top + window.scrollY - 80;
-  if (window.scrollY > top) window.scrollTo({ top, behavior: 'smooth' });
-}
-
-function fitFrame(img) {
-  const frame = img.closest('.frame');
-  if (!frame || !img.naturalWidth) return;
-  const r = img.naturalWidth / img.naturalHeight;
-  const want = frame.classList.contains('square') ? 1 : 1.5;
-  if (Math.abs(r - want) > 0.08) { img.style.objectFit = 'contain'; frame.style.background = '#efe8dd'; }
-}
-
-function makeCard(it, i, list, square) {
-  const card = document.createElement('article');
-  card.className = 'card' + (it.sold ? ' sold' : '');
-  card.style.animationDelay = Math.min(i * 0.05, 0.6) + 's';
-  card.innerHTML =
-    '<button class="frame' + (square ? ' square' : '') + '" aria-label="View ' + esc(it.title) + '">' +
-      '<img src="' + it.src + '" alt="' + esc(it.title) + '" loading="lazy" />' +
-      '<span class="badge' + (it.sold ? ' sold' : '') + '">' + (it.sold ? 'Sold' : 'Available') + '</span>' +
-      '<span class="hint">View up close</span>' +
-    '</button>' +
-    '<div class="body">' +
-      '<h3 class="title">' + esc(it.title) + '</h3>' +
-      '<p class="meta">' + esc([it.medium, it.size].filter(Boolean).join(' · ')) + '</p>' +
-      '<div class="foot"><span class="price">' + esc(it.price) + '</span>' +
-      '<a class="enquire" href="' + (it.sold ? mailto(it, true) : mailto(it)) + '">' + (it.sold ? 'Similar piece →' : 'Enquire →') + '</a></div>' +
-    '</div>';
-  card.querySelector('.frame').addEventListener('click', () => openViewer(i, list));
-  const im = card.querySelector('img');
-  im.addEventListener('load', () => fitFrame(im));
-  return card;
-}
-
-function renderSets() {
-  const box = document.getElementById('sets-grid');
-  box.innerHTML = '';
-  const shown = sets.filter(matches);
-  document.getElementById('sets').hidden = !shown.length;
-  shown.forEach((it, i) => box.appendChild(makeCard(it, i, shown, true)));
-}
-
-function render() {
-  const grid = document.getElementById('grid');
-  const onlyAvail = document.getElementById('only-available').checked;
-  const pool = sizeFilter ? [...items, ...picks].filter(matches).sort(byNum).sort((a, b) => a.sold - b.sold) : items;
-  visible = pool.filter(i => !onlyAvail || !i.sold);
-  const scope = everything().filter(matches);
-  const all = scope.length, avail = scope.filter(i => !i.sold).length;
-  const countEl = document.getElementById('count');
-  countEl.textContent = all
-    ? (sizeFilter ? sizeLabel(sizeFilter) + ' · ' : '') + all + ' piece' + (all > 1 ? 's' : '') + ' · ' + avail + ' available'
-    : 'New collection';
-  if (sizeFilter) {
-    const c = document.createElement('button');
-    c.className = 'clear-filter'; c.textContent = 'show all sizes';
-    c.addEventListener('click', () => setSize(''));
-    countEl.appendChild(c);
-  }
-  if (!visible.length) {
-    grid.innerHTML = '<p class="state">' + (sizeFilter && all ? 'The ' + sizeLabel(sizeFilter) + ' pieces are in the sets above.' : all ? 'Everything here has found a home — commission your own below.' : 'New textured pieces are on their way. Check back soon.') + '</p>';
-    return;
-  }
-  grid.innerHTML = '';
-  visible.forEach((it, i) => grid.appendChild(makeCard(it, i, visible, false)));
-}
-
-/* Commission showcase: 3 pieces from the folder.
-   Pieces marked "featured": true in details.json are used first,
-   otherwise the first three in folder order. */
-function renderShowcase() {
-  const box = document.getElementById('showcase');
-  box.innerHTML = '';
-  picks.forEach((it, k) => {
-    const b = document.createElement('button');
-    b.className = 'show-item';
-    b.style.animationDelay = (k * 0.1) + 's';
-    b.setAttribute('aria-label', 'View ' + it.title);
-    b.innerHTML = '<div class="show-frame"><img src="' + it.src + '" alt="' + esc(it.title) + '" loading="lazy" /></div>' +
-                  '<p class="show-cap">' + esc(it.title) + '</p>';
-    b.addEventListener('click', () => openViewer(k, picks));
-    box.appendChild(b);
+/* Hover preview */
+const peek = document.getElementById('ix-peek');
+const canHover = () => window.matchMedia('(hover: hover) and (min-width: 901px)').matches;
+let peekTimer = null;
+function showPeek(li, key, label, list) {
+  if (!canHover()) return;
+  clearTimeout(peekTimer);
+  peek.innerHTML =
+    '<div class="peek-head"><strong>' + esc(label) + '</strong><span>' + list.length + ' painting' + (list.length > 1 ? 's' : '') + '</span></div>' +
+    '<div class="peek-grid"></div>' +
+    '<div class="peek-foot">Click the size to show only these →</div>';
+  const grid = peek.querySelector('.peek-grid');
+  list.forEach((it, i) => {
+    const t = document.createElement('button');
+    t.className = 'peek-item' + (it.isSet ? ' set' : '') + (it.sold ? ' sold' : '');
+    t.innerHTML = '<div class="th"><img src="' + it.src + '" alt="" loading="lazy" /></div>' +
+                  '<span class="nm">' + esc(it.title) + (it.isSet ? ' · set of 3' : '') + (it.sold ? ' · sold' : '') + '</span>';
+    t.addEventListener('click', () => { hidePeek(true); openViewer(i, list); });
+    grid.appendChild(t);
   });
+  // line the panel up with the hovered size, but keep it on screen
+  const idx = document.querySelector('.index').getBoundingClientRect();
+  const rowTop = li.offsetTop;
+  peek.classList.add('show');
+  const h = peek.offsetHeight;
+  const maxTop = window.innerHeight - idx.top - h - 16;
+  const top = Math.max(Math.min(rowTop - 14, maxTop), -idx.top + 80);
+  peek.style.top = top + 'px';
+  peek.style.setProperty('--arrow', Math.max(14, Math.min(h - 26, rowTop - top + 14)) + 'px');
 }
-
-/* Viewer */
-const viewer = document.getElementById('viewer');
-const imgWrap = document.getElementById('v-imgwrap');
-function openViewer(i, list) {
-  if (list) viewList = list;
-  cur = (i + viewList.length) % viewList.length;
-  const it = viewList[cur];
-  imgWrap.classList.remove('zoomed');
-  const img = document.getElementById('v-img');
-  img.src = it.src; img.alt = it.title;
-  document.getElementById('v-status').textContent = 'Textured art · ' + (it.sold ? 'Sold' : 'Available');
-  document.getElementById('v-title').textContent = it.title;
-  document.getElementById('v-price').textContent = it.price;
-  document.getElementById('v-desc').textContent = it.desc;
-  document.getElementById('v-specs').innerHTML = [['Medium', it.medium], ['Size', it.size], ['Year', it.year]]
-    .filter(s => s[1]).map(s => '<li><span>' + s[0] + '</span><span>' + esc(s[1]) + '</span></li>').join('');
-  const wa = WHATSAPP ? 'https://wa.me/' + WHATSAPP + '?text=' + encodeURIComponent('Hi Ashwini, I\'m interested in "' + it.title + '" from your shop.') : '';
-  document.getElementById('v-actions').innerHTML =
-    '<a class="btn btn-dark" href="' + (it.sold ? mailto(it, true) : mailto(it)) + '">' + (it.sold ? 'Ask for a similar piece' : 'Enquire about this piece') + '</a>' +
-    (wa ? '<a class="btn btn-ghost" href="' + wa + '" target="_blank" rel="noopener">Message on WhatsApp</a>' : '');
-  document.getElementById('v-counter').textContent = (cur + 1) + ' / ' + viewList.length;
-  const multi = viewList.length > 1;
-  document.getElementById('v-prev').style.display = multi ? '' : 'none';
-  document.getElementById('v-next').style.display = multi ? '' : 'none';
-  viewer.classList.add('open');
-  document.body.style.overflow = 'hidden';
+function hidePeek(now) {
+  clearTimeout(peekTimer);
+  if (now === true) { peek.classList.remove('show'); return; }
+  peekTimer = setTimeout(() => peek.classList.remove('show'), 180);
 }
-function closeViewer() { viewer.classList.remove('open'); document.body.style.overflow = ''; }
-
-// click the big image to zoom in on the texture
-document.getElementById('v-img').addEventListener('click', e => {
-  const z = imgWrap.classList.toggle('zoomed');
-  if (z) { const r = e.target.getBoundingClientRect(); e.target.style.transformOrigin = ((e.clientX - r.left) / r.width * 100) + '% ' + ((e.clientY - r.top) / r.height * 100) + '%'; }
-});
-imgWrap.addEventListener('mousemove', e => {
-  if (!imgWrap.classList.contains('zoomed')) return;
-  const img = document.getElementById('v-img'), r = imgWrap.getBoundingClientRect();
-  img.style.transformOrigin = ((e.clientX - r.left) / r.width * 100) + '% ' + ((e.clientY - r.top) / r.height * 100) + '%';
-});
-
-document.getElementById('v-close').addEventListener('click', closeViewer);
-document.getElementById('v-prev').addEventListener('click', () => openViewer(cur - 1));
-document.getElementById('v-next').addEventListener('click', () => openViewer(cur + 1));
-viewer.addEventListener('click', e => { if (e.target === viewer) closeViewer(); });
-document.addEventListener('keydown', e => {
-  if (!viewer.classList.contains('open')) return;
-  if (e.key === 'Escape') closeViewer();
-  if (e.key === 'ArrowLeft') openViewer(cur - 1);
-  if (e.key === 'ArrowRight') openViewer(cur + 1);
-});
-let tx = null;
-viewer.addEventListener('touchstart', e => { tx = e.touches[0].clientX; }, { passive: true });
-viewer.addEventListener('touchend', e => {
-  if (tx === null || imgWrap.classList.contains('zoomed')) { tx = null; return; }
-  const dx = e.changedTouches[0].clientX - tx;
-  if (Math.abs(dx) > 50) openViewer(cur + (dx < 0 ? 1 : -1));
-  tx = null;
-});
-
-document.getElementById('only-available').addEventListener('change', render);
-document.getElementById('commission-btn').href = mailto(null, true);
-init();
-</script>
-</body>
-</html>
-
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --cream:  #f5f0e8; --paper:  #faf7f2; --ink:    #1c1510;
-      --warm:   #8b6f47; --accent: #c4956a; --muted:  #9e8e7e;
-      --rule:   rgba(139,111,71,.25);
-      --serif:  'Cormorant Garamond', Georgia, serif;
-      --sans:   'Jost', sans-serif;
-      --max:    1200px; --gap: clamp(1.25rem, 5vw, 4rem);
-    }
-    html { scroll-behavior: smooth; }
-    body { background: var(--paper); color: var(--ink); font-family: var(--sans); font-size: 1.05rem; font-weight: 300; line-height: 1.75; overflow-x: hidden; }
-    body::before { content: ''; position: fixed; inset: 0; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.04'/%3E%3C/svg%3E"); pointer-events: none; z-index: 9999; }
-
-    /* NAV */
-    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 1.1rem var(--gap); display: flex; align-items: center; justify-content: space-between; background: rgba(250,247,242,.88); backdrop-filter: blur(12px); border-bottom: 1px solid var(--rule); }
-    .nav-logo { font-family: var(--serif); font-size: 1.15rem; letter-spacing: .04em; color: var(--ink); text-decoration: none; }
-    .nav-back { font-size: .7rem; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); text-decoration: none; transition: color .2s; }
-    .nav-back:hover { color: var(--ink); }
-
-    /* HEADER */
-    header { max-width: none; margin: 0; padding: 8.5rem var(--gap) 3rem; display: grid; grid-template-columns: 1.2fr 1fr; gap: 2rem 4rem; align-items: end; }
-    .label { font-size: .65rem; letter-spacing: .28em; text-transform: uppercase; color: var(--accent); margin-bottom: 1rem; }
-    h1 { font-family: var(--serif); font-size: clamp(3rem, 8vw, 6rem); font-weight: 300; line-height: 1; }
-    h1 em { font-style: italic; color: var(--warm); }
-    .intro { color: var(--muted); font-size: 1rem; }
-    .intro strong { color: var(--ink); font-weight: 400; }
-
-    /* GRID */
-    main { max-width: none; margin: 0; padding: 0 var(--gap) 5rem; display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: clamp(2rem, 4vw, 4rem); align-items: start; }
-
-    /* SIZE INDEX (left) */
-    .index { position: sticky; top: 5.5rem; max-height: calc(100vh - 7rem); overflow-y: auto; padding-right: .5rem; scrollbar-width: thin; }
-    .index-title { font-size: .65rem; letter-spacing: .28em; text-transform: uppercase; color: var(--accent); margin-bottom: .9rem; }
-    .index ul { list-style: none; }
-    .ix-size { width: 100%; display: flex; justify-content: space-between; align-items: baseline; gap: .5rem; background: none; border: none; border-top: 1px solid var(--rule); padding: .7rem 0 .5rem; cursor: pointer; font-family: var(--serif); font-size: 1.2rem; color: var(--ink); text-align: left; transition: color .2s; }
-    .ix-size:hover { color: var(--warm); }
-    .ix-size .n { font-family: var(--sans); font-size: .7rem; color: var(--muted); letter-spacing: .08em; }
-    .ix-size.active { color: var(--warm); font-style: italic; }
-    .ix-size.active .n { color: var(--warm); }
-    .ix-names { padding: 0 0 .6rem .1rem; }
-    .ix-names button { display: block; width: 100%; text-align: left; background: none; border: none; padding: .18rem 0; font-family: var(--sans); font-size: .8rem; font-weight: 300; color: var(--muted); cursor: pointer; line-height: 1.4; transition: color .2s, padding .2s; }
-    .ix-names button:hover { color: var(--ink); padding-left: .3rem; }
-    .ix-names button.sold { text-decoration: line-through; opacity: .7; }
-    .ix-note { font-size: .72rem; color: var(--muted); margin-top: 1rem; line-height: 1.5; }
-    .content { min-width: 0; }
-    .clear-filter { background: none; border: none; font: inherit; letter-spacing: inherit; text-transform: inherit; color: var(--warm); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; margin-left: .6rem; }
-    .toolbar { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; padding: 1rem 0; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); margin-bottom: 2.5rem; font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
-    .toolbar label { display: inline-flex; align-items: center; gap: .5rem; cursor: pointer; }
-    .toolbar input { accent-color: var(--warm); }
-    .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2.75rem 1.75rem; }
-    .card { display: flex; flex-direction: column; animation: fadeUp .6s both; }
-    .sets { margin-bottom: 3.5rem; }
-    .sets-head { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
-    .sets-head h2 { font-family: var(--serif); font-weight: 300; font-size: clamp(1.8rem, 4vw, 2.6rem); line-height: 1.1; }
-    .sets-head h2 em { font-style: italic; color: var(--warm); }
-    .sets-head p { color: var(--muted); font-size: .95rem; }
-    .sets-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2.75rem 1.75rem; }
-    .sets:empty, .sets[hidden] { display: none; }
-    .frame.square { aspect-ratio: 1/1; }
-    .frame { position: relative; overflow: hidden; aspect-ratio: 3/2; background: linear-gradient(135deg,#e8e0d5,#d5c9b8); cursor: zoom-in; border: none; padding: 0; display: block; width: 100%; }
-    .frame img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .7s cubic-bezier(.25,.46,.45,.94); }
-    .card:hover .frame img { transform: scale(1.025); }
-    .card.sold .frame img { filter: saturate(.45) brightness(.97); }
-    .badge { position: absolute; top: .75rem; left: .75rem; font-size: .58rem; letter-spacing: .18em; text-transform: uppercase; padding: .35rem .7rem; background: rgba(250,247,242,.92); color: #4f6b3a; }
-    .badge.sold { background: var(--ink); color: var(--cream); }
-    .hint { position: absolute; left: 0; right: 0; bottom: 0; padding: .9rem; font-size: .6rem; letter-spacing: .2em; text-transform: uppercase; color: var(--cream); background: linear-gradient(to top, rgba(28,21,16,.65), transparent); opacity: 0; transition: opacity .3s; text-align: left; }
-    .card:hover .hint { opacity: 1; }
-    .body { padding-top: 1rem; display: flex; flex-direction: column; gap: .15rem; flex: 1; }
-    .title { font-family: var(--serif); font-size: 1.45rem; font-weight: 400; line-height: 1.2; }
-    .meta { font-size: .85rem; color: var(--muted); }
-    .foot { display: flex; justify-content: space-between; align-items: center; gap: .75rem; margin-top: auto; padding-top: .9rem; border-top: 1px solid var(--rule); margin-top: .9rem; }
-    .price { font-family: var(--serif); font-size: 1.2rem; }
-    .card.sold .price { color: var(--muted); }
-    .enquire { font-size: .62rem; letter-spacing: .16em; text-transform: uppercase; color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--accent); padding-bottom: 2px; white-space: nowrap; }
-    .enquire:hover { color: var(--warm); }
-    .state { grid-column: 1/-1; text-align: center; padding: 4rem 1rem; font-family: var(--serif); font-style: italic; color: var(--muted); font-size: 1.25rem; }
-    .spinner { width: 32px; height: 32px; border: 2px solid var(--rule); border-top-color: var(--accent); border-radius: 50%; animation: spin .8s linear infinite; margin: 0 auto 1rem; }
-
-    /* COMMISSION BAND */
-    .band { background: var(--ink); color: var(--cream); text-align: center; padding: 4.5rem var(--gap); }
-    .band h2 { font-family: var(--serif); font-weight: 300; font-size: clamp(1.8rem, 4vw, 2.8rem); line-height: 1.15; margin-bottom: .75rem; }
-    .band h2 em { color: var(--accent); }
-    .band p { color: rgba(245,240,232,.6); font-family: var(--serif); font-style: italic; font-size: 1.1rem; margin-bottom: 2rem; }
-    .showcase { max-width: 1200px; margin: 0 auto 2.75rem; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; align-items: start; }
-    .showcase:empty { display: none; }
-    .show-item { background: none; border: none; padding: 0; cursor: zoom-in; color: var(--cream); text-align: left; animation: fadeUp .6s both; }
-    .show-frame { aspect-ratio: 3/2; overflow: hidden; background: rgba(245,240,232,.06); border: 1px solid rgba(245,240,232,.12); padding: .6rem; transition: border-color .3s; }
-    .show-frame img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .7s cubic-bezier(.25,.46,.45,.94); }
-    .show-item:hover .show-frame { border-color: var(--accent); }
-    .show-item:hover img { transform: scale(1.04); }
-    .show-cap { font-family: var(--serif); font-style: italic; font-size: 1.05rem; color: rgba(245,240,232,.75); margin-top: .7rem; text-align: center; }
-    .show-item:nth-child(2) { margin-top: 2rem; }
-    @media (max-width: 640px) {
-      .showcase { grid-template-columns: 1fr; gap: 1.5rem; }
-      .show-frame { padding: .35rem; }
-      .show-item:nth-child(2) { margin-top: 0; }
-    }
-    .btn { font-family: var(--sans); font-size: .7rem; letter-spacing: .14em; text-transform: uppercase; text-decoration: none; padding: .9rem 2.2rem; border: 1px solid currentColor; transition: background .25s, color .25s, border-color .25s; display: inline-flex; align-items: center; justify-content: center; gap: .5rem; cursor: pointer; }
-    .btn-dark { background: var(--ink); color: var(--cream); border-color: var(--ink); }
-    .btn-dark:hover { background: var(--warm); border-color: var(--warm); }
-    .btn-ghost { background: transparent; color: var(--ink); }
-    .btn-ghost:hover { background: var(--ink); color: var(--cream); }
-    .btn-accent { background: var(--accent); color: var(--ink); border-color: var(--accent); font-weight: 500; }
-    .btn-accent:hover { background: var(--warm); border-color: var(--warm); color: var(--cream); }
-
-    footer { background: var(--ink); border-top: 1px solid rgba(245,240,232,.1); padding: 2rem var(--gap); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
-    footer p, footer a { font-size: .72rem; color: rgba(245,240,232,.4); letter-spacing: .06em; text-decoration: none; }
-    footer a:hover { color: var(--accent); }
-
-    /* DETAIL VIEW */
-    #viewer { display: none; position: fixed; inset: 0; z-index: 210; background: rgba(28,21,16,.95); align-items: center; justify-content: center; padding: clamp(.75rem,3vw,2.5rem); }
-    #viewer.open { display: flex; }
-    .panel { background: var(--paper); width: min(1400px, 100%); max-height: 100%; display: grid; grid-template-columns: 2.4fr 1fr; overflow: hidden; position: relative; }
-    .v-img { background: #1c1510; display: flex; align-items: center; justify-content: center; min-height: 320px; overflow: hidden; position: relative; }
-    .v-img img { max-width: 100%; max-height: 88vh; object-fit: contain; display: block; transition: transform .25s ease; cursor: zoom-in; }
-    .v-img.zoomed img { transform: scale(2.2); cursor: zoom-out; }
-    .v-info { padding: clamp(1.5rem,3vw,2.75rem); overflow-y: auto; display: flex; flex-direction: column; gap: .35rem; }
-    .v-info .title { font-size: clamp(1.9rem,3vw,2.5rem); }
-    .v-desc { color: var(--muted); margin: 1rem 0; }
-    .specs { list-style: none; border-top: 1px solid var(--rule); margin-bottom: 1.5rem; }
-    .specs li { display: flex; justify-content: space-between; gap: 1rem; padding: .55rem 0; border-bottom: 1px solid var(--rule); font-size: .88rem; }
-    .specs li span:first-child { color: var(--muted); }
-    .actions { display: flex; flex-direction: column; gap: .6rem; margin-top: auto; }
-    .counter { font-size: .65rem; letter-spacing: .2em; color: var(--muted); margin-top: 1rem; text-align: center; }
-    .ctrl { position: absolute; background: rgba(250,247,242,.9); border: none; color: var(--ink); cursor: pointer; width: 42px; height: 42px; display: grid; place-items: center; font-size: 1.4rem; line-height: 1; z-index: 2; transition: background .2s; }
-    .ctrl:hover { background: var(--accent); }
-    .v-close { top: .75rem; right: .75rem; }
-    .v-prev { left: .75rem; top: 50%; transform: translateY(-50%); }
-    .v-next { left: calc(70.6% - 54px); top: 50%; transform: translateY(-50%); }
-
-    @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: none; } }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    @media (max-width: 900px) {
-      main { grid-template-columns: minmax(0, 1fr); gap: 1.5rem; }
-      .index { position: static; max-height: none; overflow: visible; padding: 0; min-width: 0; }
-      .index ul { display: flex; gap: .5rem; overflow-x: auto; padding-bottom: .4rem; scrollbar-width: none; }
-      .index li { flex: 0 0 auto; }
-      .ix-size { border: 1px solid var(--rule); padding: .45rem .9rem; font-size: 1rem; white-space: nowrap; gap: .6rem; }
-      .ix-size.active { background: var(--ink); color: var(--cream); border-color: var(--ink); font-style: normal; }
-      .ix-size.active .n { color: var(--cream); }
-      .ix-names, .ix-note { display: none; }
-    }
-    @media (max-width: 640px) {
-      .grid, .sets-grid { grid-template-columns: 1fr; }
-    }
-    @media (max-width: 820px) {
-      header { grid-template-columns: 1fr; padding-top: 7rem; }
-      .panel { grid-template-columns: 1fr; overflow-y: auto; }
-      .v-img { min-height: 0; }
-      .v-img img { max-height: none; width: 100%; }
-      .v-prev, .v-next { top: 33vw; }
-      .v-next { left: auto; right: .75rem; }
-      footer { flex-direction: column; text-align: center; }
-    }
-  </style>
-</head>
-<body>
-
-<nav>
-  <a href="index.html" class="nav-logo">Paint Me A Story</a>
-  <a href="index.html" class="nav-back">← Back to home</a>
-</nav>
-
-<header>
-  <div>
-    <p class="label">The Shop</p>
-    <h1>Textured <em>Art</em></h1>
-  </div>
-  <p class="intro">Layered, hand-sculpted pieces you can almost feel through the screen. Each one is an original — <strong>tap any piece to see it up close</strong>, and enquire to make it yours.</p>
-</header>
-
-<main>
-  <aside class="index" aria-label="Browse by canvas size">
-    <p class="index-title">Canvas size</p>
-    <ul id="size-index"></ul>
-    <p class="ix-note">Sizes in inches. Sets list the size of each painting.</p>
-  </aside>
-  <div class="content">
-  <section class="sets" id="sets" hidden>
-    <div class="sets-head">
-      <h2>Sets <em>of three</em></h2>
-      <p>Made to hang together — three pieces, one story.</p>
-    </div>
-    <div class="sets-grid" id="sets-grid"></div>
-  </section>
-  <div class="toolbar">
-    <span id="count">Loading…</span>
-    <label><input type="checkbox" id="only-available" /> Show available only</label>
-  </div>
-  <div class="grid" id="grid">
-    <div class="state"><div class="spinner"></div>Gathering the collection…</div>
-  </div>
-  </div>
-</main>
-
-<section class="band">
-  <h2>Want something <em>made for your home?</em></h2>
-  <p>Tell me the colours, the size and the story — I'll paint it for you.</p>
-  <div class="showcase" id="showcase"></div>
-  <a class="btn btn-accent" id="commission-btn" href="#">Commission a textured piece</a>
-</section>
-
-<footer>
-  <p>© 2026 Paint Me A Story. All rights reserved.</p>
-  <div style="display:flex; gap:1.5rem; flex-wrap:wrap;">
-    <a href="index.html">Home</a>
-    <a href="https://instagram.com/paintmeastoryofficial" target="_blank" rel="noopener">Instagram</a>
-    <a href="https://youtube.com/@paintmeastoryofficial" target="_blank" rel="noopener">YouTube</a>
-    <a href="mailto:paintmeastoryofficial@gmail.com">Email</a>
-  </div>
-</footer>
-
-<div id="viewer" role="dialog" aria-modal="true" aria-labelledby="v-title">
-  <div class="panel">
-    <button class="ctrl v-close" id="v-close" aria-label="Close">&times;</button>
-    <button class="ctrl v-prev" id="v-prev" aria-label="Previous">&#8249;</button>
-    <button class="ctrl v-next" id="v-next" aria-label="Next">&#8250;</button>
-    <div class="v-img" id="v-imgwrap"><img id="v-img" src="" alt="" /></div>
-    <div class="v-info">
-      <p class="label" id="v-status" style="margin-bottom:.25rem"></p>
-      <h2 class="title" id="v-title"></h2>
-      <p class="price" id="v-price"></p>
-      <p class="v-desc" id="v-desc"></p>
-      <ul class="specs" id="v-specs"></ul>
-      <div class="actions" id="v-actions"></div>
-      <p class="counter" id="v-counter"></p>
-    </div>
-  </div>
-</div>
-
-<script>
-/* =====================================================================
-   HOW TO ADD ART
-   1. Upload photos into the  textured-art  folder in the repo.
-      They appear here automatically — no code changes needed.
-      The file name becomes the title:  golden-bloom.jpg  →  "Golden Bloom"
-      Pieces are shown in file-name order (start names with 01-, 02-… to
-      control the order; the numbers are hidden from the title).
-
-   2. OPTIONAL — add prices, sizes, "sold" etc. by creating
-      textured-art/details.json  like this:
-
-      {
-        "golden-bloom.jpg": {
-          "title": "Golden Bloom",
-          "price": "₹8,500",
-          "size": "24 × 36 in",
-          "medium": "Texture paste & acrylic on canvas",
-          "status": "sold",
-          "desc": "A short line about the piece.",
-          "featured": true
-        }
-      }
-      Any piece not listed simply shows "Price on request".
-      "featured": true puts a piece in the 3 pictures of the
-      "made for your home" section (otherwise the first three are used).
-   ===================================================================== */
-const REPO      = 'paintmeastoryofficial-hub/paintmeastory';
-const FOLDER    = 'textured-art';
-const EMAIL     = 'paintmeastoryofficial@gmail.com';
-const WHATSAPP  = '';   // optional, e.g. '919876543210'
-const DEFAULT_MEDIUM = 'Textured art, original';
-
-// SETS OF 3 — shown square, in their own section at the top of the shop.
-// List them by their number (the start of the file name), so renaming the
-// rest of the file name doesn't matter. You can also put "set" in the file
-// name (e.g. 27-ocean-set.jpg) or "set": true in details.json.
-const SETS = ['08', '10'];
-const fileNum = n => (n.match(/^(\d+)/) || [])[1];
-const isSetFile = n => SETS.some(x => fileNum(n) && Number(fileNum(n)) === Number(x))
-                       || /(^|[-_\s])set([-_.\s]|$)/i.test(n);
-
-const IMG_EXT = /\.(jpe?g|png|webp|gif|avif)$/i;
-// CANVAS SIZES (inches), by picture number. For new pictures you can also
-// put the size in the file name (e.g. 27-sea-breeze-8x10.png) or set
-// "size" in details.json — either way it appears in the left index.
-const SIZES = {
-  '01': '6x6',  '02': '6x6',  '03': '4x6',  '04': '8x12', '05': '6x6',
-  '06': '4x6',  '07': '4x6',  '08': '5x7',  '09': '4x6',  '10': '8x10',
-  '13': '12x12','14': '12x18','15': '4x6',  '16': '4x6',  '17': '4x6',
-  '18': '8x10', '19': '8x10', '20': '8x10', '21': '4x6',  '24': '8x10',
-  '25': '4x6',  '26': '8x10'
-};
-function sizeKey(str) {                     // '8 x 10 in' -> '8×10'
-  const m = String(str || '').match(/(\d+(?:\.\d+)?)\s*[x×*]\s*(\d+(?:\.\d+)?)/i);
-  return m ? m[1] + '×' + m[2] : '';
-}
-function sizeOf(file, d) {
-  if (d.size) return sizeKey(d.size);
-  const inName = sizeKey(file.replace(/^\d+[-_]/, ''));
-  if (inName) return inName;
-  const num = fileNum(file);
-  const k = num && Object.keys(SIZES).find(x => Number(x) === Number(num));
-  return k ? sizeKey(SIZES[k]) : '';
-}
-const sizeArea = k => k ? k.split('×').reduce((a, b) => a * b, 1) : 1e9;
-const sizeLabel = k => k ? k.replace('×', ' × ') + ' in' : 'Other';
-let sizeFilter = '';
-
-let items = [], visible = [], picks = [], sets = [], viewList = [], cur = 0;
-
-function esc(t) { return String(t ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
-function prettyName(file) {
-  return file.replace(IMG_EXT, '').replace(/^\d+[\s._-]*/, '').replace(/[-_]+/g, ' ').trim()
-             .replace(/\b\w/g, c => c.toUpperCase())
-             .replace(/(?!^)\b(Of|And|The|In|On|A|An|To|For|With)\b/g, w => w.toLowerCase()) || 'Untitled';
-}
-function mailto(item, commission) {
-  const subject = commission ? 'Commission enquiry: textured art' : 'Enquiry: ' + item.title + ' (textured art)';
-  const body = commission
-    ? "Hi Ashwini,\n\nI'd love a textured piece made for me.\nSize:\nColours:\nThe story / mood:\n\n"
-    : "Hi Ashwini,\n\nI'm interested in \"" + item.title + "\" from your shop.\n\n";
-  return 'mailto:' + EMAIL + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
-}
-
-async function listFolder() {
-  // always ask GitHub for the current folder contents (no caching)
-  const r = await fetch('https://api.github.com/repos/' + REPO + '/contents/' + FOLDER + '?t=' + Date.now(), { cache: 'no-store' });
-  if (!r.ok) throw new Error('list ' + r.status);
-  return (await r.json()).filter(f => f.type === 'file').map(f => f.name);
-}
-async function loadDetails() {
-  try { const r = await fetch(FOLDER + '/details.json', { cache: 'no-cache' }); return r.ok ? await r.json() : {}; }
-  catch (e) { return {}; }
-}
-
-async function init() {
-  const [details, files] = await Promise.all([
-    loadDetails(),
-    listFolder().catch(() => null)
-  ]);
-  // If GitHub can't be reached, fall back to whatever is listed in details.json
-  let names = (files || Object.keys(details)).filter(n => IMG_EXT.test(n));
-  names.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
-  items = names.map(n => {
-    const d = details[n] || {};
-    const sold = String(d.status || '').toLowerCase() === 'sold';
-    return {
-      file: n, src: FOLDER + '/' + encodeURIComponent(n),
-      title: d.title || prettyName(n),
-      price: sold ? 'Sold' : (d.price || 'Price on request'),
-      sizeKey: sizeOf(n, d), size: '', medium: d.medium || DEFAULT_MEDIUM, year: d.year || '',
-      desc: d.desc || '', sold, featured: !!d.featured,
-      isSet: !!d.set || isSetFile(n)
-    };
-  });
-  items.forEach(i => { i.size = i.sizeKey ? sizeLabel(i.sizeKey) : ''; });
-  // pick the 3 for "made for your home" ("featured" first, else first three
-  // in folder order) and keep them out of the main list so nothing repeats
-  sets = items.filter(i => i.isSet);
-  sets.forEach(i => {
-    if (i.medium === DEFAULT_MEDIUM) i.medium = 'Set of 3 original paintings';
-    if (i.size) i.size += ' each';
-  });
-  items = items.filter(i => !i.isSet);
-  const avail = items.filter(i => !i.sold);
-  picks = [...avail.filter(i => i.featured), ...avail.filter(i => !i.featured)].slice(0, 3);
-  items = items.filter(i => !picks.includes(i));
-  // available first, sold at the end
-  items.sort((a, b) => a.sold - b.sold);
-  renderIndex();
-  renderSets();
-  render();
-  renderShowcase();
-}
-
-const byNum = (a, b) => (Number(fileNum(a.file)) || 0) - (Number(fileNum(b.file)) || 0) || a.file.localeCompare(b.file);
-const everything = () => [...sets, ...items, ...picks].sort(byNum);
-const matches = it => !sizeFilter || it.sizeKey === sizeFilter;
-
-function renderIndex() {
-  const ul = document.getElementById('size-index');
-  const groups = {};
-  everything().forEach(it => (groups[it.sizeKey] = groups[it.sizeKey] || []).push(it));
-  const keys = Object.keys(groups).sort((a, b) => sizeArea(a) - sizeArea(b));
-  ul.innerHTML = '';
-  const add = (key, label, list) => {
-    const li = document.createElement('li');
-    const b = document.createElement('button');
-    b.className = 'ix-size' + (sizeFilter === key ? ' active' : '');
-    b.innerHTML = '<span>' + esc(label) + '</span><span class="n">' + list.length + '</span>';
-    b.addEventListener('click', () => setSize(sizeFilter === key ? '' : key));
-    li.appendChild(b);
-    if (key) {
-      const names = document.createElement('div');
-      names.className = 'ix-names';
-      list.forEach((it, i) => {
-        const nb = document.createElement('button');
-        nb.textContent = it.title + (it.isSet ? ' (set of 3)' : '');
-        if (it.sold) nb.className = 'sold';
-        nb.addEventListener('click', () => openViewer(i, list));
-        names.appendChild(nb);
-      });
-      li.appendChild(names);
-    }
-    ul.appendChild(li);
-  };
-  add('', 'All sizes', everything());
-  keys.forEach(k => add(k, sizeLabel(k), groups[k]));
-}
+document.querySelector('.index').addEventListener('mouseleave', hidePeek);
+peek.addEventListener('mouseenter', () => clearTimeout(peekTimer));
 
 function setSize(key) {
+  hidePeek(true);
   sizeFilter = key;
   renderIndex(); renderSets(); render();
   const top = document.querySelector('main').getBoundingClientRect().top + window.scrollY - 80;
