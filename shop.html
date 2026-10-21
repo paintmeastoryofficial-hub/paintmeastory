@@ -225,7 +225,7 @@ const WHATSAPP  = '';   // optional, e.g. '919876543210'
 const DEFAULT_MEDIUM = 'Textured art, original';
 
 const IMG_EXT = /\.(jpe?g|png|webp|gif|avif)$/i;
-let items = [], visible = [], cur = 0;
+let items = [], visible = [], picks = [], viewList = [], cur = 0;
 
 function esc(t) { return String(t ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function prettyName(file) {
@@ -241,13 +241,10 @@ function mailto(item, commission) {
 }
 
 async function listFolder() {
-  const key = 'pmas-ta-list';
-  try { const c = JSON.parse(sessionStorage.getItem(key) || 'null'); if (c && Date.now() - c.t < 600000) return c.files; } catch (e) {}
-  const r = await fetch('https://api.github.com/repos/' + REPO + '/contents/' + FOLDER);
+  // always ask GitHub for the current folder contents (no caching)
+  const r = await fetch('https://api.github.com/repos/' + REPO + '/contents/' + FOLDER + '?t=' + Date.now(), { cache: 'no-store' });
   if (!r.ok) throw new Error('list ' + r.status);
-  const files = (await r.json()).filter(f => f.type === 'file').map(f => f.name);
-  try { sessionStorage.setItem(key, JSON.stringify({ t: Date.now(), files })); } catch (e) {}
-  return files;
+  return (await r.json()).filter(f => f.type === 'file').map(f => f.name);
 }
 async function loadDetails() {
   try { const r = await fetch(FOLDER + '/details.json', { cache: 'no-cache' }); return r.ok ? await r.json() : {}; }
@@ -273,22 +270,28 @@ async function init() {
       desc: d.desc || '', sold, featured: !!d.featured
     };
   });
+  // pick the 3 for "made for your home" ("featured" first, else first three
+  // in folder order) and keep them out of the main list so nothing repeats
+  const avail = items.filter(i => !i.sold);
+  picks = [...avail.filter(i => i.featured), ...avail.filter(i => !i.featured)].slice(0, 3);
+  items = items.filter(i => !picks.includes(i));
   // available first, sold at the end
   items.sort((a, b) => a.sold - b.sold);
   render();
-  renderShowcase(names, details);
+  renderShowcase();
 }
 
 function render() {
   const grid = document.getElementById('grid');
   const onlyAvail = document.getElementById('only-available').checked;
   visible = items.filter(i => !onlyAvail || !i.sold);
-  const avail = items.filter(i => !i.sold).length;
-  document.getElementById('count').textContent = items.length
-    ? items.length + ' piece' + (items.length > 1 ? 's' : '') + ' · ' + avail + ' available'
+  const all = items.length + picks.length;
+  const avail = items.filter(i => !i.sold).length + picks.length;
+  document.getElementById('count').textContent = all
+    ? all + ' piece' + (all > 1 ? 's' : '') + ' · ' + avail + ' available'
     : 'New collection';
   if (!visible.length) {
-    grid.innerHTML = '<p class="state">' + (items.length ? 'Everything here has found a home — commission your own below.' : 'New textured pieces are on their way. Check back soon.') + '</p>';
+    grid.innerHTML = '<p class="state">' + (items.length || picks.length ? 'Everything here has found a home — commission your own below.' : 'New textured pieces are on their way. Check back soon.') + '</p>';
     return;
   }
   grid.innerHTML = '';
@@ -308,7 +311,7 @@ function render() {
         '<div class="foot"><span class="price">' + esc(it.price) + '</span>' +
         '<a class="enquire" href="' + (it.sold ? mailto(it, true) : mailto(it)) + '">' + (it.sold ? 'Similar piece →' : 'Enquire →') + '</a></div>' +
       '</div>';
-    card.querySelector('.frame').addEventListener('click', () => openViewer(i));
+    card.querySelector('.frame').addEventListener('click', () => openViewer(i, visible));
     grid.appendChild(card);
   });
 }
@@ -316,10 +319,8 @@ function render() {
 /* Commission showcase: 3 pieces from the folder.
    Pieces marked "featured": true in details.json are used first,
    otherwise the first three in folder order. */
-function renderShowcase(names) {
+function renderShowcase() {
   const box = document.getElementById('showcase');
-  const ordered = names.map(n => items.find(i => i.file === n)).filter(Boolean);
-  const picks = [...ordered.filter(i => i.featured), ...ordered.filter(i => !i.featured)].slice(0, 3);
   box.innerHTML = '';
   picks.forEach((it, k) => {
     const b = document.createElement('button');
@@ -328,11 +329,7 @@ function renderShowcase(names) {
     b.setAttribute('aria-label', 'View ' + it.title);
     b.innerHTML = '<div class="show-frame"><img src="' + it.src + '" alt="' + esc(it.title) + '" loading="lazy" /></div>' +
                   '<p class="show-cap">' + esc(it.title) + '</p>';
-    b.addEventListener('click', () => {
-      document.getElementById('only-available').checked = false;
-      render();
-      openViewer(visible.indexOf(it));
-    });
+    b.addEventListener('click', () => openViewer(k, picks));
     box.appendChild(b);
   });
 }
@@ -340,9 +337,10 @@ function renderShowcase(names) {
 /* Viewer */
 const viewer = document.getElementById('viewer');
 const imgWrap = document.getElementById('v-imgwrap');
-function openViewer(i) {
-  cur = (i + visible.length) % visible.length;
-  const it = visible[cur];
+function openViewer(i, list) {
+  if (list) viewList = list;
+  cur = (i + viewList.length) % viewList.length;
+  const it = viewList[cur];
   imgWrap.classList.remove('zoomed');
   const img = document.getElementById('v-img');
   img.src = it.src; img.alt = it.title;
@@ -356,8 +354,8 @@ function openViewer(i) {
   document.getElementById('v-actions').innerHTML =
     '<a class="btn btn-dark" href="' + (it.sold ? mailto(it, true) : mailto(it)) + '">' + (it.sold ? 'Ask for a similar piece' : 'Enquire about this piece') + '</a>' +
     (wa ? '<a class="btn btn-ghost" href="' + wa + '" target="_blank" rel="noopener">Message on WhatsApp</a>' : '');
-  document.getElementById('v-counter').textContent = (cur + 1) + ' / ' + visible.length;
-  const multi = visible.length > 1;
+  document.getElementById('v-counter').textContent = (cur + 1) + ' / ' + viewList.length;
+  const multi = viewList.length > 1;
   document.getElementById('v-prev').style.display = multi ? '' : 'none';
   document.getElementById('v-next').style.display = multi ? '' : 'none';
   viewer.classList.add('open');
