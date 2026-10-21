@@ -80,15 +80,15 @@
     .index { position: relative; }
 
     /* COLLAGE under the index */
-    .collage { display: grid; grid-template-columns: repeat(3, 1fr); grid-auto-rows: 1fr; grid-auto-flow: dense; gap: 5px; }
+    .collage { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; }
     .collage:empty { display: none; }
-    .col-tile { aspect-ratio: 1/1; overflow: hidden; border: none; padding: 0; cursor: zoom-in; background: #e8e0d5; position: relative; }
-    .col-tile.big { grid-column: span 2; grid-row: span 2; aspect-ratio: auto; }
-    .col-tile img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 62%; display: block; transition: transform .5s, opacity .6s; }
-    /* landscape promo cards: show only the left half (the painting in its room) */
-    .col-tile.land img { position: absolute; left: 0; top: -16.67%; width: 200%; height: 133.34%; max-width: none; object-fit: fill; transform-origin: 25% 50%; }
-    .col-tile:hover img { transform: scale(1.12); }
+    .col-tile { overflow: hidden; border: none; padding: 0; cursor: zoom-in; background: #e8e0d5; position: relative; display: block; }
+    .col-tile img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .6s, opacity .6s; }
+    .col-tile.set img { object-position: 50% 50%; }
+    .col-tile:hover img { transform: scale(1.07); }
     .col-tile.swap img { opacity: 0; }
+    .col-tile .col-name { position: absolute; left: 0; right: 0; bottom: 0; padding: 1rem .45rem .35rem; font-family: var(--serif); font-style: italic; font-size: .8rem; line-height: 1.2; color: var(--cream); background: linear-gradient(to top, rgba(28,21,16,.7), transparent); opacity: 0; transition: opacity .3s; text-align: left; pointer-events: none; }
+    .col-tile:hover .col-name, .col-tile.set .col-name { opacity: 1; }
     .col-cap { font-size: .6rem; letter-spacing: .22em; text-transform: uppercase; color: var(--accent); margin: 0 0 -.6rem .1rem; }
     .index { background: #f3ece2; border: 1px solid var(--rule); padding: 1.1rem .9rem .9rem; }
     .index-title { font-family: var(--serif); font-size: 1.35rem; font-weight: 400; color: var(--ink); margin: 0 0 .2rem .3rem; letter-spacing: 0; text-transform: none; }
@@ -371,7 +371,7 @@
     <a href="index.html">Home</a>
     <a href="https://instagram.com/paintmeastoryofficial" target="_blank" rel="noopener">Instagram</a>
     <a href="https://youtube.com/@paintmeastoryofficial" target="_blank" rel="noopener">YouTube</a>
-    <a href="mailto:paintmeastoryofficial@gmail.com">Email</a>
+    <a href="enquire.html">Write to me</a>
   </div>
 </footer>
 
@@ -869,6 +869,47 @@ function renderStrip() {
   strip.appendChild(track);
 }
 
+// WHERE THE PAINTING SITS in each picture (left, top, right, bottom as a share of the
+// picture), so small tiles can zoom in on it. New uploads use a typical position.
+const FOCUS = {
+  '01': [0.142, 0.288, 0.45, 0.712], '02': [0.138, 0.306, 0.404, 0.719], '03': [0.154, 0.25, 0.392, 0.738],
+  '04': [0.12, 0.12, 0.39, 0.77], '05': [0.121, 0.319, 0.45, 0.769], '06': [0.175, 0.25, 0.421, 0.75],
+  '07': [0.179, 0.288, 0.408, 0.731], '08': [0.133, 0.358, 0.9, 0.858], '09': [0.146, 0.231, 0.433, 0.762],
+  '10': [0.133, 0.375, 0.9, 0.858], '13': [0.067, 0.175, 0.45, 0.769], '14': [0.067, 0.294, 0.45, 0.7],
+  '15': [0.179, 0.256, 0.417, 0.762], '16': [0.171, 0.256, 0.404, 0.725], '17': [0.179, 0.288, 0.383, 0.725],
+  '18': [0.079, 0.156, 0.45, 0.781], '19': [0.129, 0.188, 0.417, 0.712], '20': [0.129, 0.269, 0.45, 0.719],
+  '21': [0.158, 0.25, 0.4, 0.731], '22': [0.06, 0.37, 0.45, 0.75], '23': [0.067, 0.238, 0.45, 0.856],
+  '24': [0.133, 0.194, 0.412, 0.712], '25': [0.15, 0.32, 0.41, 0.8], '26': [0.158, 0.288, 0.425, 0.744],
+  '27': [0.16, 0.24, 0.4, 0.73], '28': [0.125, 0.306, 0.446, 0.756]
+};
+const FOCUS_DEFAULT = [0.12, 0.25, 0.42, 0.75];
+
+// Zoom a tile's picture onto the painting, whatever shape the tile is
+function cropTo(tile, file) {
+  const img = tile.querySelector('img');
+  const apply = () => {
+    const W = img.naturalWidth, H = img.naturalHeight, r = tile.getBoundingClientRect();
+    if (!W || !r.width || !r.height) return;
+    const n = (file.match(/^(\d+)/) || [])[1];
+    const k = n && Object.keys(FOCUS).find(x => Number(x) === Number(n));
+    const [l, t, rr, b] = k ? FOCUS[k] : FOCUS_DEFAULT;
+    const A = r.width / r.height;
+    const bw = (rr - l) * W, bh = (b - t) * H, cx = (l + rr) / 2 * W, cy = (t + b) / 2 * H;
+    let ch = Math.sqrt(bh * Math.max(bh, bw / A)) * 1.1, cw = ch * A;   // zoom in, trimming a little of the edges in odd-shaped tiles
+    const maxW = W / H > 1.2 ? W / 2 : W;            // promo cards: stay on the photo side
+    if (cw > maxW) { cw = maxW; ch = cw / A; }
+    if (ch > H) { ch = H; cw = ch * A; }
+    const x0 = Math.min(Math.max(cx - cw / 2, 0), maxW - cw), y0 = Math.min(Math.max(cy - ch / 2, 0), H - ch);
+    Object.assign(img.style, { position: 'absolute', maxWidth: 'none', objectFit: 'fill',
+      width: (W / cw * 100) + '%', height: (H / ch * 100) + '%', left: (-x0 / cw * 100) + '%', top: (-y0 / ch * 100) + '%' });
+  };
+  tile._crop = apply;
+  if (img.complete && img.naturalWidth) apply(); else img.addEventListener('load', apply, { once: true });
+}
+const focusBox = file => { const n = (file.match(/^(\d+)/) || [])[1]; const k = n && Object.keys(FOCUS).find(x => Number(x) === Number(n)); return k ? FOCUS[k] : FOCUS_DEFAULT; };
+// painting's own shape (width / height), from its box in a 3:2 promo card
+const paintShape = file => { const [l, t, r, b] = focusBox(file); return (r - l) * 1.5 / (b - t); };
+
 /* Shuffled collage of small squares under the index.
    A new random mix on every visit; it grows so the left column reaches the
    end of the sets, and one tile changes to another painting every few seconds. */
@@ -878,50 +919,82 @@ function renderCollage() {
   collagePool = shuffle(everything());
   sizeCollage(true);
 }
+// Mosaic made of 4-row blocks of a 3-column grid, alternating two patterns.
+// [column, row, columns wide, rows tall, kind]
+const MOSAIC = [
+  [[1,1,2,2,'big'], [3,1,1,1,'s'], [3,2,1,1,'s'], [1,3,1,2,'tall'], [2,3,1,1,'s'], [2,4,1,1,'s'], [3,3,1,2,'tall']],
+  [[1,1,1,2,'tall'], [2,1,2,2,'big'], [1,3,2,1,'wide'], [3,3,1,1,'s'], [1,4,1,1,'s'], [2,4,1,1,'s'], [3,4,1,1,'s']]
+];
+const shapeOf = it => it.isSet && it.pieces >= 3 ? 'set' : paintShape(it.file) < 0.85 ? 'tall' : paintShape(it.file) > 1.2 ? 'wide' : 'sq';
 function sizeCollage(force) {
   const box = document.getElementById('collage');
   if (!box || !collagePool.length) return;
   if (window.matchMedia('(max-width: 900px)').matches) return;     // phones: no collage
   const all = everything();
-  // how many rows fit between the top of the collage and the end of the sets?
-  const gap = 5, tile = (box.clientWidth - 2 * gap) / 3;
+  const gap = 5, cell = (box.clientWidth - 2 * gap) / 3;
+  if (!cell) return;
   const setsEl = document.getElementById('sets');
   const target = !setsEl.hidden ? setsEl.getBoundingClientRect().bottom : 0;
   const room = target - box.getBoundingClientRect().top;
-  const rows = Math.max(3, Math.floor((room + gap) / (tile + gap)));
-  const n = Math.min(collagePool.length, rows * 3 - 3);              // the big tile takes 4 squares
-  if (!force && box.children.length === n) return;
+  const blocks = Math.max(1, Math.round((room + gap) / (4 * (cell + gap))));
+  if (!force && box._blocks === blocks) return;
+  box._blocks = blocks;
+  box.style.gridAutoRows = cell + 'px';
   box.innerHTML = '';
   clearInterval(collageTimer);
-  const tileEl = (it, k) => {
+  // pools by shape
+  const pools = { set: [], tall: [], wide: [], sq: [] };
+  collagePool.forEach(it => pools[shapeOf(it)].push(it));
+  const take = kind => {
+    const order = kind === 'big' ? ['set', 'sq', 'wide', 'tall'] : kind === 'tall' ? ['tall', 'sq', 'wide']
+      : kind === 'wide' ? ['wide', 'sq', 'tall'] : ['sq', 'tall', 'wide'];
+    for (const k of order) if (pools[k].length) return pools[k].shift();
+    return null;
+  };
+  const tileEl = (it, slot, rowOff) => {
+    const [c, r, w, h, kind] = slot;
     const t = document.createElement('button');
-    t.className = 'col-tile' + (k === 0 ? ' big' : '');
-    t.title = it.title;
+    const whole = shapeOf(it) === 'set';
+    t.className = 'col-tile' + (whole ? ' set' : '');
+    t.dataset.kind = kind;
+    t.style.gridColumn = c + ' / span ' + w;
+    t.style.gridRow = (r + rowOff) + ' / span ' + h;
     t.setAttribute('aria-label', 'View ' + it.title);
-    t.innerHTML = '<img src="' + it.src + '" alt="" loading="lazy" />';
-    markShape(t.querySelector('img'));
+    t.innerHTML = '<img src="' + it.src + '" alt="" /><span class="col-name">' + esc(it.title) + '</span>';
     t._item = it;
+    if (!whole) cropTo(t, it.file);
     t.addEventListener('click', () => openViewer(all.indexOf(t._item), all));
     return t;
   };
-  collagePool.slice(0, n).forEach((it, k) => box.appendChild(tileEl(it, k)));
-  collageSpare = collagePool.slice(n);
+  for (let bl = 0; bl < blocks; bl++) {
+    for (const slot of MOSAIC[bl % 2]) {
+      const it = take(slot[4]);
+      if (it) box.appendChild(tileEl(it, slot, bl * 4));
+    }
+  }
+  collageSpare = [...pools.tall, ...pools.wide, ...pools.sq];
+  requestAnimationFrame(() => [...box.children].forEach(t => t._crop && t._crop()));
   fitSide();
   if (!collageSpare.length || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   collageTimer = setInterval(() => {
     if (document.hidden || box.matches(':hover')) return;
-    const tiles = [...box.children];
+    const tiles = [...box.children].filter(t => !t.classList.contains('set'));
+    if (!tiles.length) return;
     const t = tiles[Math.floor(Math.random() * tiles.length)];
-    const next = collageSpare.shift();
+    const want = t.dataset.kind === 'tall' ? 'tall' : t.dataset.kind === 'wide' ? 'wide' : null;
+    let i = want ? collageSpare.findIndex(x => shapeOf(x) === want) : 0;
+    if (i < 0) i = 0;
+    const next = collageSpare.splice(i, 1)[0];
     collageSpare.push(t._item);
     t.classList.add('swap');
     setTimeout(() => {
       t._item = next;
-      t.title = next.title;
       t.setAttribute('aria-label', 'View ' + next.title);
+      t.querySelector('.col-name').textContent = next.title;
       const img = t.querySelector('img');
-      img.onload = () => { t.classList.toggle('land', img.naturalWidth / img.naturalHeight > 1.2); t.classList.remove('swap'); };
+      img.addEventListener('load', () => t.classList.remove('swap'), { once: true });
       img.src = next.src;
+      cropTo(t, next.file);
     }, 600);
   }, 3500);
 }
@@ -931,7 +1004,7 @@ function fitSide() {
   side.classList.toggle('tall', side.offsetHeight > window.innerHeight - 110);
 }
 let resizeT = null;
-window.addEventListener('resize', () => { clearTimeout(resizeT); resizeT = setTimeout(() => { sizeCollage(); fitSide(); }, 150); });
+window.addEventListener('resize', () => { clearTimeout(resizeT); resizeT = setTimeout(() => { sizeCollage(); fitSide(); document.querySelectorAll('.col-tile').forEach(t => t._crop && t._crop()); }, 150); });
 if ('ResizeObserver' in window) new ResizeObserver(() => sizeCollage()).observe(document.getElementById('sets'));
 
 /* Hover preview */
