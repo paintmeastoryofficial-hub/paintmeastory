@@ -289,7 +289,7 @@
     <p>Observing life and capturing stories in the form of art.</p>
     <div style="margin-top:2rem; display:flex; gap:1rem; flex-wrap:wrap;">
       <a href="https://www.artstation.com/ashwiniiyer" target="_blank" class="btn btn-dark" style="font-size:.68rem;">ArtStation Portfolio ↗</a>
-      <a href="#connect" class="btn btn-ghost" style="font-size:.68rem;">Get In Touch</a>
+      <a href="enquire.html" class="btn btn-ghost" style="font-size:.68rem;">Get In Touch</a>
     </div>
   </div>
   <div class="reveal" style="animation-delay:.15s">
@@ -350,7 +350,7 @@
       <p class="shop-desc">Original paintings, fine art prints, bottle art, and bespoke commissions — each work carries the emotion it was made with.</p>
       <div class="shop-cta">
         <a href="shop.html" class="btn btn-accent" style="font-size:.68rem;">Shop Textured Art →</a>
-        <a href="shop.html#enquire" class="btn btn-outline-light" style="font-size:.68rem;">Enquire About a Piece</a>
+        <a href="enquire.html" class="btn btn-outline-light" style="font-size:.68rem;">Enquire About a Piece</a>
         <a href="https://www.artstation.com/ashwiniiyer" target="_blank" class="btn btn-outline-light" style="font-size:.68rem;">View Portfolio ↗</a>
       </div>
     </div>
@@ -370,7 +370,7 @@
       </a>
 
       <!-- BOTTLE ART -->
-      <a href="" class="shop-card">
+      <a href="enquire.html?topic=bottle" class="shop-card">
         <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#c4956a" stroke-width="1.3">
           <path d="M9 2h6v3l2.5 3.5V20a2 2 0 0 1-2 2H8.5a2 2 0 0 1-2-2V8.5L9 5V2z"/>
           <line x1="6.5" y1="12" x2="17.5" y2="12"/>
@@ -381,7 +381,7 @@
       </a>
 
       <!-- CUSTOM ART / COMMISSIONS -->
-      <a href="" class="shop-card">
+      <a href="enquire.html?topic=commission" class="shop-card">
         <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#c4956a" stroke-width="1.3">
           <path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
         </svg>
@@ -391,7 +391,7 @@
       </a>
 
       <!-- PRINTS -->
-      <a href="" class="shop-card">
+      <a href="enquire.html?topic=prints" class="shop-card">
         <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#c4956a" stroke-width="1.3">
           <polyline points="6 9 6 2 18 2 18 9"/>
           <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
@@ -481,6 +481,7 @@
       </a>
 
     </div>
+    <a href="enquire.html" class="btn btn-accent" style="font-size:.68rem;">Write to me →</a>
   </div>
 </section>
 
@@ -613,6 +614,47 @@
       return TX_BACKUP;
     }
   }
+  // WHERE THE PAINTING SITS in each picture (left, top, right, bottom as a share of the
+  // picture), so small tiles can zoom in on it. New uploads use a typical position.
+  const FOCUS = {
+    '01': [0.142, 0.288, 0.45, 0.712], '02': [0.138, 0.306, 0.404, 0.719], '03': [0.154, 0.25, 0.392, 0.738],
+    '04': [0.12, 0.12, 0.39, 0.77], '05': [0.121, 0.319, 0.45, 0.769], '06': [0.175, 0.25, 0.421, 0.75],
+    '07': [0.179, 0.288, 0.408, 0.731], '08': [0.133, 0.358, 0.9, 0.858], '09': [0.146, 0.231, 0.433, 0.762],
+    '10': [0.133, 0.375, 0.9, 0.858], '13': [0.067, 0.175, 0.45, 0.769], '14': [0.067, 0.294, 0.45, 0.7],
+    '15': [0.179, 0.256, 0.417, 0.762], '16': [0.171, 0.256, 0.404, 0.725], '17': [0.179, 0.288, 0.383, 0.725],
+    '18': [0.079, 0.156, 0.45, 0.781], '19': [0.129, 0.188, 0.417, 0.712], '20': [0.129, 0.269, 0.45, 0.719],
+    '21': [0.158, 0.25, 0.4, 0.731], '22': [0.06, 0.37, 0.45, 0.75], '23': [0.067, 0.238, 0.45, 0.856],
+    '24': [0.133, 0.194, 0.412, 0.712], '25': [0.15, 0.32, 0.41, 0.8], '26': [0.158, 0.288, 0.425, 0.744],
+    '27': [0.16, 0.24, 0.4, 0.73], '28': [0.125, 0.306, 0.446, 0.756]
+  };
+  const FOCUS_DEFAULT = [0.12, 0.25, 0.42, 0.75];
+  
+  // Zoom a tile's picture onto the painting, whatever shape the tile is
+  function cropTo(tile, file) {
+    const img = tile.querySelector('img');
+    const apply = () => {
+      const W = img.naturalWidth, H = img.naturalHeight, r = tile.getBoundingClientRect();
+      if (!W || !r.width || !r.height) return;
+      const n = (file.match(/^(\d+)/) || [])[1];
+      const k = n && Object.keys(FOCUS).find(x => Number(x) === Number(n));
+      const [l, t, rr, b] = k ? FOCUS[k] : FOCUS_DEFAULT;
+      const A = r.width / r.height;
+      const bw = (rr - l) * W, bh = (b - t) * H, cx = (l + rr) / 2 * W, cy = (t + b) / 2 * H;
+      let ch = Math.sqrt(bh * Math.max(bh, bw / A)) * 1.1, cw = ch * A;   // zoom in, trimming a little of the edges in odd-shaped tiles
+      const maxW = W / H > 1.2 ? W / 2 : W;            // promo cards: stay on the photo side
+    if (cw > maxW) { cw = maxW; ch = cw / A; }
+      if (ch > H) { ch = H; cw = ch * A; }
+      const x0 = Math.min(Math.max(cx - cw / 2, 0), maxW - cw), y0 = Math.min(Math.max(cy - ch / 2, 0), H - ch);
+      Object.assign(img.style, { position: 'absolute', maxWidth: 'none', objectFit: 'fill',
+        width: (W / cw * 100) + '%', height: (H / ch * 100) + '%', left: (-x0 / cw * 100) + '%', top: (-y0 / ch * 100) + '%' });
+    };
+    tile._crop = apply;
+    if (img.complete && img.naturalWidth) apply(); else img.addEventListener('load', apply, { once: true });
+  }
+  const focusBox = file => { const n = (file.match(/^(\d+)/) || [])[1]; const k = n && Object.keys(FOCUS).find(x => Number(x) === Number(n)); return k ? FOCUS[k] : FOCUS_DEFAULT; };
+  // painting's own shape (width / height), from its box in a 3:2 promo card
+  const paintShape = file => { const [l, t, r, b] = focusBox(file); return (r - l) * 1.5 / (b - t); };
+  
   async function loadTextured() {
     const files = (await txFiles()).filter(f => txExt.test(f));
     if (!files.length) { document.getElementById('textured').style.display = 'none'; return; }
@@ -635,12 +677,16 @@
     const fill = (a, f) => {
       a.href = link(f); a.title = txTitle(f); a.setAttribute('aria-label', 'View ' + txTitle(f));
       const im = a.querySelector('img');
-      im.onload = () => { a.classList.toggle('land', !a.classList.contains('set') && im.naturalWidth / im.naturalHeight > 1.2); a.classList.remove('swap'); };
+      im.onload = () => a.classList.remove('swap');
       im.src = src(f); a.querySelector('.tx-name').textContent = txTitle(f); a._f = f;
+      if (!a.classList.contains('set')) cropTo(a, f);
     };
     const addTile = (f, cls) => { const a = document.createElement('a'); a.className = 'tx-tile' + (cls ? ' ' + cls : ''); a.innerHTML = '<img alt="" loading="lazy" /><span class="tx-name"></span>'; fill(a, f); box.appendChild(a); return a; };
     setFiles.forEach((f, i) => addTile(f, 'set ' + (i ? 'b' : 'a')));
     shown.forEach(f => addTile(f));
+    const recrop = () => [...box.children].forEach(t => t._crop && t._crop());
+    requestAnimationFrame(recrop);
+    window.addEventListener('resize', recrop);
     const n = files.length;
     document.getElementById('tx-stats').textContent = n + ' original' + (n > 1 ? 's' : '') + ' · sets and single canvases · new pieces added often';
     // gently swap pictures now and then
