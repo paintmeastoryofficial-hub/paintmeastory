@@ -193,6 +193,50 @@
     footer p, footer a { font-size: .72rem; color: rgba(245,240,232,.4); letter-spacing: .06em; text-decoration: none; }
     footer a:hover { color: var(--accent); }
 
+    /* ENQUIRY FORM */
+    #enq [hidden] { display: none !important; }
+    #enq { display: none; position: fixed; inset: 0; z-index: 230; background: rgba(28,21,16,.92); align-items: center; justify-content: center; padding: clamp(.75rem, 3vw, 2rem); }
+    #enq.open { display: flex; }
+    .enq-panel { background: var(--paper); width: min(960px, 100%); max-height: 100%; overflow-y: auto; display: grid; grid-template-columns: 1fr 1fr; position: relative; }
+    .enq-form { padding: clamp(1.5rem, 3vw, 2.5rem); display: flex; flex-direction: column; gap: .9rem; }
+    .enq-form h2 { font-family: var(--serif); font-weight: 300; font-size: clamp(1.8rem, 3vw, 2.3rem); line-height: 1.1; }
+    .enq-form h2 em { font-style: italic; color: var(--warm); }
+    .enq-piece { display: flex; gap: .9rem; align-items: center; padding: .7rem; background: #f3ece2; }
+    .enq-piece img { width: 64px; height: 64px; object-fit: cover; object-position: 0% 55%; flex-shrink: 0; }
+    .enq-piece.square img { object-position: 50% 55%; }
+    .enq-piece strong { font-family: var(--serif); font-weight: 400; font-size: 1.15rem; display: block; line-height: 1.2; }
+    .enq-piece span { font-size: .8rem; color: var(--muted); }
+    .enq-form label { display: flex; flex-direction: column; gap: .25rem; font-size: .62rem; letter-spacing: .18em; text-transform: uppercase; color: var(--muted); }
+    .enq-form input, .enq-form textarea { font: 300 1rem/1.5 var(--sans); color: var(--ink); background: #fff; border: 1px solid var(--rule); padding: .6rem .75rem; border-radius: 0; letter-spacing: 0; text-transform: none; }
+    .enq-form input:focus, .enq-form textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(196,149,106,.18); }
+    .enq-form input.missing { border-color: #b4553a; }
+    .enq-form textarea { min-height: 84px; resize: vertical; }
+    .enq-row { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
+    .enq-out { background: #1c1510; color: var(--cream); padding: clamp(1.5rem, 3vw, 2.5rem); display: flex; flex-direction: column; gap: .9rem; }
+    .enq-out .lbl { font-size: .62rem; letter-spacing: .2em; text-transform: uppercase; color: var(--accent); }
+    .enq-to { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: .5rem; font-size: .85rem; border-bottom: 1px solid rgba(245,240,232,.15); padding-bottom: .7rem; }
+    .enq-to > span { white-space: nowrap; }
+    .enq-subj { font-family: var(--serif); font-size: 1.15rem; }
+    .enq-body { white-space: pre-wrap; font-size: .85rem; line-height: 1.6; color: rgba(245,240,232,.78); background: rgba(245,240,232,.05); padding: .9rem 1rem; max-height: 300px; overflow-y: auto; flex: 1; }
+    .enq-send { display: flex; flex-direction: column; gap: .55rem; }
+    .enq-send .btn { width: 100%; }
+    .btn-gmail { background: var(--cream); color: var(--ink); border-color: var(--cream); font-weight: 500; }
+    .btn-gmail:hover { background: var(--accent); border-color: var(--accent); }
+    .btn-line { background: transparent; color: var(--cream); border-color: rgba(245,240,232,.35); }
+    .btn-line:hover { border-color: var(--cream); background: rgba(245,240,232,.07); }
+    .mini { background: none; border: 1px solid rgba(245,240,232,.3); color: var(--cream); font: 400 .6rem var(--sans); letter-spacing: .14em; text-transform: uppercase; padding: .35rem .6rem; cursor: pointer; white-space: nowrap; }
+    .mini:hover { border-color: var(--accent); color: var(--accent); }
+    .enq-tip { font-size: .72rem; color: rgba(245,240,232,.5); line-height: 1.5; }
+    .enq-close { position: absolute; top: .6rem; right: .6rem; width: 40px; height: 40px; border: none; background: rgba(250,247,242,.92); font-size: 1.4rem; cursor: pointer; z-index: 2; }
+    .enq-close:hover { background: var(--accent); }
+    .toast { position: fixed; left: 50%; bottom: 2rem; transform: translateX(-50%) translateY(20px); background: var(--ink); color: var(--cream); padding: .8rem 1.3rem; font-size: .85rem; z-index: 300; opacity: 0; transition: all .3s; pointer-events: none; box-shadow: 0 10px 30px rgba(0,0,0,.25); }
+    .toast.show { opacity: 1; transform: translateX(-50%); }
+    @media (max-width: 760px) {
+      .enq-panel { grid-template-columns: 1fr; }
+      .enq-row { grid-template-columns: 1fr; }
+      .enq-body { max-height: 220px; }
+    }
+
     /* DETAIL VIEW */
     #viewer { display: none; position: fixed; inset: 0; z-index: 210; background: rgba(28,21,16,.95); align-items: center; justify-content: center; padding: clamp(.75rem,3vw,2.5rem); }
     #viewer.open { display: flex; }
@@ -310,6 +354,44 @@
   </div>
 </footer>
 
+<div id="enq" role="dialog" aria-modal="true" aria-labelledby="enq-title">
+  <div class="enq-panel">
+    <button class="enq-close" id="enq-close" aria-label="Close">&times;</button>
+    <form class="enq-form" id="enq-form" autocomplete="on" onsubmit="return false">
+      <p class="label" id="enq-kicker" style="margin:0">Enquiry</p>
+      <h2 id="enq-title">Let's talk about <em>this piece</em></h2>
+      <div class="enq-piece" id="enq-piece" hidden></div>
+      <div class="enq-row">
+        <label>Your name *<input id="f-name" name="name" autocomplete="name" required /></label>
+        <label>Phone / WhatsApp<input id="f-phone" name="tel" type="tel" autocomplete="tel" /></label>
+      </div>
+      <label>City (for delivery)<input id="f-city" name="city" autocomplete="address-level2" /></label>
+      <div id="f-commission" hidden>
+        <div class="enq-row">
+          <label>Size you'd like<input id="f-size" placeholder="e.g. 8 × 10 in, or not sure" /></label>
+          <label>Needed by<input id="f-date" placeholder="e.g. mid-December" /></label>
+        </div>
+        <label style="margin-top:.9rem">Colours / mood<input id="f-colours" placeholder="e.g. gold and deep blue, calm" /></label>
+      </div>
+      <label><span id="f-msg-label">Anything else? (optional)</span><textarea id="f-msg"></textarea></label>
+    </form>
+    <div class="enq-out">
+      <p class="lbl">Your email — ready to send</p>
+      <div class="enq-to"><span>To: <span id="enq-addr"></span></span><button class="mini" type="button" id="copy-addr">Copy address</button></div>
+      <div class="enq-subj" id="enq-subj"></div>
+      <div class="enq-body" id="enq-body"></div>
+      <div class="enq-send">
+        <a class="btn btn-gmail" id="send-gmail" target="_blank" rel="noopener">Send with Gmail</a>
+        <a class="btn btn-line" id="send-mail">Use another mail app</a>
+        <button class="btn btn-line" type="button" id="send-copy">Copy the whole email</button>
+        <a class="btn btn-line" id="send-wa" target="_blank" rel="noopener" hidden>Send on WhatsApp</a>
+      </div>
+      <p class="enq-tip">Gmail opens with everything filled in — just press Send. If you use a different email, copy the message and paste it into a new mail to the address above.</p>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
 <div id="viewer" role="dialog" aria-modal="true" aria-labelledby="v-title">
   <div class="panel">
     <button class="ctrl v-close" id="v-close" aria-label="Close">&times;</button>
@@ -407,19 +489,129 @@ function prettyName(file) {
              .replace(/\b\w/g, c => c.toUpperCase())
              .replace(/(?!^)\b(Of|And|The|In|On|A|An|To|For|With)\b/g, w => w.toLowerCase()) || 'Untitled';
 }
-function mailto(item, commission) {
-  const subject = commission ? 'Commission enquiry: textured art' : 'Enquiry: ' + item.title + ' (textured art)';
-  const body = commission
-    ? "Hi Ashwini,\n\nI'd love a textured piece made for me.\nSize:\nColours:\nThe story / mood:\n\n"
-    : "Hi Ashwini,\n\nI'm interested in \"" + item.title + "\" from your shop.\n\n";
-  return 'mailto:' + EMAIL + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+/* =====================================================================
+   ENQUIRIES — a small form that writes the email for the customer, then
+   sends it with Gmail, their own mail app, a copy-paste, or WhatsApp.
+   ===================================================================== */
+const SHOP_URL = 'https://www.paintmeastory.com/shop.html';
+let enqItem = null, enqKind = 'piece';
+const $ = id => document.getElementById(id);
+const val = id => $(id).value.trim();
+
+function buildEmail() {
+  const it = enqItem, name = val('f-name') || '[your name]';
+  const mine = 'My details\n' +
+    'Name: ' + name + '\n' +
+    'Phone / WhatsApp: ' + (val('f-phone') || '—') + '\n' +
+    'City: ' + (val('f-city') || '—');
+  const extra = val('f-msg') ? '\n\n' + val('f-msg') : '';
+  let subject, body;
+  if (enqKind === 'commission') {
+    subject = 'Commission enquiry — textured painting';
+    body = "Hi Ashwini,\n\nI'd love a textured painting made for me.\n\n" +
+      'What I have in mind\n' +
+      'Size: ' + (val('f-size') || 'not sure yet') + '\n' +
+      'Colours / mood: ' + (val('f-colours') || 'open to ideas') + '\n' +
+      'Needed by: ' + (val('f-date') || 'no rush') + extra + '\n\n' + mine;
+  } else if (enqKind === 'general') {
+    subject = 'Enquiry — Paint Me A Story';
+    body = 'Hi Ashwini,\n\nI have a question about your art.' + (extra || '\n\n[your question]') + '\n\n' + mine;
+  } else if (it.sold) {
+    subject = 'Similar piece to "' + it.title + '"';
+    body = 'Hi Ashwini,\n\nI love "' + it.title + '" (' + [it.size, it.medium].filter(Boolean).join(', ') + ') — I see it has been sold. ' +
+      'Could you make something similar for me?' + extra + '\n\n' + mine;
+  } else {
+    subject = 'Enquiry: ' + it.title + (it.size ? ' (' + it.size + ')' : '');
+    body = "Hi Ashwini,\n\nI'm interested in this painting from your shop:\n\n" +
+      'Painting: ' + it.title + '\n' +
+      (it.size ? 'Size: ' + it.size + '\n' : '') +
+      'Type: ' + it.medium + '\n' +
+      'Price shown: ' + it.price + '\n' +
+      'Shop: ' + SHOP_URL + extra + '\n\n' + mine;
+  }
+  body += '\n\nThank you,\n' + name;
+  return { subject, body };
 }
 
+function refreshEmail() {
+  const { subject, body } = buildEmail();
+  $('enq-subj').textContent = subject;
+  $('enq-body').textContent = body;
+  const q = encodeURIComponent;
+  $('send-gmail').href = 'https://mail.google.com/mail/?view=cm&fs=1&to=' + q(EMAIL) + '&su=' + q(subject) + '&body=' + q(body);
+  $('send-mail').href = 'mailto:' + EMAIL + '?subject=' + q(subject) + '&body=' + q(body);
+  if (WHATSAPP) $('send-wa').href = 'https://wa.me/' + WHATSAPP + '?text=' + q(subject + '\n\n' + body);
+}
+
+function openEnquiry(item, kind) {
+  enqItem = item; enqKind = item ? 'piece' : (kind || 'general');
+  const piece = $('enq-piece');
+  if (item) {
+    piece.hidden = false;
+    piece.className = 'enq-piece' + (item.isSet ? ' square' : '');
+    piece.innerHTML = '<img src="' + item.src + '" alt="" /><div><strong>' + esc(item.title) + '</strong><span>' +
+      esc([item.size, item.price].filter(Boolean).join(' · ')) + '</span></div>';
+  } else piece.hidden = true;
+  $('enq-kicker').textContent = enqKind === 'commission' ? 'Commission' : item && item.sold ? 'Something similar' : 'Enquiry';
+  $('enq-title').innerHTML = enqKind === 'commission' ? 'Tell me about <em>your painting</em>'
+    : enqKind === 'general' ? 'Ask me <em>anything</em>'
+    : item.sold ? 'A piece like <em>this one</em>' : "Let's talk about <em>this piece</em>";
+  $('f-commission').hidden = enqKind !== 'commission';
+  $('f-msg-label').textContent = enqKind === 'general' ? 'Your question' : enqKind === 'commission' ? 'The story, the room, anything else' : 'Anything else? (optional)';
+  $('send-wa').hidden = !WHATSAPP;
+  $('enq-addr').textContent = EMAIL;
+  try { ['f-name', 'f-phone', 'f-city'].forEach(k => { const v = localStorage.getItem('pmas-' + k); if (v && !val(k)) $(k).value = v; }); } catch (e) {}
+  ['f-msg', 'f-size', 'f-date', 'f-colours'].forEach(k => { $(k).value = ''; });   // fresh message each time
+  $('f-name').classList.remove('missing');
+  refreshEmail();
+  viewer.classList.remove('open');
+  $('enq').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  setTimeout(() => $(val('f-name') ? 'f-msg' : 'f-name').focus(), 50);
+}
+function closeEnquiry() { $('enq').classList.remove('open'); document.body.style.overflow = ''; }
+
+function toast(msg) { const t = $('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2600); }
+async function copyText(text) {
+  try { await navigator.clipboard.writeText(text); return true; }
+  catch (e) {
+    const ta = document.createElement('textarea'); ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    let ok = false; try { ok = document.execCommand('copy'); } catch (e2) {}
+    ta.remove(); return ok;
+  }
+}
+function needName(e) {
+  if (val('f-name')) return false;
+  e.preventDefault(); $('f-name').classList.add('missing'); $('f-name').focus(); toast('Please add your name first');
+  return true;
+}
+function remember() { try { ['f-name', 'f-phone', 'f-city'].forEach(k => localStorage.setItem('pmas-' + k, val(k))); } catch (e) {} }
+
+// Backup list, used only if GitHub can't be reached (it limits how often one
+// connection can ask). New uploads still appear automatically whenever GitHub answers.
+const BACKUP_FILES = [
+  '01-lavender-grove.png', '02-pastel-layers.png', '03-ocean-tones.png', '04-golden-blooms.png',
+  '05-sunlit.png', '06-blue-blooms.png', '07-golden-whirl.png', '08-elements-flow.png',
+  '09-amber-haze.png', '10-golden-textures.jpg', '13-golden-rays.png', '14-golden-impressions.png',
+  '15-golden-bloom.png', '16-midnight-rivers.png', '17-golden-orbit.png', '18-silver-blues.png',
+  '19-ember-pulse.png', '20-pink-cascade.png', '21-coastal-calm.png', '22-tides.png',
+  '23-ember-flow.png', '24-pink-rhythm.png', '25-silver-swirl.png', '26-golden-cascade.png',
+  '27-strings.png', '28-summer-blues.png'
+];
 async function listFolder() {
-  // always ask GitHub for the current folder contents (no caching)
-  const r = await fetch('https://api.github.com/repos/' + REPO + '/contents/' + FOLDER + '?t=' + Date.now(), { cache: 'no-store' });
-  if (!r.ok) throw new Error('list ' + r.status);
-  return (await r.json()).filter(f => f.type === 'file').map(f => f.name);
+  // always ask GitHub for the current folder contents
+  try {
+    const r = await fetch('https://api.github.com/repos/' + REPO + '/contents/' + FOLDER + '?t=' + Date.now(), { cache: 'no-store' });
+    if (!r.ok) throw new Error('list ' + r.status);
+    const files = (await r.json()).filter(f => f.type === 'file').map(f => f.name);
+    try { localStorage.setItem('pmas-files', JSON.stringify(files)); } catch (e) {}
+    return files;
+  } catch (e) {
+    // GitHub busy: use the last list this browser saw, else the backup list
+    try { const saved = JSON.parse(localStorage.getItem('pmas-files') || 'null'); if (saved && saved.length) return saved; } catch (e2) {}
+    return BACKUP_FILES;
+  }
 }
 async function loadDetails() {
   try { const r = await fetch(FOLDER + '/details.json', { cache: 'no-cache' }); return r.ok ? await r.json() : {}; }
@@ -667,9 +859,10 @@ function makeCard(it, i, list, square) {
       '<h3 class="title">' + esc(it.title) + '</h3>' +
       '<p class="meta">' + esc([it.medium, it.size].filter(Boolean).join(' · ')) + '</p>' +
       '<div class="foot"><span class="price">' + esc(it.price) + '</span>' +
-      '<a class="enquire" href="' + (it.sold ? mailto(it, true) : mailto(it)) + '">' + (it.sold ? 'Similar piece →' : 'Enquire →') + '</a></div>' +
+      '<a class="enquire" href="#enquire">' + (it.sold ? 'Similar piece →' : 'Enquire →') + '</a></div>' +
     '</div>';
   card.querySelector('.frame').addEventListener('click', () => openViewer(i, list));
+  card.querySelector('.enquire').addEventListener('click', e => { e.preventDefault(); openEnquiry(it); });
   const im = card.querySelector('img');
   im.addEventListener('load', () => fitFrame(im));
   return card;
@@ -744,8 +937,9 @@ function openViewer(i, list) {
     .filter(s => s[1]).map(s => '<li><span>' + s[0] + '</span><span>' + esc(s[1]) + '</span></li>').join('');
   const wa = WHATSAPP ? 'https://wa.me/' + WHATSAPP + '?text=' + encodeURIComponent('Hi Ashwini, I\'m interested in "' + it.title + '" from your shop.') : '';
   document.getElementById('v-actions').innerHTML =
-    '<a class="btn btn-dark" href="' + (it.sold ? mailto(it, true) : mailto(it)) + '">' + (it.sold ? 'Ask for a similar piece' : 'Enquire about this piece') + '</a>' +
+    '<a class="btn btn-dark" href="#enquire" id="v-enquire">' + (it.sold ? 'Ask for a similar piece' : 'Enquire about this piece') + '</a>' +
     (wa ? '<a class="btn btn-ghost" href="' + wa + '" target="_blank" rel="noopener">Message on WhatsApp</a>' : '');
+  document.getElementById('v-enquire').addEventListener('click', e => { e.preventDefault(); openEnquiry(it); });
   document.getElementById('v-counter').textContent = (cur + 1) + ' / ' + viewList.length;
   const multi = viewList.length > 1;
   document.getElementById('v-prev').style.display = multi ? '' : 'none';
@@ -786,7 +980,23 @@ viewer.addEventListener('touchend', e => {
 });
 
 document.getElementById('only-available').addEventListener('change', render);
-document.getElementById('commission-btn').href = mailto(null, true);
+document.getElementById('commission-btn').addEventListener('click', e => { e.preventDefault(); openEnquiry(null, 'commission'); });
+document.querySelectorAll('a[href^="mailto:"]').forEach(a => a.addEventListener('click', e => { e.preventDefault(); openEnquiry(null, 'general'); }));
+['f-name', 'f-phone', 'f-city', 'f-size', 'f-date', 'f-colours', 'f-msg'].forEach(k => $(k).addEventListener('input', () => { $(k).classList.remove('missing'); refreshEmail(); }));
+['send-gmail', 'send-mail', 'send-wa'].forEach(k => $(k).addEventListener('click', e => { if (!needName(e)) { remember(); refreshEmail(); } }));
+$('send-copy').addEventListener('click', async e => {
+  if (needName(e)) return;
+  remember();
+  const { subject, body } = buildEmail();
+  toast(await copyText('To: ' + EMAIL + '\nSubject: ' + subject + '\n\n' + body) ? 'Email copied — paste it into a new mail to ' + EMAIL : 'Could not copy — please select the text and copy it');
+});
+$('copy-addr').addEventListener('click', async () => toast(await copyText(EMAIL) ? 'Address copied' : EMAIL));
+$('enq-close').addEventListener('click', closeEnquiry);
+$('enq').addEventListener('click', e => { if (e.target === $('enq')) closeEnquiry(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && $('enq').classList.contains('open')) closeEnquiry(); });
+if (location.hash === '#enquire') openEnquiry(null, 'general');
+if (location.hash === '#commission') openEnquiry(null, 'commission');
+
 init();
 </script>
 </body>
