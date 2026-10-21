@@ -75,7 +75,7 @@
     @media (max-width: 640px) { .strip-item { width: 120px; } .strip { padding-bottom: 2rem; } }
 
     /* SIZE INDEX (left) */
-    .side { position: sticky; top: 6rem; z-index: 30; display: flex; flex-direction: column; gap: 1.2rem; }
+    .side { position: relative; z-index: 30; display: flex; flex-direction: column; gap: 1.2rem; }
     .side.tall { position: static; }
     .index { position: relative; }
 
@@ -95,6 +95,14 @@
     .index-sub { font-size: .6rem; letter-spacing: .24em; text-transform: uppercase; color: var(--accent); margin: 0 0 .9rem .3rem; }
     .index ul { list-style: none; display: flex; flex-direction: column; gap: .05rem; }
     .ix-div { font-size: .58rem; letter-spacing: .22em; text-transform: uppercase; color: var(--muted); padding: .8rem .4rem .35rem; margin-top: .35rem; border-top: 1px solid var(--rule); }
+    .ix-div-plain { padding: 0; margin: .55rem 0 .2rem; }
+    .ix-colours { display: flex; flex-wrap: wrap; gap: .55rem; padding: .55rem .4rem .2rem; }
+    .swatch { width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--paper); box-shadow: 0 0 0 1px rgba(28,21,16,.12); cursor: pointer; padding: 0; transition: transform .2s, box-shadow .2s; }
+    .swatch.pale { box-shadow: 0 0 0 1px rgba(28,21,16,.25); }
+    .swatch:hover { transform: scale(1.18); }
+    .swatch.active { transform: scale(1.1); box-shadow: 0 0 0 2px var(--paper), 0 0 0 3.5px var(--warm); }
+    .peek-dot { display: inline-block; width: 20px; height: 20px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 0 1px rgba(28,21,16,.2); vertical-align: middle; }
+    .count-dot { display: inline-block; width: 11px; height: 11px; border-radius: 50%; margin-right: .5rem; vertical-align: -1px; box-shadow: 0 0 0 1px rgba(28,21,16,.2); }
     .ix-icon.trio { display: flex; gap: 2px; align-items: flex-end; justify-content: center; }
     .ix-icon.trio i { width: 6px; height: 13px; border-width: 1.3px; }
     .ix-icon.trio i:nth-child(2) { height: 16px; }
@@ -209,15 +217,20 @@
     .enq-form label { display: flex; flex-direction: column; gap: .25rem; font-size: .62rem; letter-spacing: .18em; text-transform: uppercase; color: var(--muted); }
     .enq-form input, .enq-form textarea { font: 300 1rem/1.5 var(--sans); color: var(--ink); background: #fff; border: 1px solid var(--rule); padding: .6rem .75rem; border-radius: 0; letter-spacing: 0; text-transform: none; }
     .enq-form input:focus, .enq-form textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(196,149,106,.18); }
-    .enq-form input.missing { border-color: #b4553a; }
+    .enq-form input.missing { border-color: #b4553a; box-shadow: 0 0 0 3px rgba(180,85,58,.18); animation: nudge .35s; }
+    @keyframes nudge { 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
     .enq-form textarea { min-height: 84px; resize: vertical; }
     .enq-row { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
     .enq-out { background: #1c1510; color: var(--cream); padding: clamp(1.5rem, 3vw, 2.5rem); display: flex; flex-direction: column; gap: .9rem; }
     .enq-out .lbl { font-size: .62rem; letter-spacing: .2em; text-transform: uppercase; color: var(--accent); }
     .enq-to { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: .5rem; font-size: .85rem; border-bottom: 1px solid rgba(245,240,232,.15); padding-bottom: .7rem; }
     .enq-to > span { white-space: nowrap; }
-    .enq-subj { font-family: var(--serif); font-size: 1.15rem; }
-    .enq-body { white-space: pre-wrap; font-size: .85rem; line-height: 1.6; color: rgba(245,240,232,.78); background: rgba(245,240,232,.05); padding: .9rem 1rem; max-height: 300px; overflow-y: auto; flex: 1; }
+    .enq-letter { background: var(--paper); color: var(--ink); flex: 1; display: flex; flex-direction: column; box-shadow: 0 14px 40px rgba(0,0,0,.35); min-height: 0; }
+    .enq-letter-top { display: flex; align-items: center; gap: .75rem; padding: .9rem 1rem; border-bottom: 1px solid var(--rule); background: #f3ece2; }
+    .enq-letter-top img { width: 44px; height: 44px; object-fit: cover; object-position: 10% 55%; flex-shrink: 0; }
+    .enq-letter-top img[hidden] { display: none; }
+    .enq-subj { font-family: var(--serif); font-size: 1.15rem; line-height: 1.25; }
+    .enq-body { white-space: pre-wrap; font-size: .85rem; line-height: 1.65; color: #4a3d31; padding: 1rem 1.1rem; max-height: 300px; overflow-y: auto; flex: 1; }
     .enq-send { display: flex; flex-direction: column; gap: .55rem; }
     .enq-send .btn { width: 100%; }
     .btn-gmail { background: var(--cream); color: var(--ink); border-color: var(--cream); font-weight: 500; }
@@ -226,6 +239,7 @@
     .btn-line:hover { border-color: var(--cream); background: rgba(245,240,232,.07); }
     .mini { background: none; border: 1px solid rgba(245,240,232,.3); color: var(--cream); font: 400 .6rem var(--sans); letter-spacing: .14em; text-transform: uppercase; padding: .35rem .6rem; cursor: pointer; white-space: nowrap; }
     .mini:hover { border-color: var(--accent); color: var(--accent); }
+    .enq-warn { display: flex; align-items: center; justify-content: space-between; gap: .75rem; flex-wrap: wrap; background: rgba(196,149,106,.16); border-left: 3px solid var(--accent); padding: .7rem .8rem; font-size: .8rem; color: var(--cream); }
     .enq-tip { font-size: .72rem; color: rgba(245,240,232,.5); line-height: 1.5; }
     .enq-close { position: absolute; top: .6rem; right: .6rem; width: 40px; height: 40px; border: none; background: rgba(250,247,242,.92); font-size: 1.4rem; cursor: pointer; z-index: 2; }
     .enq-close:hover { background: var(--accent); }
@@ -288,6 +302,13 @@
       .v-next { left: auto; right: .75rem; }
       footer { flex-direction: column; text-align: center; }
     }
+  
+    /* BACK TO TOP */
+    .to-top { position: fixed; right: clamp(1rem, 3vw, 2rem); bottom: clamp(1rem, 3vw, 2rem); z-index: 150; display: flex; align-items: center; gap: .5rem; background: var(--ink); color: var(--cream); border: none; padding: .75rem 1.1rem .75rem .95rem; font-family: var(--sans); font-size: .62rem; letter-spacing: .18em; text-transform: uppercase; cursor: pointer; box-shadow: 0 10px 28px rgba(28,21,16,.25); opacity: 0; visibility: hidden; transform: translateY(12px); transition: opacity .3s, transform .3s, visibility .3s, background .2s; }
+    .to-top.show { opacity: 1; visibility: visible; transform: none; }
+    .to-top:hover { background: var(--warm); }
+    .to-top svg { width: 14px; height: 14px; }
+    @media (max-width: 640px) { .to-top span { display: none; } .to-top { padding: .8rem; border-radius: 50%; } }
   </style>
 </head>
 <body>
@@ -314,7 +335,7 @@
     <p class="index-title">Canvas size</p>
     <ul id="size-index"></ul>
     <div class="ix-peek" id="ix-peek" aria-hidden="true"></div>
-    <p class="ix-note">Hover to preview · click to filter. Shapes show each canvas’s proportions.</p>
+    <p class="ix-note">Hover to preview · click to filter. Shapes show each canvas’s proportions; circles show colours.</p>
   </aside>
   <p class="col-cap">A little of everything</p>
   <div class="collage" id="collage" aria-label="Shuffled paintings"></div>
@@ -378,13 +399,19 @@
     <div class="enq-out">
       <p class="lbl">Your email — ready to send</p>
       <div class="enq-to"><span>To: <span id="enq-addr"></span></span><button class="mini" type="button" id="copy-addr">Copy address</button></div>
-      <div class="enq-subj" id="enq-subj"></div>
-      <div class="enq-body" id="enq-body"></div>
+      <div class="enq-letter">
+        <div class="enq-letter-top"><img id="enq-thumb" alt="" hidden /><div class="enq-subj" id="enq-subj"></div></div>
+        <div class="enq-body" id="enq-body"></div>
+      </div>
       <div class="enq-send">
         <a class="btn btn-gmail" id="send-gmail" target="_blank" rel="noopener">Send with Gmail</a>
         <a class="btn btn-line" id="send-mail">Use another mail app</a>
         <button class="btn btn-line" type="button" id="send-copy">Copy the whole email</button>
         <a class="btn btn-line" id="send-wa" target="_blank" rel="noopener" hidden>Send on WhatsApp</a>
+      </div>
+      <div class="enq-warn" id="enq-warn" hidden>
+        <span>Please add your name so Ashwini knows who's writing.</span>
+        <button type="button" class="mini" id="warn-anyway">Continue anyway</button>
       </div>
       <p class="enq-tip">Gmail opens with everything filled in — just press Send. If you use a different email, copy the message and paste it into a new mail to the address above.</p>
     </div>
@@ -478,7 +505,67 @@ function sizeOf(file, d) {
 }
 const sizeArea = k => /×/.test(k) ? k.split('×').reduce((a, b) => a * b, 1) : 1e9;
 const sizeLabel = k => k === 'sets' ? 'Sets' : k === 'other' || !k ? 'Other' : k.replace('×', ' × ') + ' in';
-let sizeFilter = '';
+let sizeFilter = '', colourFilter = '';
+
+// COLOURS — small circles in the index (never named on the page).
+// Set by picture number for the current paintings; any new upload is read
+// automatically from its close-up photos when the page opens.
+const PALETTE = {
+  gold: '#c9a23f', orange: '#e2873a', earth: '#7b4a2c', pink: '#e0559a', purple: '#8d7fd8',
+  blue: '#2f57c9', teal: '#1ea3a8', green: '#79b443', black: '#222222', light: '#ece8e0'
+};
+const COLOURS = {
+  '01': ['purple', 'green', 'teal'], '02': ['pink', 'purple', 'orange'], '03': ['teal', 'blue'],
+  '04': ['gold', 'light'], '05': ['orange', 'gold', 'green'], '06': ['blue', 'light'],
+  '07': ['gold', 'purple', 'black'], '08': ['gold', 'black'], '09': ['gold', 'orange'],
+  '10': ['gold', 'earth'], '13': ['gold', 'blue'], '14': ['earth', 'gold', 'black'],
+  '15': ['gold', 'teal'], '16': ['teal', 'gold', 'black'], '17': ['blue', 'gold'],
+  '18': ['blue', 'light'], '19': ['orange', 'earth', 'gold'], '20': ['blue', 'pink'],
+  '21': ['blue', 'gold', 'light'], '22': ['pink', 'blue', 'light'], '23': ['earth', 'orange'],
+  '24': ['pink', 'black'], '25': ['light'], '26': ['teal', 'gold'],
+  '27': ['black', 'light'], '28': ['teal', 'light']
+};
+function colourFamily(r, g, b) {
+  const max = Math.max(r, g, b) / 255, min = Math.min(r, g, b) / 255, v = max, s = max ? (max - min) / max : 0, d = max - min;
+  let h = 0;
+  if (d) { const R = r / 255, G = g / 255, B = b / 255;
+    h = max === R ? 60 * (((G - B) / d) % 6) : max === G ? 60 * ((B - R) / d + 2) : 60 * ((R - G) / d + 4); if (h < 0) h += 360; }
+  if (v > 0.93 && s < 0.07) return null;                                  // the cream card itself
+  if (h >= 18 && h <= 55 && s >= 0.06 && s <= 0.3 && v > 0.6) return null; // beige walls / tabletops
+  if (v < 0.2) return 'black';
+  if (s < 0.16) return v < 0.35 ? 'black' : 'light';
+  if (h >= 345 || h < 12) return v < 0.5 ? 'earth' : 'pink';
+  if (h < 38) return v < 0.55 ? 'earth' : (s > 0.55 ? 'orange' : 'gold');
+  if (h < 62) return v < 0.4 ? 'earth' : 'gold';
+  if (h < 160) return 'green';
+  if (h < 195) return 'teal';
+  if (h < 238) return 'blue';
+  if (h < 300) return 'purple';
+  return 'pink';
+}
+function detectColours(it) {
+  return new Promise(resolve => {
+    const img = new Image();
+    img.onload = () => {
+      try {
+        const w = img.naturalWidth, h = img.naturalHeight, wide = w / h > 1.2;
+        const box = wide ? [0.5, 0.05, 0.98, 0.97] : [0.15, 0.25, 0.85, 0.72];
+        const c = document.createElement('canvas'); c.width = 80; c.height = 60;
+        const x = c.getContext('2d', { willReadFrequently: true });
+        x.drawImage(img, box[0] * w, box[1] * h, (box[2] - box[0]) * w, (box[3] - box[1]) * h, 0, 0, 80, 60);
+        const px = x.getImageData(0, 0, 80, 60).data, count = {}; let total = 0;
+        for (let i = 0; i < px.length; i += 4) { const f = colourFamily(px[i], px[i + 1], px[i + 2]); if (f) { count[f] = (count[f] || 0) + 1; total++; } }
+        resolve(Object.entries(count).filter(([, n]) => n / total >= 0.12).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([f]) => f));
+      } catch (e) { resolve([]); }
+    };
+    img.onerror = () => resolve([]);
+    img.src = it.src;
+  });
+}
+function coloursFor(n) {
+  const k = Object.keys(COLOURS).find(x => fileNum(n) && Number(fileNum(n)) === Number(x));
+  return k ? COLOURS[k] : null;
+}
 
 let items = [], visible = [], picks = [], sets = [], viewList = [], cur = 0;
 
@@ -499,37 +586,45 @@ const $ = id => document.getElementById(id);
 const val = id => $(id).value.trim();
 
 function buildEmail() {
-  const it = enqItem, name = val('f-name') || '[your name]';
-  const mine = 'My details\n' +
-    'Name: ' + name + '\n' +
-    'Phone / WhatsApp: ' + (val('f-phone') || '—') + '\n' +
-    'City: ' + (val('f-city') || '—');
-  const extra = val('f-msg') ? '\n\n' + val('f-msg') : '';
+  const it = enqItem, name = val('f-name') || '[your name]', first = name.split(' ')[0];
+  const block = (head, rows) => head.toUpperCase() + '\n' + '────────────' + '\n' + rows.filter(Boolean).join('\n');
+  const me = block('About me', [
+    'Name:  ' + name,
+    'Phone / WhatsApp:  ' + (val('f-phone') || '—'),
+    'City:  ' + (val('f-city') || '—')
+  ]);
+  const note = val('f-msg') ? val('f-msg') + '\n\n' : '';
+  const sign = 'Looking forward to hearing from you!\n\nWarm regards,\n' + first + '\n\n· Sent via paintmeastory.com ·';
   let subject, body;
   if (enqKind === 'commission') {
-    subject = 'Commission enquiry — textured painting';
-    body = "Hi Ashwini,\n\nI'd love a textured painting made for me.\n\n" +
-      'What I have in mind\n' +
-      'Size: ' + (val('f-size') || 'not sure yet') + '\n' +
-      'Colours / mood: ' + (val('f-colours') || 'open to ideas') + '\n' +
-      'Needed by: ' + (val('f-date') || 'no rush') + extra + '\n\n' + mine;
+    subject = '✦ Commission enquiry · textured painting';
+    body = 'Hi Ashwini,\n\n' +
+      "I've been admiring your textured art and would love a painting made just for me.\n\n" +
+      block('What I have in mind', [
+        '✦ Size:  ' + (val('f-size') || 'not sure yet'),
+        '✦ Colours / mood:  ' + (val('f-colours') || 'open to your ideas'),
+        '✦ Needed by:  ' + (val('f-date') || 'no rush')
+      ]) + '\n\n' + note + me + '\n\n' + sign;
   } else if (enqKind === 'general') {
-    subject = 'Enquiry — Paint Me A Story';
-    body = 'Hi Ashwini,\n\nI have a question about your art.' + (extra || '\n\n[your question]') + '\n\n' + mine;
+    subject = '✦ A question for Paint Me A Story';
+    body = 'Hi Ashwini,\n\n' + (val('f-msg') || '[your question]') + '\n\n' + me + '\n\n' + sign;
   } else if (it.sold) {
-    subject = 'Similar piece to "' + it.title + '"';
-    body = 'Hi Ashwini,\n\nI love "' + it.title + '" (' + [it.size, it.medium].filter(Boolean).join(', ') + ') — I see it has been sold. ' +
-      'Could you make something similar for me?' + extra + '\n\n' + mine;
+    subject = '✦ Something like "' + it.title + '"';
+    body = 'Hi Ashwini,\n\n' +
+      'I fell in love with "' + it.title + '" — I see it has already found a home. Would you be able to create something in a similar spirit for me?\n\n' +
+      block('The painting I loved', ['✦ ' + it.title, it.size ? '✦ ' + it.size : '', '✦ ' + it.medium]) + '\n\n' +
+      note + me + '\n\n' + sign;
   } else {
-    subject = 'Enquiry: ' + it.title + (it.size ? ' (' + it.size + ')' : '');
-    body = "Hi Ashwini,\n\nI'm interested in this painting from your shop:\n\n" +
-      'Painting: ' + it.title + '\n' +
-      (it.size ? 'Size: ' + it.size + '\n' : '') +
-      'Type: ' + it.medium + '\n' +
-      'Price shown: ' + it.price + '\n' +
-      'Shop: ' + SHOP_URL + extra + '\n\n' + mine;
+    subject = '✦ Enquiry · ' + it.title + (it.size ? ' (' + it.size + ')' : '');
+    body = 'Hi Ashwini,\n\n' +
+      'I came across "' + it.title + '" in your shop and would love to know more about it.\n\n' +
+      block('The painting', [
+        '✦ ' + it.title + (it.isSet ? '  (set of ' + it.pieces + ')' : ''),
+        it.size ? '✦ ' + it.size : '',
+        '✦ ' + it.medium,
+        '✦ ' + it.price
+      ]) + '\n\n' + note + me + '\n\n' + sign;
   }
-  body += '\n\nThank you,\n' + name;
   return { subject, body };
 }
 
@@ -551,7 +646,8 @@ function openEnquiry(item, kind) {
     piece.className = 'enq-piece' + (item.isSet ? ' square' : '');
     piece.innerHTML = '<img src="' + item.src + '" alt="" /><div><strong>' + esc(item.title) + '</strong><span>' +
       esc([item.size, item.price].filter(Boolean).join(' · ')) + '</span></div>';
-  } else piece.hidden = true;
+    $('enq-thumb').src = item.src; $('enq-thumb').hidden = false;
+  } else { piece.hidden = true; $('enq-thumb').hidden = true; }
   $('enq-kicker').textContent = enqKind === 'commission' ? 'Commission' : item && item.sold ? 'Something similar' : 'Enquiry';
   $('enq-title').innerHTML = enqKind === 'commission' ? 'Tell me about <em>your painting</em>'
     : enqKind === 'general' ? 'Ask me <em>anything</em>'
@@ -563,6 +659,7 @@ function openEnquiry(item, kind) {
   try { ['f-name', 'f-phone', 'f-city'].forEach(k => { const v = localStorage.getItem('pmas-' + k); if (v && !val(k)) $(k).value = v; }); } catch (e) {}
   ['f-msg', 'f-size', 'f-date', 'f-colours'].forEach(k => { $(k).value = ''; });   // fresh message each time
   $('f-name').classList.remove('missing');
+  $('enq-warn').hidden = true;
   refreshEmail();
   viewer.classList.remove('open');
   $('enq').classList.add('open');
@@ -581,9 +678,15 @@ async function copyText(text) {
     ta.remove(); return ok;
   }
 }
-function needName(e) {
-  if (val('f-name')) return false;
-  e.preventDefault(); $('f-name').classList.add('missing'); $('f-name').focus(); toast('Please add your name first');
+// If the name is empty: highlight it and offer "Continue anyway" for that same action
+let pendingAction = null;
+function needName(e, action) {
+  if (val('f-name')) { $('enq-warn').hidden = true; return false; }
+  e.preventDefault();
+  $('f-name').classList.remove('missing'); void $('f-name').offsetWidth; $('f-name').classList.add('missing');
+  $('f-name').focus();
+  pendingAction = action;
+  $('enq-warn').hidden = false;
   return true;
 }
 function remember() { try { ['f-name', 'f-phone', 'f-city'].forEach(k => localStorage.setItem('pmas-' + k, val(k))); } catch (e) {} }
@@ -635,7 +738,8 @@ async function init() {
       price: sold ? 'Sold' : (d.price || 'Price on request'),
       sizeKey: sizeOf(n, d), size: '', medium: d.medium || DEFAULT_MEDIUM, year: d.year || '',
       desc: d.desc || '', sold, featured: !!d.featured,
-      isSet: !!d.set || isSetFile(n), pieces: setPieces(n, d)
+      isSet: !!d.set || isSetFile(n), pieces: setPieces(n, d),
+      colours: d.colours || coloursFor(n)
     };
   });
   items.forEach(i => { i.size = i.sizeKey ? sizeLabel(i.sizeKey) : ''; });
@@ -652,18 +756,27 @@ async function init() {
   items = items.filter(i => !picks.includes(i));
   // available first, sold at the end
   items.sort((a, b) => a.sold - b.sold);
+  // read colours for any new painting not in the COLOURS list
+  const unknown = everything().filter(it => !it.colours);
+  if (unknown.length) Promise.all(unknown.map(async it => { it.colours = await detectColours(it); })).then(() => renderIndex());
   renderStrip();
   renderIndex();
   renderCollage();
   renderSets();
   render();
   renderShowcase();
+  // opened from the home page with a painting chosen: shop.html#view=<file>
+  if (location.hash.startsWith('#view=')) {
+    const f = decodeURIComponent(location.hash.slice(6)), all = everything(), i = all.findIndex(it => it.file === f);
+    if (i >= 0) openViewer(i, all);
+  }
 }
 
 const byNum = (a, b) => (Number(fileNum(a.file)) || 0) - (Number(fileNum(b.file)) || 0) || a.file.localeCompare(b.file);
 const everything = () => [...sets, ...items, ...picks].sort(byNum);
 const groupOf = it => it.isSet ? 'sets' : (it.sizeKey || 'other');
-const matches = it => !sizeFilter || groupOf(it) === sizeFilter;
+const matches = it => (!sizeFilter || groupOf(it) === sizeFilter) && (!colourFilter || (it.colours || []).includes(colourFilter));
+const filtering = () => !!(sizeFilter || colourFilter);
 
 function renderIndex() {
   const ul = document.getElementById('size-index');
@@ -674,9 +787,10 @@ function renderIndex() {
   const add = (key, label, list) => {
     const li = document.createElement('li');
     const b = document.createElement('button');
-    b.className = 'ix-size' + (sizeFilter === key ? ' active' : '');
+    const on = key ? sizeFilter === key : !filtering();
+    b.className = 'ix-size' + (on ? ' active' : '');
     b.innerHTML = sizeIcon(key) + '<span>' + esc(label) + '</span><span class="n">' + list.length + '</span>';
-    b.addEventListener('click', () => setSize(sizeFilter === key ? '' : key));
+    b.addEventListener('click', () => key ? setSize(sizeFilter === key ? '' : key) : clearFilters());
     li.appendChild(b);
     if (key) {
       li.addEventListener('mouseenter', () => showPeek(li, key, label, list));
@@ -692,6 +806,24 @@ function renderIndex() {
   div.className = 'ix-div'; div.textContent = 'Single canvases';
   ul.appendChild(div);
   keys.forEach(k => add(k, sizeLabel(k), groups[k]));
+  // colour circles
+  const fams = Object.keys(PALETTE).filter(f => everything().some(it => (it.colours || []).includes(f)));
+  if (fams.length) {
+    const d2 = document.createElement('li'); d2.className = 'ix-div ix-div-plain'; ul.appendChild(d2);
+    const li = document.createElement('li'); li.className = 'ix-colours';
+    fams.forEach(f => {
+      const list = everything().filter(it => (it.colours || []).includes(f));
+      const b = document.createElement('button');
+      b.className = 'swatch' + (colourFilter === f ? ' active' : '') + (f === 'light' ? ' pale' : '');
+      b.style.background = PALETTE[f];
+      b.setAttribute('aria-label', 'Show paintings with this colour (' + list.length + ')');
+      b.addEventListener('click', () => setColour(colourFilter === f ? '' : f));
+      b.addEventListener('mouseenter', () => showPeek(li, 'c:' + f, '', list));
+      b.addEventListener('focus', () => showPeek(li, 'c:' + f, '', list));
+      li.appendChild(b);
+    });
+    ul.appendChild(li);
+  }
 }
 
 // small canvas shape drawn in proportion to the size (portrait)
@@ -738,19 +870,30 @@ function renderStrip() {
 }
 
 /* Shuffled collage of small squares under the index.
-   A new random mix on every visit, and one tile changes every few seconds. */
+   A new random mix on every visit; it grows so the left column reaches the
+   end of the sets, and one tile changes to another painting every few seconds. */
 const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
-let collageTimer = null;
+let collageTimer = null, collagePool = [], collageSpare = [];
 function renderCollage() {
+  collagePool = shuffle(everything());
+  sizeCollage(true);
+}
+function sizeCollage(force) {
   const box = document.getElementById('collage');
+  if (!box || !collagePool.length) return;
+  if (window.matchMedia('(max-width: 900px)').matches) return;     // phones: no collage
   const all = everything();
+  // how many rows fit between the top of the collage and the end of the sets?
+  const gap = 5, tile = (box.clientWidth - 2 * gap) / 3;
+  const setsEl = document.getElementById('sets');
+  const target = !setsEl.hidden ? setsEl.getBoundingClientRect().bottom : 0;
+  const room = target - box.getBoundingClientRect().top;
+  const rows = Math.max(3, Math.floor((room + gap) / (tile + gap)));
+  const n = Math.min(collagePool.length, rows * 3 - 3);              // the big tile takes 4 squares
+  if (!force && box.children.length === n) return;
   box.innerHTML = '';
   clearInterval(collageTimer);
-  if (all.length < 4) { fitSide(); return; }
-  const pool = shuffle(all);
-  const n = Math.min(6, pool.length);           // 1 big + 5 small = 3 rows of 3
-  const spare = pool.slice(n);
-  const tile = (it, k) => {
+  const tileEl = (it, k) => {
     const t = document.createElement('button');
     t.className = 'col-tile' + (k === 0 ? ' big' : '');
     t.title = it.title;
@@ -761,15 +904,16 @@ function renderCollage() {
     t.addEventListener('click', () => openViewer(all.indexOf(t._item), all));
     return t;
   };
-  pool.slice(0, n).forEach((it, k) => box.appendChild(tile(it, k)));
+  collagePool.slice(0, n).forEach((it, k) => box.appendChild(tileEl(it, k)));
+  collageSpare = collagePool.slice(n);
   fitSide();
-  if (!spare.length || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  if (!collageSpare.length || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   collageTimer = setInterval(() => {
     if (document.hidden || box.matches(':hover')) return;
     const tiles = [...box.children];
     const t = tiles[Math.floor(Math.random() * tiles.length)];
-    const next = spare.shift();
-    spare.push(t._item);
+    const next = collageSpare.shift();
+    collageSpare.push(t._item);
     t.classList.add('swap');
     setTimeout(() => {
       t._item = next;
@@ -786,7 +930,9 @@ function fitSide() {
   const side = document.getElementById('side');
   side.classList.toggle('tall', side.offsetHeight > window.innerHeight - 110);
 }
-window.addEventListener('resize', fitSide);
+let resizeT = null;
+window.addEventListener('resize', () => { clearTimeout(resizeT); resizeT = setTimeout(() => { sizeCollage(); fitSide(); }, 150); });
+if ('ResizeObserver' in window) new ResizeObserver(() => sizeCollage()).observe(document.getElementById('sets'));
 
 /* Hover preview */
 const peek = document.getElementById('ix-peek');
@@ -796,9 +942,10 @@ function showPeek(li, key, label, list) {
   if (!canHover()) return;
   clearTimeout(peekTimer);
   peek.innerHTML =
-    '<div class="peek-head"><strong>' + esc(label) + '</strong><span>' + list.length + ' painting' + (list.length > 1 ? 's' : '') + '</span></div>' +
+    '<div class="peek-head"><strong>' + (key.startsWith('c:') ? '<i class="peek-dot" style="background:' + PALETTE[key.slice(2)] + '"></i>' : esc(label)) +
+    '</strong><span>' + list.length + ' painting' + (list.length > 1 ? 's' : '') + '</span></div>' +
     '<div class="peek-grid"></div>' +
-    '<div class="peek-foot">Click the size to show only these →</div>';
+    '<div class="peek-foot">' + (key.startsWith('c:') ? 'Click the circle' : 'Click the size') + ' to show only these →</div>';
   const grid = peek.querySelector('.peek-grid');
   list.forEach((it, i) => {
     const t = document.createElement('button');
@@ -827,10 +974,12 @@ function hidePeek(now) {
 document.querySelector('.index').addEventListener('mouseleave', hidePeek);
 peek.addEventListener('mouseenter', () => clearTimeout(peekTimer));
 
-function setSize(key) {
+function setColour(c) { colourFilter = c; refreshFilters(); }
+function clearFilters() { sizeFilter = ''; colourFilter = ''; refreshFilters(); }
+function setSize(key) { sizeFilter = key; refreshFilters(); }
+function refreshFilters() {
   hidePeek(true);
-  sizeFilter = key;
-  renderIndex(); renderSets(); render();
+  renderIndex(); renderSets(); render(); sizeCollage();
   const top = document.querySelector('main').getBoundingClientRect().top + window.scrollY - 80;
   if (window.scrollY > top) window.scrollTo({ top, behavior: 'smooth' });
 }
@@ -879,22 +1028,28 @@ function renderSets() {
 function render() {
   const grid = document.getElementById('grid');
   const onlyAvail = document.getElementById('only-available').checked;
-  const pool = sizeFilter ? [...items, ...picks].filter(matches).sort(byNum).sort((a, b) => a.sold - b.sold) : items;
+  const pool = filtering() ? [...items, ...picks].filter(matches).sort(byNum).sort((a, b) => a.sold - b.sold) : items;
   visible = pool.filter(i => !onlyAvail || !i.sold);
   const scope = everything().filter(matches);
   const all = scope.length, avail = scope.filter(i => !i.sold).length;
   const countEl = document.getElementById('count');
   countEl.textContent = all
     ? (sizeFilter ? sizeLabel(sizeFilter) + ' · ' : '') + all + ' piece' + (all > 1 ? 's' : '') + ' · ' + avail + ' available'
-    : 'New collection';
-  if (sizeFilter) {
+    : (filtering() ? 'No paintings match' : 'New collection');
+  if (colourFilter) {
+    const dot = document.createElement('i'); dot.className = 'count-dot'; dot.style.background = PALETTE[colourFilter];
+    countEl.prepend(dot);
+  }
+  if (filtering()) {
     const c = document.createElement('button');
-    c.className = 'clear-filter'; c.textContent = 'show all sizes';
-    c.addEventListener('click', () => setSize(''));
+    c.className = 'clear-filter'; c.textContent = 'show everything';
+    c.addEventListener('click', clearFilters);
     countEl.appendChild(c);
   }
   if (!visible.length) {
-    grid.innerHTML = '<p class="state">' + (sizeFilter === 'sets' && all ? 'All the sets are shown above.' : all ? 'Everything here has found a home — commission your own below.' : 'New textured pieces are on their way. Check back soon.') + '</p>';
+    grid.innerHTML = '<p class="state">' + (filtering() && !all ? 'Nothing matches both choices yet — try another size or colour.'
+      : filtering() ? 'These are shown in the sets above.'
+      : all ? 'Everything here has found a home — commission your own below.' : 'New textured pieces are on their way. Check back soon.') + '</p>';
     return;
   }
   grid.innerHTML = '';
@@ -982,22 +1137,44 @@ viewer.addEventListener('touchend', e => {
 document.getElementById('only-available').addEventListener('change', render);
 document.getElementById('commission-btn').addEventListener('click', e => { e.preventDefault(); openEnquiry(null, 'commission'); });
 document.querySelectorAll('a[href^="mailto:"]').forEach(a => a.addEventListener('click', e => { e.preventDefault(); openEnquiry(null, 'general'); }));
-['f-name', 'f-phone', 'f-city', 'f-size', 'f-date', 'f-colours', 'f-msg'].forEach(k => $(k).addEventListener('input', () => { $(k).classList.remove('missing'); refreshEmail(); }));
-['send-gmail', 'send-mail', 'send-wa'].forEach(k => $(k).addEventListener('click', e => { if (!needName(e)) { remember(); refreshEmail(); } }));
-$('send-copy').addEventListener('click', async e => {
-  if (needName(e)) return;
-  remember();
+['f-name', 'f-phone', 'f-city', 'f-size', 'f-date', 'f-colours', 'f-msg'].forEach(k => $(k).addEventListener('input', () => { $(k).classList.remove('missing'); if (k === 'f-name' && val('f-name')) $('enq-warn').hidden = true; refreshEmail(); }));
+async function copyEmail() {
+  remember(); refreshEmail();
   const { subject, body } = buildEmail();
-  toast(await copyText('To: ' + EMAIL + '\nSubject: ' + subject + '\n\n' + body) ? 'Email copied — paste it into a new mail to ' + EMAIL : 'Could not copy — please select the text and copy it');
-});
+  const ok = await copyText('To: ' + EMAIL + '\nSubject: ' + subject + '\n\n' + body);
+  toast(ok ? 'Email copied — paste it into a new mail to ' + EMAIL : 'Could not copy — please select the text and copy it');
+}
+const openLink = id => { remember(); refreshEmail(); const a = $(id);
+  if (a.target === '_blank') window.open(a.href, '_blank', 'noopener'); else location.href = a.href; };
+['send-gmail', 'send-mail', 'send-wa'].forEach(k => $(k).addEventListener('click', e => {
+  if (!needName(e, () => openLink(k))) { remember(); refreshEmail(); }
+}));
+$('send-copy').addEventListener('click', e => { if (!needName(e, copyEmail)) copyEmail(); });
+$('warn-anyway').addEventListener('click', () => { $('enq-warn').hidden = true; $('f-name').classList.remove('missing'); if (pendingAction) pendingAction(); });
 $('copy-addr').addEventListener('click', async () => toast(await copyText(EMAIL) ? 'Address copied' : EMAIL));
 $('enq-close').addEventListener('click', closeEnquiry);
 $('enq').addEventListener('click', e => { if (e.target === $('enq')) closeEnquiry(); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && $('enq').classList.contains('open')) closeEnquiry(); });
-if (location.hash === '#enquire') openEnquiry(null, 'general');
-if (location.hash === '#commission') openEnquiry(null, 'commission');
+function hashAction() {
+  if (location.hash === '#enquire') openEnquiry(null, 'general');
+  if (location.hash === '#commission') openEnquiry(null, 'commission');
+}
+hashAction();
+window.addEventListener('hashchange', hashAction);
 
 init();
+</script>
+
+<button class="to-top" id="to-top" aria-label="Back to top">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg><span>Top</span>
+</button>
+<script>
+  (function () {
+    var b = document.getElementById('to-top');
+    var onScroll = function () { b.classList.toggle('show', window.scrollY > 700); };
+    window.addEventListener('scroll', onScroll, { passive: true }); onScroll();
+    b.addEventListener('click', function () { window.scrollTo({ top: 0, behavior: 'smooth' }); });
+  })();
 </script>
 </body>
 </html>
