@@ -46,6 +46,14 @@
     .toolbar input { accent-color: var(--warm); }
     .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 460px), 1fr)); gap: 2.75rem 1.75rem; }
     .card { display: flex; flex-direction: column; animation: fadeUp .6s both; }
+    .sets { margin-bottom: 3.5rem; }
+    .sets-head { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+    .sets-head h2 { font-family: var(--serif); font-weight: 300; font-size: clamp(1.8rem, 4vw, 2.6rem); line-height: 1.1; }
+    .sets-head h2 em { font-style: italic; color: var(--warm); }
+    .sets-head p { color: var(--muted); font-size: .95rem; }
+    .sets-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); gap: 2.75rem 1.75rem; }
+    .sets:empty, .sets[hidden] { display: none; }
+    .frame.square { aspect-ratio: 1/1; }
     .frame { position: relative; overflow: hidden; aspect-ratio: 3/2; background: linear-gradient(135deg,#e8e0d5,#d5c9b8); cursor: zoom-in; border: none; padding: 0; display: block; width: 100%; }
     .frame img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .7s cubic-bezier(.25,.46,.45,.94); }
     .card:hover .frame img { transform: scale(1.025); }
@@ -147,6 +155,13 @@
 </header>
 
 <main>
+  <section class="sets" id="sets" hidden>
+    <div class="sets-head">
+      <h2>Sets <em>of three</em></h2>
+      <p>Made to hang together — three pieces, one story.</p>
+    </div>
+    <div class="sets-grid" id="sets-grid"></div>
+  </section>
   <div class="toolbar">
     <span id="count">Loading…</span>
     <label><input type="checkbox" id="only-available" /> Show available only</label>
@@ -224,13 +239,20 @@ const EMAIL     = 'paintmeastoryofficial@gmail.com';
 const WHATSAPP  = '';   // optional, e.g. '919876543210'
 const DEFAULT_MEDIUM = 'Textured art, original';
 
+// SETS OF 3 — shown square, in their own section at the top of the shop.
+// Add a file name here, or put "set": true for it in details.json,
+// or include "set" in the file name (e.g. 11-blue-set.jpg).
+const SETS = ['08-elements-of-flow.png', '10-golden-textures.jpg'];
+const isSetFile = n => SETS.includes(n) || /(^|[-_\s])set([-_.\s]|$)/i.test(n);
+
 const IMG_EXT = /\.(jpe?g|png|webp|gif|avif)$/i;
-let items = [], visible = [], picks = [], viewList = [], cur = 0;
+let items = [], visible = [], picks = [], sets = [], viewList = [], cur = 0;
 
 function esc(t) { return String(t ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function prettyName(file) {
   return file.replace(IMG_EXT, '').replace(/^\d+[\s._-]*/, '').replace(/[-_]+/g, ' ').trim()
-             .replace(/\b\w/g, c => c.toUpperCase()) || 'Untitled';
+             .replace(/\b\w/g, c => c.toUpperCase())
+             .replace(/(?!^)\b(Of|And|The|In|On|A|An|To|For|With)\b/g, w => w.toLowerCase()) || 'Untitled';
 }
 function mailto(item, commission) {
   const subject = commission ? 'Commission enquiry: textured art' : 'Enquiry: ' + item.title + ' (textured art)';
@@ -267,53 +289,67 @@ async function init() {
       title: d.title || prettyName(n),
       price: sold ? 'Sold' : (d.price || 'Price on request'),
       size: d.size || '', medium: d.medium || DEFAULT_MEDIUM, year: d.year || '',
-      desc: d.desc || '', sold, featured: !!d.featured
+      desc: d.desc || '', sold, featured: !!d.featured,
+      isSet: !!d.set || isSetFile(n)
     };
   });
   // pick the 3 for "made for your home" ("featured" first, else first three
   // in folder order) and keep them out of the main list so nothing repeats
+  sets = items.filter(i => i.isSet);
+  sets.forEach(i => { if (!i.size && i.medium === DEFAULT_MEDIUM) i.medium = 'Set of 3 original paintings'; });
+  items = items.filter(i => !i.isSet);
   const avail = items.filter(i => !i.sold);
   picks = [...avail.filter(i => i.featured), ...avail.filter(i => !i.featured)].slice(0, 3);
   items = items.filter(i => !picks.includes(i));
   // available first, sold at the end
   items.sort((a, b) => a.sold - b.sold);
+  renderSets();
   render();
   renderShowcase();
+}
+
+function makeCard(it, i, list, square) {
+  const card = document.createElement('article');
+  card.className = 'card' + (it.sold ? ' sold' : '');
+  card.style.animationDelay = Math.min(i * 0.05, 0.6) + 's';
+  card.innerHTML =
+    '<button class="frame' + (square ? ' square' : '') + '" aria-label="View ' + esc(it.title) + '">' +
+      '<img src="' + it.src + '" alt="' + esc(it.title) + '" loading="lazy" />' +
+      '<span class="badge' + (it.sold ? ' sold' : '') + '">' + (it.sold ? 'Sold' : 'Available') + '</span>' +
+      '<span class="hint">View up close</span>' +
+    '</button>' +
+    '<div class="body">' +
+      '<h3 class="title">' + esc(it.title) + '</h3>' +
+      '<p class="meta">' + esc([it.medium, it.size].filter(Boolean).join(' · ')) + '</p>' +
+      '<div class="foot"><span class="price">' + esc(it.price) + '</span>' +
+      '<a class="enquire" href="' + (it.sold ? mailto(it, true) : mailto(it)) + '">' + (it.sold ? 'Similar piece →' : 'Enquire →') + '</a></div>' +
+    '</div>';
+  card.querySelector('.frame').addEventListener('click', () => openViewer(i, list));
+  return card;
+}
+
+function renderSets() {
+  const box = document.getElementById('sets-grid');
+  box.innerHTML = '';
+  document.getElementById('sets').hidden = !sets.length;
+  sets.forEach((it, i) => box.appendChild(makeCard(it, i, sets, true)));
 }
 
 function render() {
   const grid = document.getElementById('grid');
   const onlyAvail = document.getElementById('only-available').checked;
   visible = items.filter(i => !onlyAvail || !i.sold);
-  const all = items.length + picks.length;
-  const avail = items.filter(i => !i.sold).length + picks.length;
+  const all = items.length + picks.length + sets.length;
+  const avail = items.filter(i => !i.sold).length + picks.length + sets.filter(i => !i.sold).length;
   document.getElementById('count').textContent = all
     ? all + ' piece' + (all > 1 ? 's' : '') + ' · ' + avail + ' available'
     : 'New collection';
   if (!visible.length) {
-    grid.innerHTML = '<p class="state">' + (items.length || picks.length ? 'Everything here has found a home — commission your own below.' : 'New textured pieces are on their way. Check back soon.') + '</p>';
+    grid.innerHTML = '<p class="state">' + (all ? 'Everything here has found a home — commission your own below.' : 'New textured pieces are on their way. Check back soon.') + '</p>';
     return;
   }
   grid.innerHTML = '';
-  visible.forEach((it, i) => {
-    const card = document.createElement('article');
-    card.className = 'card' + (it.sold ? ' sold' : '');
-    card.style.animationDelay = Math.min(i * 0.05, 0.6) + 's';
-    card.innerHTML =
-      '<button class="frame" aria-label="View ' + esc(it.title) + '">' +
-        '<img src="' + it.src + '" alt="' + esc(it.title) + '" loading="lazy" />' +
-        '<span class="badge' + (it.sold ? ' sold' : '') + '">' + (it.sold ? 'Sold' : 'Available') + '</span>' +
-        '<span class="hint">View up close</span>' +
-      '</button>' +
-      '<div class="body">' +
-        '<h3 class="title">' + esc(it.title) + '</h3>' +
-        '<p class="meta">' + esc([it.medium, it.size].filter(Boolean).join(' · ')) + '</p>' +
-        '<div class="foot"><span class="price">' + esc(it.price) + '</span>' +
-        '<a class="enquire" href="' + (it.sold ? mailto(it, true) : mailto(it)) + '">' + (it.sold ? 'Similar piece →' : 'Enquire →') + '</a></div>' +
-      '</div>';
-    card.querySelector('.frame').addEventListener('click', () => openViewer(i, visible));
-    grid.appendChild(card);
-  });
+  visible.forEach((it, i) => grid.appendChild(makeCard(it, i, visible, false)));
 }
 
 /* Commission showcase: 3 pieces from the folder.
