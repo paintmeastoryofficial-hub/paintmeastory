@@ -587,7 +587,7 @@ const val = id => $(id).value.trim();
 
 function buildEmail() {
   const it = enqItem, name = val('f-name') || '[your name]', first = name.split(' ')[0];
-  const block = (head, rows) => head.toUpperCase() + '\n' + '────────────' + '\n' + rows.filter(Boolean).join('\n');
+  const block = (head, rows) => head.toUpperCase() + '\n' + rows.filter(Boolean).join('\n');
   const me = block('About me', [
     'Name:  ' + name,
     'Phone / WhatsApp:  ' + (val('f-phone') || '—'),
