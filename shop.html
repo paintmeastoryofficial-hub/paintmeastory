@@ -95,12 +95,18 @@
     .index-sub { font-size: .6rem; letter-spacing: .24em; text-transform: uppercase; color: var(--accent); margin: 0 0 .9rem .3rem; }
     .index ul { list-style: none; display: flex; flex-direction: column; gap: .05rem; }
     .ix-div { font-size: .58rem; letter-spacing: .22em; text-transform: uppercase; color: var(--muted); padding: .8rem .4rem .35rem; margin-top: .35rem; border-top: 1px solid var(--rule); }
-    .ix-div-plain { padding: 0; margin: .55rem 0 .2rem; }
-    .ix-colours { display: flex; flex-wrap: wrap; gap: .55rem; padding: .55rem .4rem .2rem; }
-    .swatch { width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--paper); box-shadow: 0 0 0 1px rgba(28,21,16,.12); cursor: pointer; padding: 0; transition: transform .2s, box-shadow .2s; }
+    .ix-colour-block { background: var(--paper); border: 1px solid var(--rule); padding: .85rem .8rem .95rem; margin: 0 0 1.1rem; box-shadow: 0 4px 14px rgba(28,21,16,.05); }
+    .ix-colour-block .index-title { margin: 0 0 .65rem .1rem; display: flex; justify-content: space-between; align-items: baseline; }
+    .ix-size-title { margin-bottom: .55rem !important; }
+    .ix-colours { display: grid; grid-template-columns: repeat(5, 26px); justify-content: space-between; row-gap: .6rem; padding: 0 .1rem; }
+    .swatch { position: relative; width: 26px; height: 26px; border-radius: 50%; border: 2.5px solid #fff; box-shadow: 0 0 0 1px rgba(28,21,16,.12); cursor: pointer; padding: 0; transition: transform .2s, box-shadow .2s; }
     .swatch.pale { box-shadow: 0 0 0 1px rgba(28,21,16,.25); }
-    .swatch:hover { transform: scale(1.18); }
-    .swatch.active { transform: scale(1.1); box-shadow: 0 0 0 2px var(--paper), 0 0 0 3.5px var(--warm); }
+    .swatch:hover { transform: scale(1.15); }
+    .swatch.active::after { content: '✓'; position: absolute; inset: 0; display: grid; place-items: center; color: #fff; font-size: .75rem; text-shadow: 0 0 3px rgba(0,0,0,.5); }
+    .swatch.pale.active::after { color: var(--ink); text-shadow: none; }
+    .swatch.dim { opacity: .35; }
+    .ix-colour-clear { font: 400 .58rem var(--sans); letter-spacing: .16em; text-transform: uppercase; color: var(--warm); background: none; border: none; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+    .swatch.active { transform: scale(1.1); box-shadow: 0 0 0 2px var(--paper), 0 0 0 4px var(--warm); }
     .peek-dot { display: inline-block; width: 20px; height: 20px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 0 1px rgba(28,21,16,.2); vertical-align: middle; }
     .count-dot { display: inline-block; width: 11px; height: 11px; border-radius: 50%; margin-right: .5rem; vertical-align: -1px; box-shadow: 0 0 0 1px rgba(28,21,16,.2); }
     .ix-icon.trio { display: flex; gap: 2px; align-items: flex-end; justify-content: center; }
@@ -283,7 +289,11 @@
       .index ul { display: flex; gap: .5rem; overflow-x: auto; padding-bottom: .4rem; scrollbar-width: none; }
       .index li { flex: 0 0 auto; }
       .index { background: none; border: none; padding: 0; }
-      .index-title, .index-sub { display: none; }
+      .index-sub, .ix-size-title { display: none; }
+      .ix-colour-block { background: none; border: none; box-shadow: none; padding: 0; margin: 0 0 .7rem; display: flex; align-items: center; gap: .8rem; }
+      .ix-colour-block .index-title { font-size: 1rem; margin: 0; white-space: nowrap; }
+      .ix-colours { display: flex; gap: .5rem; overflow-x: auto; padding: .35rem .2rem; scrollbar-width: none; }
+      .swatch { flex: 0 0 auto; width: 28px; height: 28px; }
       .index ul { flex-direction: row; gap: .5rem; }
       .ix-size { display: flex; border: 1px solid var(--rule); padding: .4rem .8rem; font-size: 1rem; white-space: nowrap; gap: .5rem; background: var(--paper); }
       .ix-icon { width: 20px; height: 18px; }
@@ -332,10 +342,14 @@
   <div class="side" id="side">
   <aside class="index" aria-label="Browse by canvas size">
     <p class="index-sub">Browse by</p>
-    <p class="index-title">Canvas size</p>
+    <div class="ix-colour-block">
+      <p class="index-title">Colour</p>
+      <div class="ix-colours" id="colour-index" role="group" aria-label="Filter by colour"></div>
+    </div>
+    <p class="index-title ix-size-title">Canvas size</p>
     <ul id="size-index"></ul>
     <div class="ix-peek" id="ix-peek" aria-hidden="true"></div>
-    <p class="ix-note">Hover to preview · click to filter. Shapes show each canvas’s proportions; circles show colours.</p>
+    <p class="ix-note">Hover to preview · click to filter. Choose a colour and a size together to narrow it down.</p>
   </aside>
   <p class="col-cap">A little of everything</p>
   <div class="collage" id="collage" aria-label="Shuffled paintings"></div>
@@ -344,7 +358,6 @@
   <section class="sets" id="sets" hidden>
     <div class="sets-head">
       <h2>Paintings <em>in sets</em></h2>
-      <p>Made to hang together — two or three pieces, one story.</p>
     </div>
     <div class="sets-grid" id="sets-grid"></div>
   </section>
@@ -806,24 +819,32 @@ function renderIndex() {
   div.className = 'ix-div'; div.textContent = 'Single canvases';
   ul.appendChild(div);
   keys.forEach(k => add(k, sizeLabel(k), groups[k]));
-  // colour circles
+  renderColours();
+}
+
+function renderColours() {
+  const box = document.getElementById('colour-index');
   const fams = Object.keys(PALETTE).filter(f => everything().some(it => (it.colours || []).includes(f)));
-  if (fams.length) {
-    const d2 = document.createElement('li'); d2.className = 'ix-div ix-div-plain'; ul.appendChild(d2);
-    const li = document.createElement('li'); li.className = 'ix-colours';
-    fams.forEach(f => {
-      const list = everything().filter(it => (it.colours || []).includes(f));
-      const b = document.createElement('button');
-      b.className = 'swatch' + (colourFilter === f ? ' active' : '') + (f === 'light' ? ' pale' : '');
-      b.style.background = PALETTE[f];
-      b.setAttribute('aria-label', 'Show paintings with this colour (' + list.length + ')');
-      b.addEventListener('click', () => setColour(colourFilter === f ? '' : f));
-      b.addEventListener('mouseenter', () => showPeek(li, 'c:' + f, '', list));
-      b.addEventListener('focus', () => showPeek(li, 'c:' + f, '', list));
-      li.appendChild(b);
-    });
-    ul.appendChild(li);
-  }
+  const block = box.closest('.ix-colour-block');
+  block.hidden = !fams.length;
+  box.innerHTML = '';
+  // a "clear" link beside the heading while a colour is chosen
+  const head = block.querySelector('.index-title');
+  head.innerHTML = 'Colour' + (colourFilter ? ' <button type="button" class="ix-colour-clear">clear</button>' : '');
+  if (colourFilter) head.querySelector('button').addEventListener('click', () => setColour(''));
+  fams.forEach(f => {
+    const list = everything().filter(it => (it.colours || []).includes(f));
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'swatch' + (colourFilter === f ? ' active' : colourFilter ? ' dim' : '') + (f === 'light' ? ' pale' : '');
+    b.style.background = PALETTE[f];
+    b.setAttribute('aria-label', 'Show paintings with this colour (' + list.length + ')');
+    b.setAttribute('aria-pressed', colourFilter === f);
+    b.addEventListener('click', () => setColour(colourFilter === f ? '' : f));
+    b.addEventListener('mouseenter', () => showPeek(block, 'c:' + f, '', list));
+    b.addEventListener('focus', () => showPeek(block, 'c:' + f, '', list));
+    box.appendChild(b);
+  });
 }
 
 // small canvas shape drawn in proportion to the size (portrait)
