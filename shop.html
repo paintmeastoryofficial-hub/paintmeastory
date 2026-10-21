@@ -380,7 +380,7 @@ const SIZES = {
   '06': '4x6',  '07': '4x6',  '08': '5x7',  '09': '4x6',  '10': '8x10',  '22': '4x4',  '23': '6x10',
   '13': '12x12','14': '12x18','15': '4x6',  '16': '4x6',  '17': '4x6',
   '18': '8x10', '19': '8x10', '20': '8x10', '21': '4x6',  '24': '8x10',
-  '25': '4x6',  '26': '8x10'
+  '25': '4x6',  '26': '8x10', '27': '4x6',  '28': '6x6'
 };
 function sizeKey(str) {                     // '8 x 10 in' -> '8×10'
   const m = String(str || '').match(/(\d+(?:\.\d+)?)\s*[x×*]\s*(\d+(?:\.\d+)?)/i);
@@ -402,7 +402,8 @@ let items = [], visible = [], picks = [], sets = [], viewList = [], cur = 0;
 
 function esc(t) { return String(t ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function prettyName(file) {
-  return file.replace(IMG_EXT, '').replace(/^\d+[\s._-]*/, '').replace(/[-_]+/g, ' ').trim()
+  return file.replace(IMG_EXT, '').replace(/^\d+[\s._-]*/, '')
+             .replace(/[\s._-]*\d+(?:\.\d+)?\s*[x×]\s*\d+(?:\.\d+)?(?:\s*in(?:ch(?:es)?)?)?$/i, '').replace(/[-_]+/g, ' ').trim()
              .replace(/\b\w/g, c => c.toUpperCase())
              .replace(/(?!^)\b(Of|And|The|In|On|A|An|To|For|With)\b/g, w => w.toLowerCase()) || 'Untitled';
 }
