@@ -47,11 +47,11 @@
     .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 460px), 1fr)); gap: 2.75rem 1.75rem; }
     .card { display: flex; flex-direction: column; animation: fadeUp .6s both; }
     .sets { margin-bottom: 3.5rem; }
-    .sets-head { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+    .sets-head { max-width: 860px; margin-left: auto; margin-right: auto; display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
     .sets-head h2 { font-family: var(--serif); font-weight: 300; font-size: clamp(1.8rem, 4vw, 2.6rem); line-height: 1.1; }
     .sets-head h2 em { font-style: italic; color: var(--warm); }
     .sets-head p { color: var(--muted); font-size: .95rem; }
-    .sets-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); gap: 2.75rem 1.75rem; }
+    .sets-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); max-width: 860px; margin: 0 auto; gap: 2.75rem 1.75rem; }
     .sets:empty, .sets[hidden] { display: none; }
     .frame.square { aspect-ratio: 1/1; }
     .frame { position: relative; overflow: hidden; aspect-ratio: 3/2; background: linear-gradient(135deg,#e8e0d5,#d5c9b8); cursor: zoom-in; border: none; padding: 0; display: block; width: 100%; }
@@ -240,10 +240,13 @@ const WHATSAPP  = '';   // optional, e.g. '919876543210'
 const DEFAULT_MEDIUM = 'Textured art, original';
 
 // SETS OF 3 — shown square, in their own section at the top of the shop.
-// Add a file name here, or put "set": true for it in details.json,
-// or include "set" in the file name (e.g. 11-blue-set.jpg).
-const SETS = ['08-elements-of-flow.png', '10-golden-textures.jpg'];
-const isSetFile = n => SETS.includes(n) || /(^|[-_\s])set([-_.\s]|$)/i.test(n);
+// List them by their number (the start of the file name), so renaming the
+// rest of the file name doesn't matter. You can also put "set" in the file
+// name (e.g. 27-ocean-set.jpg) or "set": true in details.json.
+const SETS = ['08', '10'];
+const fileNum = n => (n.match(/^(\d+)/) || [])[1];
+const isSetFile = n => SETS.some(x => fileNum(n) && Number(fileNum(n)) === Number(x))
+                       || /(^|[-_\s])set([-_.\s]|$)/i.test(n);
 
 const IMG_EXT = /\.(jpe?g|png|webp|gif|avif)$/i;
 let items = [], visible = [], picks = [], sets = [], viewList = [], cur = 0;
@@ -308,6 +311,14 @@ async function init() {
   renderShowcase();
 }
 
+function fitFrame(img) {
+  const frame = img.closest('.frame');
+  if (!frame || !img.naturalWidth) return;
+  const r = img.naturalWidth / img.naturalHeight;
+  const want = frame.classList.contains('square') ? 1 : 1.5;
+  if (Math.abs(r - want) > 0.08) { img.style.objectFit = 'contain'; frame.style.background = '#efe8dd'; }
+}
+
 function makeCard(it, i, list, square) {
   const card = document.createElement('article');
   card.className = 'card' + (it.sold ? ' sold' : '');
@@ -325,6 +336,8 @@ function makeCard(it, i, list, square) {
       '<a class="enquire" href="' + (it.sold ? mailto(it, true) : mailto(it)) + '">' + (it.sold ? 'Similar piece →' : 'Enquire →') + '</a></div>' +
     '</div>';
   card.querySelector('.frame').addEventListener('click', () => openViewer(i, list));
+  const im = card.querySelector('img');
+  im.addEventListener('load', () => fitFrame(im));
   return card;
 }
 
