@@ -15,3 +15,13 @@ Drop photos (.jpg, .png, .webp) into this folder and they appear on shop.html au
 ```
 
 Add `"featured": true` to a piece to show it in the three pictures under "Want something made for your home?" (otherwise the first three are used).
+
+## Tags (up to 5 per painting)
+
+Edit `tags.txt` in this folder — one painting per line, using its number:
+
+```
+29: hearts, love, minimal, gift, small
+```
+
+Tags show under each painting, in the shop's index (click to filter) and in search.
