@@ -1,0 +1,34 @@
+# TAGS for the shop — up to 5 per painting
+#
+# One painting per line:   number: tag, tag, tag, tag, tag
+# The number is the one at the start of the picture's file name.
+# Lines starting with # are notes and are ignored.
+# Edit this file on GitHub (pencil icon) — the shop updates by itself.
+
+01: abstract, pastel, modern, calm, minimal
+02: abstract, pastel, modern, soft, minimal
+03: abstract, ocean, calm, geometric, modern
+04: floral, gold, elegant, statement, calm
+05: floral, sunflower, nature, cheerful, bright
+06: floral, nature, bold, modern, gift
+07: abstract, gold, swirl, bold, dramatic
+08: abstract, gold, set, dramatic, modern
+09: abstract, gold, warm, minimal, glow
+10: abstract, gold, set, warm, minimal
+13: abstract, gold, sun, statement, dramatic
+14: abstract, gold, geometric, warm, statement
+15: floral, gold, nature, bold, gift
+16: abstract, gold, flow, dramatic, luxe
+17: abstract, ocean, swirl, gold, bold
+18: abstract, monochrome, calm, statement, bold
+19: abstract, warm, earthy, dramatic, statement
+20: floral, nature, cheerful, bright, gift
+21: ocean, beach, calm, nature, gift
+22: abstract, pastel, set, swirl, gift
+23: abstract, warm, earthy, flow, dramatic
+24: abstract, bold, framed, modern, geometric
+25: abstract, monochrome, elegant, framed, minimal
+26: floral, nature, gold, elegant, leaves
+27: music, figurative, monochrome, folk, gift
+28: floral, nature, cheerful, bright, gift
+29: hearts, love, minimal, gift, small
