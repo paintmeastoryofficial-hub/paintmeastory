@@ -596,7 +596,7 @@
   '15-golden-bloom.png', '16-midnight-rivers.png', '17-golden-orbit.png', '18-silver-blues.png',
   '19-ember-pulse.png', '20-pink-cascade.png', '21-coastal-calm.png', '22-tides.png',
   '23-ember-flow.png', '24-pink-rhythm.png', '25-silver-swirl.png', '26-golden-cascade.png',
-  '27-strings.png', '28-summer-blues.png'
+  '27-strings.png', '28-summer-blues.png', '29-little-hearts-4x6in.png'
 ];
   const txExt = /\.(jpe?g|png|webp|gif|avif)$/i;
   const txTitle = f => f.replace(txExt, '').replace(/^\d+[\s._-]*/, '')
@@ -626,7 +626,7 @@
     '18': [0.079, 0.156, 0.45, 0.781], '19': [0.129, 0.188, 0.417, 0.712], '20': [0.129, 0.269, 0.45, 0.719],
     '21': [0.158, 0.25, 0.4, 0.731], '22': [0.06, 0.37, 0.45, 0.75], '23': [0.067, 0.238, 0.45, 0.856],
     '24': [0.133, 0.194, 0.412, 0.712], '25': [0.15, 0.32, 0.41, 0.8], '26': [0.158, 0.288, 0.425, 0.744],
-    '27': [0.16, 0.24, 0.4, 0.73], '28': [0.125, 0.306, 0.446, 0.756]
+    '27': [0.16, 0.24, 0.4, 0.73], '28': [0.125, 0.306, 0.446, 0.756], '29': [0.172, 0.263, 0.42, 0.783]
   };
   const FOCUS_DEFAULT = [0.12, 0.25, 0.42, 0.75];
   
@@ -635,7 +635,14 @@
     const img = tile.querySelector('img');
     const apply = () => {
       const W = img.naturalWidth, H = img.naturalHeight, r = tile.getBoundingClientRect();
-      if (!W || !r.width || !r.height) return;
+      if (!W) return;
+    if (!r.width || !r.height) {          // not on screen yet: crop as soon as it gets a size
+      if (!tile._ro && 'ResizeObserver' in window) {
+        tile._ro = new ResizeObserver(() => { const q = tile.getBoundingClientRect(); if (q.width && q.height) { tile._ro.disconnect(); tile._ro = null; apply(); } });
+        tile._ro.observe(tile);
+      }
+      return;
+    }
       const n = (file.match(/^(\d+)/) || [])[1];
       const k = n && Object.keys(FOCUS).find(x => Number(x) === Number(n));
       const [l, t, rr, b] = k ? FOCUS[k] : FOCUS_DEFAULT;
@@ -691,17 +698,18 @@
     const n = files.length;
     document.getElementById('tx-stats').textContent = n + ' original' + (n > 1 ? 's' : '') + ' · sets and single canvases · new pieces added often';
     // gently swap pictures now and then
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || !spare.length) return;
+    if (!spare.length) return;
+    const hovering = el => window.matchMedia('(hover: hover) and (pointer: fine)').matches && el.matches(':hover');
     let k = 0;
     setInterval(() => {
       if (document.hidden) return;
       if (++k % 4 === 0) {                                   // every 4th change, the big one
-        if (feat.matches(':hover')) return;
+        if (hovering(feat)) return;
         const next = spare.shift(); spare.push(feat._f || pool[0]);
         feat.classList.add('swap'); setTimeout(() => { featImg.onload = () => feat.classList.remove('swap'); setFeature(next); feat._f = next; }, 600);
         return;
       }
-      if (box.matches(':hover')) return;
+      if (hovering(box)) return;
       const tiles = [...box.children].filter(x => !x.classList.contains('set')), t = tiles[Math.floor(Math.random() * tiles.length)];
       const next = spare.shift(); spare.push(t._f);
       t.classList.add('swap'); setTimeout(() => fill(t, next), 600);
