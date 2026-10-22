@@ -299,16 +299,27 @@
     .views button svg { width: 13px; height: 13px; }
     .views button.on { background: var(--ink); color: var(--cream); }
     .content.size-view .sets, .content.size-view #grid { display: none; }
+    @media (max-width: 900px) { .content.size-view .collage-slot { display: none; } }
     #bysize[hidden] { display: none; }
     .bs-group { margin-bottom: 2.6rem; animation: fadeUp .5s both; }
     .bs-head { display: flex; align-items: baseline; gap: .8rem; border-bottom: 1px solid var(--rule); padding-bottom: .5rem; margin-bottom: 1.1rem; }
     .bs-head h3 { font-family: var(--serif); font-weight: 400; font-size: 1.55rem; line-height: 1; }
     .bs-head span { font-size: .66rem; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); }
-    .bs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 1.1rem .9rem; }
+    .bs-grid { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 1.6rem 1.4rem; }
+    .tb-btn { font: 400 .62rem var(--sans); letter-spacing: .16em; text-transform: uppercase; padding: .45rem .8rem; border: 1px solid var(--rule); background: none; color: var(--ink); cursor: pointer; }
+    .tb-btn:hover { background: var(--ink); color: var(--cream); }
+    .tag-pick { position: relative; display: inline-flex !important; align-items: center; gap: 0 !important; border: 1px solid var(--rule); padding-left: .65rem; }
+    .tag-pick span { color: var(--warm); font-size: .8rem; }
+    .tag-pick select { appearance: none; -webkit-appearance: none; border: none; background: transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238b6f47' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right .5rem center / 12px; font: 400 .66rem var(--sans); letter-spacing: .12em; text-transform: uppercase; color: var(--ink); padding: .45rem 1.8rem .45rem .25rem; cursor: pointer; }
+    .tag-pick select:focus { outline: none; }
+    .tag-pick.on { background: var(--warm); border-color: var(--warm); }
+    .tag-pick.on span, .tag-pick.on select { color: var(--cream); }
     .bs-item { background: none; border: none; padding: 0; cursor: zoom-in; text-align: left; color: var(--ink); }
-    .bs-item .th { position: relative; aspect-ratio: 1/1; overflow: hidden; background: #e8e0d5; }
+    .bs-item { width: calc(var(--h) * var(--r)); flex: 0 0 auto; }
+    .bs-item .th { position: relative; width: 100%; height: var(--h); overflow: hidden; background: #e8e0d5; box-shadow: 0 8px 18px rgba(28,21,16,.12); }
+    .bs-group { --h: 190px; }
     .bs-item .th img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .5s; }
-    .bs-item:hover .th img { transform: scale(1.06); }
+    .bs-item:hover .th { box-shadow: 0 12px 26px rgba(28,21,16,.2); }
     .bs-item .nm { display: block; font-family: var(--serif); font-size: 1.02rem; line-height: 1.2; margin-top: .4rem; }
     .bs-item .nm small { display: block; font: 400 .66rem var(--sans); color: var(--muted); letter-spacing: .06em; margin-top: .1rem; }
     .bs-item.sold .th { opacity: .5; }
@@ -319,7 +330,8 @@
     .az-panel { background: var(--paper); width: min(980px, 100%); max-height: 100%; overflow-y: auto; padding: clamp(1.4rem, 3vw, 2.4rem); position: relative; }
     .az-panel h2 { font-family: var(--serif); font-weight: 300; font-size: clamp(1.8rem, 4vw, 2.4rem); margin-bottom: 1.2rem; }
     .az-panel h2 em { font-style: italic; color: var(--warm); }
-    .az-letter { font-family: var(--serif); font-style: italic; font-size: 1.3rem; color: var(--accent); margin: .9rem 0 .4rem; border-bottom: 1px solid var(--rule); }
+    .az-letter { display: none; }
+    .az-old { font-family: var(--serif); font-style: italic; font-size: 1.3rem; color: var(--accent); margin: .9rem 0 .4rem; border-bottom: 1px solid var(--rule); }
     .az-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: .25rem 1rem; }
     .az-close { position: absolute; top: .7rem; right: .7rem; width: 38px; height: 38px; border: none; background: #f3ece2; font-size: 1.3rem; cursor: pointer; }
     .az-close:hover { background: var(--accent); }
@@ -353,7 +365,8 @@
       .suggest { width: 100%; }
     }
     @media (max-width: 640px) {
-      .bs-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .8rem .55rem; }
+      .bs-grid { gap: 1rem .8rem; }
+      .bs-group { --h: 130px; }
       .bs-item .nm { font-size: .88rem; }
       .views button span { display: none; }
       .toolbar { gap: .7rem; }
@@ -450,22 +463,31 @@
       <button type="button" class="q-clear" id="q-clear" aria-label="Clear search">×</button>
       <div class="suggest" id="suggest" role="listbox"></div>
     </div>
-    <button type="button" class="ix-az" id="az-open">All paintings A–Z</button>
     <div class="ix-colour-block">
       <p class="index-title ix-colour-title"><span>pick your colour</span></p>
       <div class="ix-colours" id="colour-index" role="group" aria-label="Filter by colour"></div>
     </div>
     <p class="index-title ix-size-title">Canvas size</p>
     <ul id="size-index"></ul>
-    <p class="index-title ix-size-title ix-tags-title">Tags</p>
-    <div class="ix-tags" id="tag-index"></div>
     <div class="ix-peek" id="ix-peek" aria-hidden="true"></div>
-    <p class="ix-note">Hover to preview · click to filter. Mix a colour, a size and a tag to narrow it down.</p>
+    <p class="ix-note">Hover to preview · click to filter.</p>
   </aside>
   <p class="col-cap" id="col-cap">A little of everything</p>
   <div class="collage" id="collage" aria-label="Shuffled paintings"></div>
   </div>
   <div class="content">
+  <div class="toolbar" id="toolbar">
+    <span id="count">Loading…</span>
+    <div class="tool-right">
+      <div class="views" role="group" aria-label="View">
+        <button type="button" data-view="gallery" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="4" width="8" height="6"/><rect x="13" y="4" width="8" height="6"/><rect x="3" y="14" width="8" height="6"/><rect x="13" y="14" width="8" height="6"/></svg><span>Gallery</span></button>
+        <button type="button" data-view="size"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="5" height="5"/><rect x="10" y="3" width="5" height="5"/><rect x="17" y="3" width="4" height="5"/><path d="M3 12h18"/><rect x="3" y="15" width="5" height="5"/><rect x="10" y="15" width="5" height="5"/></svg><span>By size</span></button>
+      </div>
+      <button type="button" class="tb-btn" id="az-open">A–Z</button>
+      <label class="tag-pick"><span>#</span><select id="tag-select" aria-label="Filter by tag"><option value="">All tags</option></select></label>
+      <label><input type="checkbox" id="only-available" /> Available only</label>
+    </div>
+  </div>
   <section class="sets" id="sets" hidden>
     <div class="sets-head">
       <h2>Paintings <em>in sets</em></h2>
@@ -473,16 +495,6 @@
     <div class="sets-grid" id="sets-grid"></div>
   </section>
   <div class="collage-slot" id="collage-slot"></div>
-  <div class="toolbar">
-    <span id="count">Loading…</span>
-    <div class="tool-right">
-      <div class="views" role="group" aria-label="View">
-        <button type="button" data-view="gallery" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="4" width="8" height="6"/><rect x="13" y="4" width="8" height="6"/><rect x="3" y="14" width="8" height="6"/><rect x="13" y="14" width="8" height="6"/></svg><span>Gallery</span></button>
-        <button type="button" data-view="size"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="5" height="5"/><rect x="10" y="3" width="5" height="5"/><rect x="17" y="3" width="4" height="5"/><path d="M3 12h18"/><rect x="3" y="15" width="5" height="5"/><rect x="10" y="15" width="5" height="5"/></svg><span>By size</span></button>
-      </div>
-      <label><input type="checkbox" id="only-available" /> Available only</label>
-    </div>
-  </div>
   <div id="bysize" hidden></div>
   <div class="grid" id="grid">
     <div class="state"><div class="spinner"></div>Gathering the collection…</div>
@@ -1136,10 +1148,10 @@ function sizeCollage(force) {
   const all = everything();
   const gap = 5, cell = (box.clientWidth - 2 * gap) / 3;
   if (!cell) return;
-  const setsEl = document.getElementById('sets');
-  const target = !setsEl.hidden ? setsEl.getBoundingClientRect().bottom : 0;
+  // runs down beside the paintings (about to the end of the list)
+  const target = document.querySelector('.content').getBoundingClientRect().bottom - 40;
   const room = target - box.getBoundingClientRect().top;
-  const blocks = phoneMode ? 1 : view === 'size' ? 2 : Math.max(1, Math.round((room + gap) / (4 * (cell + gap))));
+  const blocks = phoneMode ? 2 : Math.min(30, Math.max(1, Math.floor((room + gap) / (4 * (cell + gap)))));
   if (!force && box._blocks === blocks && box._cell === cell) return;
   box._blocks = blocks; box._cell = cell;
   box.style.gridAutoRows = cell + 'px';
@@ -1147,7 +1159,10 @@ function sizeCollage(force) {
   clearInterval(collageTimer);
   // pools by shape
   const pools = { set: [], tall: [], wide: [], sq: [] };
-  collagePool.forEach(it => pools[shapeOf(it)].push(it));
+  // enough paintings for every block: reshuffle and repeat when the collection runs out
+  let src = collagePool.slice();
+  while (src.length < blocks * 7 && collagePool.length) src = src.concat(shuffle(collagePool));
+  src.forEach(it => pools[shapeOf(it)].push(it));
   const take = kind => {
     const order = kind === 'big' ? ['set', 'sq', 'wide', 'tall'] : kind === 'tall' ? ['tall', 'sq', 'wide']
       : kind === 'wide' ? ['wide', 'sq', 'tall'] : ['sq', 'tall', 'wide'];
@@ -1175,7 +1190,9 @@ function sizeCollage(force) {
       if (it) box.appendChild(tileEl(it, slot, bl * 4));
     }
   }
-  collageSpare = [...pools.tall, ...pools.wide, ...pools.sq];
+  const showing = new Set([...box.children].map(t => t._item));
+  collageSpare = shuffle(everything().filter(x => !showing.has(x) && shapeOf(x) !== 'set'));
+  if (!collageSpare.length) collageSpare = shuffle(everything().filter(x => shapeOf(x) !== 'set'));
   requestAnimationFrame(() => [...box.children].forEach(t => t._crop && t._crop()));
   fitSide();
   if (!collageSpare.length) return;
@@ -1208,7 +1225,7 @@ function fitSide() {
 }
 let resizeT = null;
 window.addEventListener('resize', () => { clearTimeout(resizeT); resizeT = setTimeout(() => { sizeCollage(); fitSide(); document.querySelectorAll('.col-tile').forEach(t => t._crop && t._crop()); }, 150); });
-if ('ResizeObserver' in window) new ResizeObserver(() => sizeCollage()).observe(document.getElementById('sets'));
+if ('ResizeObserver' in window) { const ro = new ResizeObserver(() => { clearTimeout(resizeT); resizeT = setTimeout(() => sizeCollage(), 120); }); ro.observe(document.querySelector('.content')); }
 
 /* Hover preview */
 const peek = document.getElementById('ix-peek');
@@ -1285,13 +1302,11 @@ function makeCard(it, i, list, square) {
     '<div class="body">' +
       '<h3 class="title">' + esc(it.title) + '</h3>' +
       '<p class="meta">' + esc([it.medium, it.size].filter(Boolean).join(' · ')) + '</p>' +
-      tagButtons(it, 'card-tags') +
       '<div class="foot"><span class="price">' + esc(it.price) + '</span>' +
       '<a class="enquire" href="#enquire">' + (it.sold ? 'Similar piece →' : 'Enquire →') + '</a></div>' +
     '</div>';
   card.querySelector('.frame').addEventListener('click', () => openViewer(i, list));
   card.querySelector('.enquire').addEventListener('click', e => { e.preventDefault(); openEnquiry(it); });
-  wireTags(card);
   const im = card.querySelector('img');
   im.addEventListener('load', () => fitFrame(im));
   return card;
@@ -1308,35 +1323,19 @@ function wireTags(root, after) {
   }));
 }
 
-// tag chips in the index: most-used first, the rest behind "more"
-let tagsOpen = false;
+// tag dropdown in the top bar: most-used tags first
 function renderTags() {
-  const box = $('tag-index'), count = {};
+  const sel = $('tag-select'), count = {};
   everything().forEach(it => (it.tags || []).forEach(t => { count[t] = (count[t] || 0) + 1; }));
   const tags = Object.keys(count).sort((a, b) => count[b] - count[a] || a.localeCompare(b));
-  box.previousElementSibling.hidden = box.hidden = !tags.length;
-  box.innerHTML = '';
-  const LIMIT = 12, phone = window.matchMedia('(max-width: 900px)').matches;
-  tags.forEach((t, i) => {
-    if (!phone && !tagsOpen && i >= LIMIT && t !== tagFilter) return;
-    const b = document.createElement('button');
-    b.type = 'button'; b.className = 'tag' + (tagFilter === t ? ' on' : '');
-    b.textContent = '#' + t;
-    b.title = count[t] + ' painting' + (count[t] > 1 ? 's' : '');
-    b.setAttribute('aria-pressed', tagFilter === t);
-    b.addEventListener('click', () => setTag(tagFilter === t ? '' : t));
-    box.appendChild(b);
-  });
-  if (!phone && tags.length > LIMIT) {
-    const m = document.createElement('button');
-    m.type = 'button'; m.className = 'tag-more';
-    m.textContent = tagsOpen ? 'fewer' : '+ ' + (tags.length - LIMIT) + ' more';
-    m.addEventListener('click', () => { tagsOpen = !tagsOpen; renderTags(); });
-    box.appendChild(m);
-  }
+  sel.closest('.tag-pick').hidden = !tags.length;
+  sel.innerHTML = '<option value="">All tags</option>' + tags.map(t => '<option value="' + esc(t) + '">' + esc(t) + ' (' + count[t] + ')</option>').join('');
+  sel.value = tagFilter;
+  sel.closest('.tag-pick').classList.toggle('on', !!tagFilter);
 }
+$('tag-select').addEventListener('change', e => setTag(e.target.value));
 
-// SECOND VIEW: small thumbnails grouped by canvas size
+// SECOND VIEW: paintings grouped by canvas size, each shown whole at its own shape
 function renderBySize(onlyAvail) {
   const box = $('bysize');
   const pool = everything().filter(matches).filter(i => !onlyAvail || !i.sold);
@@ -1353,13 +1352,15 @@ function renderBySize(onlyAvail) {
     sec.innerHTML = '<div class="bs-head"><h3>' + esc(sizeLabel(k)) + '</h3><span>' + list.length + ' painting' + (list.length > 1 ? 's' : '') + '</span></div><div class="bs-grid"></div>';
     const grid = sec.querySelector('.bs-grid');
     list.forEach((it, i) => {
+      const whole = shapeOf(it) === 'set';
       const b = document.createElement('button');
       b.type = 'button';
       b.className = 'bs-item' + (it.sold ? ' sold' : '');
+      b.style.setProperty('--r', whole ? 1 : Math.min(1.6, Math.max(0.55, paintShape(it.file))).toFixed(3));
       b.setAttribute('aria-label', 'View ' + it.title);
       b.innerHTML = '<div class="th"><img src="' + it.src + '" alt="" loading="lazy" /></div>' +
         '<span class="nm">' + esc(it.title) + '<small>' + esc(it.isSet ? 'Set of ' + it.pieces + (it.size ? ' · ' + it.size : '') : (it.sold ? 'Sold' : it.price)) + '</small></span>';
-      if (shapeOf(it) !== 'set') cropTo(b.querySelector('.th'), it.file);
+      if (!whole) cropTo(b.querySelector('.th'), it.file);
       b.addEventListener('click', () => openViewer(i, list));
       grid.appendChild(b);
     });
@@ -1664,14 +1665,8 @@ $('q-clear').addEventListener('click', () => { setQuery(''); refreshFilters(true
 function openAZ() {
   const list = everything().slice().sort((a, b) => a.title.localeCompare(b.title));
   const box = $('az-list'); box.innerHTML = '';
-  let letter = '', grid = null;
+  const grid = document.createElement('div'); grid.className = 'az-grid'; box.appendChild(grid);
   list.forEach((it, i) => {
-    const L = it.title[0].toUpperCase();
-    if (L !== letter) {
-      letter = L;
-      box.insertAdjacentHTML('beforeend', '<p class="az-letter">' + esc(L) + '</p>');
-      grid = document.createElement('div'); grid.className = 'az-grid'; box.appendChild(grid);
-    }
     const b = document.createElement('button');
     b.type = 'button'; b.className = 'sg-row';
     b.innerHTML = '<span class="th"><img src="' + it.src + '" alt="" loading="lazy" /></span><span>' + esc(it.title) + '</span><small>' + esc(it.isSet ? 'Set' : it.size) + '</small>';
