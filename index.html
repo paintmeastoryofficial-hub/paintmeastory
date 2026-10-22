@@ -596,7 +596,7 @@
   '15-golden-bloom.png', '16-midnight-rivers.png', '17-golden-orbit.png', '18-silver-blues.png',
   '19-ember-pulse.png', '20-pink-cascade.png', '21-coastal-calm.png', '22-tides.png',
   '23-ember-flow.png', '24-pink-rhythm.png', '25-silver-swirl.png', '26-golden-cascade.png',
-  '27-strings.png', '28-summer-blues.png', '29-little-hearts-4x6in.png'
+  '27-strings.png', '28-summer-blues.png', '29-little-hearts-4x6in.png', '30-intersect-4x6in.png'
 ];
   const txExt = /\.(jpe?g|png|webp|gif|avif)$/i;
   const txTitle = f => f.replace(txExt, '').replace(/^\d+[\s._-]*/, '')
@@ -626,7 +626,7 @@
     '18': [0.079, 0.156, 0.45, 0.781], '19': [0.129, 0.188, 0.417, 0.712], '20': [0.129, 0.269, 0.45, 0.719],
     '21': [0.158, 0.25, 0.4, 0.731], '22': [0.06, 0.37, 0.45, 0.75], '23': [0.067, 0.238, 0.45, 0.856],
     '24': [0.133, 0.194, 0.412, 0.712], '25': [0.15, 0.32, 0.41, 0.8], '26': [0.158, 0.288, 0.425, 0.744],
-    '27': [0.16, 0.24, 0.4, 0.73], '28': [0.125, 0.306, 0.446, 0.756], '29': [0.172, 0.263, 0.42, 0.783]
+    '27': [0.16, 0.24, 0.4, 0.73], '28': [0.125, 0.306, 0.446, 0.756], '29': [0.172, 0.263, 0.42, 0.783], '30': [0.187, 0.317, 0.397, 0.78]
   };
   const FOCUS_DEFAULT = [0.12, 0.25, 0.42, 0.75];
   
@@ -652,7 +652,7 @@
       const maxW = W / H > 1.2 ? W / 2 : W;            // promo cards: stay on the photo side
     if (cw > maxW) { cw = maxW; ch = cw / A; }
       if (ch > H) { ch = H; cw = ch * A; }
-      const x0 = Math.min(Math.max(cx - cw / 2, 0), maxW - cw), y0 = Math.min(Math.max(cy - ch / 2, 0), H - ch);
+      const x0 = Math.min(Math.max(cx - cw / 2, 0), maxW - cw), y0 = Math.min(Math.max(t * H - (ch - bh) * 0.15, 0), H - ch);   // little room above (titles/text), more below
       Object.assign(img.style, { position: 'absolute', maxWidth: 'none', objectFit: 'fill',
         width: (W / cw * 100) + '%', height: (H / ch * 100) + '%', left: (-x0 / cw * 100) + '%', top: (-y0 / ch * 100) + '%' });
     };
