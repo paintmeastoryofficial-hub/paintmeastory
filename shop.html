@@ -337,10 +337,14 @@
     .az-panel h2 em { font-style: italic; color: var(--warm); }
     .az-letter { display: none; }
     .az-old { font-family: var(--serif); font-style: italic; font-size: 1.3rem; color: var(--accent); margin: .9rem 0 .4rem; border-bottom: 1px solid var(--rule); }
-    .az-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: .5rem 1.2rem; }
-    #az .sg-row { padding: .45rem .5rem; gap: .9rem; font-size: 1.1rem; }
-    #az .sg-row .th { width: 72px; height: 72px; }
-    @media (max-width: 640px) { #az .sg-row .th { width: 60px; height: 60px; } }
+    .az-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1.4rem 1.1rem; }
+    .az-item { background: none; border: none; padding: 0; cursor: pointer; text-align: left; color: var(--ink); }
+    .az-item .th { position: relative; display: block; aspect-ratio: 4/5; overflow: hidden; background: #e8e0d5; box-shadow: 0 6px 16px rgba(28,21,16,.1); transition: box-shadow .3s, transform .3s; }
+    .az-item .th img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .az-item:hover .th { transform: translateY(-3px); box-shadow: 0 12px 26px rgba(28,21,16,.18); }
+    .az-item .nm { display: block; font-family: var(--serif); font-size: 1.1rem; line-height: 1.2; margin-top: .55rem; }
+    .az-item .nm small { display: block; font: 400 .68rem var(--sans); color: var(--muted); letter-spacing: .06em; margin-top: .15rem; }
+    @media (max-width: 640px) { .az-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.1rem .8rem; } .az-item .nm { font-size: 1rem; } }
     .az-close { position: absolute; top: .7rem; right: .7rem; width: 38px; height: 38px; border: none; background: #f3ece2; font-size: 1.3rem; cursor: pointer; }
     .az-close:hover { background: var(--accent); }
 
@@ -492,7 +496,6 @@
         <button type="button" data-view="size"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="5" height="5"/><rect x="10" y="3" width="5" height="5"/><rect x="17" y="3" width="4" height="5"/><path d="M3 12h18"/><rect x="3" y="15" width="5" height="5"/><rect x="10" y="15" width="5" height="5"/></svg><span>By size</span></button>
       </div>
       <button type="button" class="tb-btn" id="az-open">A–Z</button>
-      <div class="tag-pick" id="tag-pick"><button type="button" class="tb-btn tag-btn" id="tag-btn" aria-expanded="false" aria-haspopup="true"><span id="tag-btn-text">Tags</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></button><div class="tag-pop" id="tag-pop" role="menu"></div></div>
       <label><input type="checkbox" id="only-available" /> Available only</label>
     </div>
   </div>
@@ -1331,26 +1334,7 @@ function wireTags(root, after) {
   }));
 }
 
-// tag menu in the top bar: a button that opens a panel of tags (most-used first)
-function renderTags() {
-  const pop = $('tag-pop'), btn = $('tag-btn'), count = {};
-  everything().forEach(it => (it.tags || []).forEach(t => { count[t] = (count[t] || 0) + 1; }));
-  const tags = Object.keys(count).sort((a, b) => count[b] - count[a] || a.localeCompare(b));
-  $('tag-pick').hidden = !tags.length;
-  $('tag-btn-text').textContent = tagFilter ? '#' + tagFilter : 'Tags';
-  btn.classList.toggle('on', !!tagFilter);
-  pop.innerHTML = '<button type="button" class="tag all' + (tagFilter ? '' : ' on') + '" data-t="">All</button>' +
-    tags.map(t => '<button type="button" class="tag' + (tagFilter === t ? ' on' : '') + '" data-t="' + esc(t) + '">#' + esc(t) + '<span class="c">' + count[t] + '</span></button>').join('');
-  pop.querySelectorAll('.tag').forEach(b => b.addEventListener('click', () => { closeTagPop(); setTag(b.dataset.t); }));
-}
-function closeTagPop() { $('tag-pop').classList.remove('show'); $('tag-btn').setAttribute('aria-expanded', 'false'); }
-$('tag-btn').addEventListener('click', e => {
-  e.stopPropagation();
-  const open = !$('tag-pop').classList.contains('show');
-  $('tag-pop').classList.toggle('show', open); $('tag-btn').setAttribute('aria-expanded', String(open));
-});
-document.addEventListener('click', e => { if (!e.target.closest('#tag-pick')) closeTagPop(); });
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeTagPop(); });
+function renderTags() {}   // tags show only inside the painting view
 
 // SECOND VIEW: paintings grouped by canvas size, each shown whole at its own shape
 function renderBySize(onlyAvail) {
@@ -1684,9 +1668,9 @@ function openAZ() {
   const grid = document.createElement('div'); grid.className = 'az-grid'; box.appendChild(grid);
   list.forEach((it, i) => {
     const b = document.createElement('button');
-    b.type = 'button'; b.className = 'sg-row';
-    b.innerHTML = '<span class="th"><img src="' + it.src + '" alt="" loading="lazy" /></span><span>' + esc(it.title) + '</span><small>' + esc(it.isSet ? 'Set' : it.size) + '</small>';
-    cropTo(b.querySelector('.th'), it.file);
+    b.type = 'button'; b.className = 'az-item';
+    b.innerHTML = '<span class="th"><img src="' + it.src + '" alt="" loading="lazy" /></span><span class="nm">' + esc(it.title) + '<small>' + esc(it.isSet ? 'Set of ' + it.pieces : it.size) + '</small></span>';
+    if (shapeOf(it) !== 'set') cropTo(b.querySelector('.th'), it.file, 1.25);
     b.addEventListener('click', () => { closeAZ(); openViewer(i, list); });
     grid.appendChild(b);
   });
