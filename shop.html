@@ -446,7 +446,7 @@
   
 
     /* NEW ARTWORK — floating button + window that zooms out of it */
-    .new-fab { position: fixed; left: clamp(1rem, 3vw, 2rem); bottom: clamp(1rem, 3vw, 2rem); z-index: 150; display: inline-flex; align-items: center; gap: .55rem; background: var(--ink); color: var(--cream); border: 1px solid rgba(196,149,106,.55); border-radius: 999px; padding: .55rem .7rem .55rem .9rem; font: italic 400 1.15rem var(--serif); letter-spacing: .01em; cursor: pointer; box-shadow: 0 10px 28px rgba(28,21,16,.25); transition: transform .25s, background .25s; animation: newPulse 4.5s ease-in-out 1.5s infinite; }
+    .new-fab { position: fixed; left: clamp(1rem, 3vw, 2rem); bottom: clamp(1rem, 3vw, 2rem); z-index: 150; display: inline-flex; align-items: center; gap: .55rem; background: var(--ink); color: var(--cream); border: 1px solid rgba(196,149,106,.55); border-radius: 999px; padding: .55rem .7rem .55rem .9rem; font: 400 .7rem var(--sans); letter-spacing: .2em; text-transform: uppercase; cursor: pointer; box-shadow: 0 10px 28px rgba(28,21,16,.25); transition: transform .25s, background .25s; animation: newPulse 4.5s ease-in-out 1.5s infinite; }
     .new-fab:hover { transform: translateY(-2px); background: #2b2119; }
     .new-fab .brush { width: 17px; height: 17px; color: var(--accent); display: block; transform-origin: 30% 80%; animation: brushWiggle 4.5s ease-in-out 1.5s infinite; }
     @keyframes brushWiggle { 0%, 70%, 100% { transform: rotate(0); } 78% { transform: rotate(-14deg); } 86% { transform: rotate(8deg); } }
@@ -610,7 +610,7 @@
 </div>
 <div class="toast" id="toast"></div>
 
-<button type="button" class="new-fab" id="new-fab" aria-haspopup="dialog" aria-expanded="false" aria-controls="new-win" hidden><svg class="brush" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M18.4 2.6a2 2 0 0 1 2.9 2.9L12 14.8 9.2 12z"/><path d="M9.2 12c-2 0-3.6 1.6-3.6 3.6 0 1.4-1 2.6-2.6 3 1 1.5 2.7 2.4 4.6 2.4 3.1 0 5.4-2.4 5.4-5.4"/></svg>New work<span class="new-count" id="new-count"></span></button>
+<button type="button" class="new-fab" id="new-fab" aria-haspopup="dialog" aria-expanded="false" aria-controls="new-win" hidden><svg class="brush" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M18.4 2.6a2 2 0 0 1 2.9 2.9L12 14.8 9.2 12z"/><path d="M9.2 12c-2 0-3.6 1.6-3.6 3.6 0 1.4-1 2.6-2.6 3 1 1.5 2.7 2.4 4.6 2.4 3.1 0 5.4-2.4 5.4-5.4"/></svg>New<span class="new-count" id="new-count"></span></button>
 <div class="new-win" id="new-win" role="dialog" aria-labelledby="new-title">
   <div class="new-head">
     <div><p class="label">Just painted</p><h2 id="new-title">Fresh off <em>the easel</em></h2></div>
@@ -1722,8 +1722,11 @@ function openAZ() {
   });
   grid.querySelectorAll('.az-item').forEach((el, k) => { el.style.transitionDelay = Math.min(0.28 + k * 0.035, 1.1) + 's'; });
   // grow out of the A–Z button
-  const btn = $('az-open').getBoundingClientRect(), panel = document.querySelector('.az-panel').getBoundingClientRect();
-  document.querySelector('.az-panel').style.transformOrigin = (btn.left + btn.width / 2 - panel.left) + 'px ' + (btn.top + btn.height / 2 - panel.top) + 'px';
+  // measure the panel's real (unscaled) place, and keep the origin on its edge nearest the button
+  const pnl = document.querySelector('.az-panel'), btn = $('az-open').getBoundingClientRect();
+  const ox = Math.min(Math.max(btn.left + btn.width / 2 - pnl.offsetLeft, 0), pnl.offsetWidth);
+  const oy = Math.min(Math.max(btn.top + btn.height / 2 - pnl.offsetTop, 0), pnl.offsetHeight);
+  pnl.style.transformOrigin = ox + 'px ' + oy + 'px';
   document.body.style.overflow = 'hidden';
   requestAnimationFrame(() => requestAnimationFrame(() => $('az').classList.add('open')));
 }
