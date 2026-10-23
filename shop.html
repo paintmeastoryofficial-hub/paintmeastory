@@ -5,12 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Shop — Textured Art | Paint Me A Story</title>
   <!-- LINK PREVIEWS (WhatsApp, Instagram, Facebook, X, LinkedIn…) -->
-  <meta name="description" content="Original hand-sculpted textured paintings by Ashwini Iyer. Browse by canvas size, shop the collection or commission your own." />
+  <meta name="description" content="Original paintings for your walls, desk or gifting. Visit the shop." />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Paint Me A Story" />
   <meta property="og:url" content="https://www.paintmeastory.com/shop.html" />
-  <meta property="og:title" content="Textured Art — Shop | Paint Me A Story" />
-  <meta property="og:description" content="Original hand-sculpted textured paintings by Ashwini Iyer. Browse by canvas size, shop the collection or commission your own." />
+  <meta property="og:title" content="Handmade Textured Art by Ashwini Iyer" />
+  <meta property="og:description" content="Original paintings for your walls, desk or gifting. Visit the shop." />
   <meta property="og:image" content="https://www.paintmeastory.com/images/share-shop.jpg?v=3" />
   <meta property="og:image:secure_url" content="https://www.paintmeastory.com/images/share-shop.jpg?v=3" />
   <meta property="og:image:type" content="image/jpeg" />
@@ -18,8 +18,8 @@
   <meta property="og:image:height" content="630" />
   <meta property="og:image:alt" content="Three textured paintings by Paint Me A Story" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Textured Art — Shop | Paint Me A Story" />
-  <meta name="twitter:description" content="Original hand-sculpted textured paintings by Ashwini Iyer. Browse by canvas size, shop the collection or commission your own." />
+  <meta name="twitter:title" content="Handmade Textured Art by Ashwini Iyer" />
+  <meta name="twitter:description" content="Original paintings for your walls, desk or gifting. Visit the shop." />
   <meta name="twitter:image" content="https://www.paintmeastory.com/images/share-shop.jpg?v=3" />
   <link rel="canonical" href="https://www.paintmeastory.com/shop.html" />
 
@@ -1234,7 +1234,7 @@ const FOCUS = {
   '18': [0.079, 0.156, 0.45, 0.781], '19': [0.129, 0.188, 0.417, 0.712], '20': [0.129, 0.269, 0.45, 0.719],
   '21': [0.158, 0.25, 0.4, 0.731], '22': [0.06, 0.37, 0.45, 0.75], '23': [0.067, 0.238, 0.45, 0.856],
   '24': [0.133, 0.194, 0.412, 0.712], '25': [0.15, 0.32, 0.41, 0.8], '26': [0.158, 0.288, 0.425, 0.744],
-  '27': [0.16, 0.24, 0.4, 0.73], '28': [0.125, 0.306, 0.446, 0.756], '29': [0.172, 0.263, 0.42, 0.783], '30': [0.187, 0.317, 0.397, 0.78]
+  '27': [0.16, 0.24, 0.4, 0.73], '28': [0.125, 0.306, 0.446, 0.756], '29': [0.172, 0.263, 0.42, 0.783], '30': [0.179, 0.291, 0.365, 0.723]
 };
 const FOCUS_DEFAULT = [0.12, 0.25, 0.42, 0.75];
 
@@ -1851,7 +1851,7 @@ function renderNew() {
     b.style.transitionDelay = (0.25 + i * 0.1) + 's';
     b.innerHTML = '<span class="th"><img src="' + it.src + '" alt="" loading="lazy" /><span class="tag-new">New</span></span>' +
       '<span class="nm">' + esc(it.title) + '<small>' + esc(it.isSet ? 'Set of ' + it.pieces + (it.size ? ' · ' + it.size : '') : it.size) + '</small></span>';
-    if (shapeOf(it) !== 'set') cropTo(b.querySelector('.th'), it.file, 1.2);
+    if (shapeOf(it) !== 'set') cropTo(b.querySelector('.th'), it.file, 1.38);
     b.addEventListener('click', () => { closeNew(); openViewer(i, newList); });
     grid.appendChild(b);
   });
