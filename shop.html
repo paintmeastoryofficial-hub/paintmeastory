@@ -48,8 +48,7 @@
     /* NAV */
     nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 1.1rem var(--gap); display: flex; align-items: center; justify-content: space-between; background: rgba(250,247,242,.88); backdrop-filter: blur(12px); border-bottom: 1px solid var(--rule); }
     .nav-logo { font-family: var(--serif); font-size: 1.15rem; letter-spacing: .04em; color: var(--ink); text-decoration: none; }
-    .logo-img { display: block; height: 32px; width: auto; }
-    @media (max-width: 600px) { .logo-img { height: 22px; } }
+    .logo-img { display: block; }   /* size is set inside logo/logo.svg */
     .nav-back { font-size: .7rem; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); text-decoration: none; transition: color .2s; }
     .nav-back:hover { color: var(--ink); }
 
@@ -498,7 +497,7 @@
 <body>
 
 <nav>
-  <a href="index.html" class="nav-logo"><img src="logo/logo.svg" alt="Paint Me A Story" class="logo-img" width="250" height="28" /></a>
+  <a href="index.html" class="nav-logo"><img src="logo/logo.svg" alt="Paint Me A Story" class="logo-img" /></a>
   <a href="index.html" class="nav-back">← Back home</a>
 </nav>
 
