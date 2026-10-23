@@ -40,6 +40,7 @@
     nav a { text-decoration: none; }
     .logo { font-family: var(--serif); font-size: 1.15rem; color: var(--ink); letter-spacing: .04em; }
     .logo-img { display: block; }   /* size is set inside logo/logo.svg */
+    @media (max-width: 600px) { .logo-img { transform: scale(.67); transform-origin: left center; } }   /* 2/3 size on phones */
     .back { font-size: .7rem; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); }
     .back:hover { color: var(--ink); }
 
