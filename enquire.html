@@ -18,7 +18,10 @@
   <meta name="twitter:card" content="summary_large_image" />
   <link rel="canonical" href="https://www.paintmeastory.com/enquire.html" />
 
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='16' fill='%231c1510'/%3E%3Ccircle cx='9' cy='15' r='3.5' fill='%23c4956a'/%3E%3Ccircle cx='18' cy='10' r='2.5' fill='%238b6f47'/%3E%3Ccircle cx='23' cy='18' r='3' fill='%23c4956a'/%3E%3Ccircle cx='14' cy='22' r='2' fill='%23f5f0e8'/%3E%3Crect x='15' y='21' width='2' height='7' rx='1' fill='%239e8e7e'/%3E%3C/svg%3E" />
+  <link rel="icon" href="/logo/favicon.ico" sizes="48x48" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/logo/favicon.png" />
+  <link rel="icon" type="image/svg+xml" href="/logo/favicon.svg" />
+  <link rel="apple-touch-icon" href="/logo/apple-touch-icon.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet" />
@@ -36,6 +39,8 @@
     nav { position: sticky; top: 0; z-index: 10; display: flex; justify-content: space-between; align-items: center; padding: 1.1rem clamp(1.25rem, 6vw, 4rem); background: rgba(250,247,242,.92); backdrop-filter: blur(10px); border-bottom: 1px solid var(--rule); }
     nav a { text-decoration: none; }
     .logo { font-family: var(--serif); font-size: 1.15rem; color: var(--ink); letter-spacing: .04em; }
+    .logo-img { display: block; height: 32px; width: auto; }
+    @media (max-width: 600px) { .logo-img { height: 22px; } }
     .back { font-size: .7rem; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); }
     .back:hover { color: var(--ink); }
 
@@ -94,7 +99,7 @@
 <body>
 
 <nav>
-  <a href="index.html" class="logo">Paint Me A Story</a>
+  <a href="index.html" class="logo"><img src="logo/logo.svg" alt="Paint Me A Story" class="logo-img" width="250" height="28" /></a>
   <a href="index.html" class="back">← Back home</a>
 </nav>
 
