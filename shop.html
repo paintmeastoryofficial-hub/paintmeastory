@@ -1112,14 +1112,14 @@ const stripMotion = { track: null, x: 0, v: 0, dragged: false };
   const strip = document.getElementById('strip');
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const BASE = reduce ? 10 : 22;              // px per second, drifting right
-  let last = performance.now(), drag = null, hover = false, lastY = window.scrollY;
+  let last = performance.now(), drag = null, hover = false, lastY = window.scrollY, boost = 0;
   const fine = window.matchMedia('(hover: hover) and (pointer: fine)');
   strip.addEventListener('mouseenter', () => { if (fine.matches) hover = true; });
   strip.addEventListener('mouseleave', () => { hover = false; });
   // page scroll gives the strip a push (down = faster right, up = left)
   window.addEventListener('scroll', () => {
     const dy = window.scrollY - lastY; lastY = window.scrollY;
-    if (!drag) stripMotion.v = Math.max(-600, Math.min(600, stripMotion.v + Math.max(-40, Math.min(40, dy)) * 4));
+    if (!drag) boost = Math.max(-260, Math.min(260, boost + Math.max(-30, Math.min(30, dy)) * 2.4));   // gentle push, capped
   }, { passive: true });
   // swipe / drag
   strip.addEventListener('pointerdown', e => {
@@ -1154,8 +1154,9 @@ const stripMotion = { track: null, x: 0, v: 0, dragged: false };
     if (t && !document.hidden) {
       const half = t.scrollWidth / 2;
       if (!drag) {
-        const target = hover ? 0 : BASE;
-        stripMotion.v += (target - stripMotion.v) * Math.min(1, dt * 2.2);   // ease back to normal pace
+        boost *= Math.exp(-dt * 1.2);                                        // the push fades out slowly
+        const target = (hover ? 0 : BASE) + boost;
+        stripMotion.v += (target - stripMotion.v) * Math.min(1, dt * 2.2);   // glide towards it, never jump
         stripMotion.x += stripMotion.v * dt;
       }
       if (half > 0) { while (stripMotion.x > 0) stripMotion.x -= half; while (stripMotion.x <= -half) stripMotion.x += half; }
