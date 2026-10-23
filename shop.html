@@ -1111,7 +1111,10 @@ const stripMotion = { track: null, x: 0, v: 0, dragged: false };
 (function () {
   const strip = document.getElementById('strip');
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const BASE = reduce ? 10 : 22;              // px per second, drifting right
+  // normal drift speed (px per second, to the right) — a touch slower on phones,
+  // where the pictures are smaller, and gentler if the phone asks for less motion
+  const phoneW = () => window.matchMedia('(max-width: 640px)').matches;
+  const baseSpeed = () => (phoneW() ? 34 : 42) * (reduce ? 0.6 : 1);
   let last = performance.now(), drag = null, hover = false, lastY = window.scrollY, boost = 0;
   const fine = window.matchMedia('(hover: hover) and (pointer: fine)');
   strip.addEventListener('mouseenter', () => { if (fine.matches) hover = true; });
@@ -1155,7 +1158,7 @@ const stripMotion = { track: null, x: 0, v: 0, dragged: false };
       const half = t.scrollWidth / 2;
       if (!drag) {
         boost *= Math.exp(-dt * 1.2);                                        // the push fades out slowly
-        const target = (hover ? 0 : BASE) + boost;
+        const target = (hover ? 0 : baseSpeed()) + boost;
         stripMotion.v += (target - stripMotion.v) * Math.min(1, dt * 2.2);   // glide towards it, never jump
         stripMotion.x += stripMotion.v * dt;
       }
