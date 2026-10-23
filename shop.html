@@ -100,6 +100,7 @@
     .col-tile.swap img { opacity: 0; }
     .col-tile .col-name { position: absolute; left: 0; right: 0; bottom: 0; padding: 1rem .45rem .35rem; font-family: var(--serif); font-style: italic; font-size: .8rem; line-height: 1.2; color: var(--cream); background: linear-gradient(to top, rgba(28,21,16,.7), transparent); opacity: 0; transition: opacity .3s; text-align: left; pointer-events: none; }
     .col-tile:hover .col-name, .col-tile.set .col-name { opacity: 1; }
+    .cap-mark { width: 22px; height: 22px; border-radius: 5px; vertical-align: middle; margin-right: .6rem; }
     .col-cap { font-size: .6rem; letter-spacing: .22em; text-transform: uppercase; color: var(--accent); margin: 0 0 -.6rem .1rem; }
     .index { background: #f3ece2; border: 1px solid var(--rule); padding: 1.1rem .9rem .9rem; }
     .index-title { font-family: var(--serif); font-size: 1.35rem; font-weight: 400; color: var(--ink); margin: 0 0 .2rem .3rem; letter-spacing: 0; text-transform: none; }
@@ -374,6 +375,7 @@
     /* PHONE MOSAIC SLOT */
     .collage-slot { display: none; margin: 0 0 2.5rem; }
     .collage-slot .col-cap { margin: 0 0 .7rem; }
+    @media (max-width: 900px) { .collage-slot .col-cap, .collage-slot #collage { margin-left: 1.5rem; margin-right: 1.5rem; } }   /* narrower so the heading and all tiles fit on one phone screen */
     @media (max-width: 900px) { .collage-slot .col-tile:not(.set) .col-name { display: none; } .collage-slot .col-tile.set .col-name { font-size: .62rem; padding: .6rem .3rem .2rem; } }
 
     /* FULL-SCREEN ZOOM */
@@ -552,7 +554,7 @@
     <div class="ix-peek" id="ix-peek" aria-hidden="true"></div>
     <p class="ix-note">Hover to preview. Find a painting you love!</p>
   </aside>
-  <p class="col-cap" id="col-cap">A little of everything</p>
+  <p class="col-cap" id="col-cap"><img class="cap-mark" src="logo/favicon.svg" alt="" />A little of everything</p>
   <div class="collage" id="collage" aria-label="Shuffled paintings"></div>
   </div>
   <div class="content">
@@ -1325,10 +1327,8 @@ const MOSAIC = [
   [[1,1,2,2,'big'], [3,1,1,1,'s'], [3,2,1,1,'s'], [1,3,1,2,'tall'], [2,3,1,1,'s'], [2,4,1,1,'s'], [3,3,1,2,'tall']],
   [[1,1,1,2,'tall'], [2,1,2,2,'big'], [1,3,2,1,'wide'], [3,3,1,1,'s'], [1,4,1,1,'s'], [2,4,1,1,'s'], [3,4,1,1,'s']]
 ];
-// Phone: one 5-column block of 20 small tiles (sizes in grid cells)
-const MOSAIC_PHONE = [[1,1,2,2,'big'], [3,1,1,1,'s'], [4,1,1,1,'s'], [5,1,1,2,'tall'], [3,2,1,1,'s'], [4,2,1,1,'s'],
-  [1,3,1,1,'s'], [2,3,1,2,'tall'], [3,3,1,1,'s'], [4,3,1,1,'s'], [5,3,1,1,'s'], [1,4,1,1,'s'], [3,4,1,1,'s'], [4,4,1,1,'s'], [5,4,1,1,'s'],
-  [1,5,1,1,'s'], [2,5,1,1,'s'], [3,5,1,1,'s'], [4,5,1,1,'s'], [5,5,1,1,'s']];
+// Phone: a tall 5 x 8 rectangle of 32 small tiles (sizes in grid cells)
+const MOSAIC_PHONE = [[1,1,2,2,'big'], [3,1,1,1,'s'], [4,1,1,1,'s'], [5,1,1,1,'s'], [3,2,1,1,'s'], [4,2,1,1,'s'], [5,2,1,1,'s'], [1,3,1,1,'s'], [2,3,1,1,'s'], [3,3,1,2,'tall'], [4,3,1,1,'s'], [5,3,1,1,'s'], [1,4,1,1,'s'], [2,4,1,1,'s'], [4,4,1,1,'s'], [5,4,1,1,'s'], [1,5,1,1,'s'], [2,5,1,1,'s'], [3,5,1,1,'s'], [4,5,2,2,'big'], [1,6,1,1,'s'], [2,6,1,1,'s'], [3,6,1,1,'s'], [1,7,1,2,'tall'], [2,7,1,1,'s'], [3,7,1,1,'s'], [4,7,1,1,'s'], [5,7,1,1,'s'], [2,8,1,1,'s'], [3,8,1,1,'s'], [4,8,1,1,'s'], [5,8,1,1,'s']];
 const shapeOf = it => it.isSet && it.pieces >= 3 ? 'set' : paintShape(it.file) < 0.85 ? 'tall' : paintShape(it.file) > 1.2 ? 'wide' : 'sq';
 function sizeCollage(force) {
   const box = document.getElementById('collage');
@@ -1352,7 +1352,7 @@ function sizeCollage(force) {
   const pools = { set: [], tall: [], wide: [], sq: [] };
   // enough paintings for every block: reshuffle and repeat when the collection runs out
   let src = collagePool.slice();
-  while (src.length < (phoneMode ? 20 : blocks * 7) && collagePool.length) src = src.concat(shuffle(collagePool));
+  while (src.length < (phoneMode ? 32 : blocks * 7) && collagePool.length) src = src.concat(shuffle(collagePool));
   src.forEach(it => pools[shapeOf(it)].push(it));
   const take = kind => {
     const order = kind === 'big' ? ['set', 'sq', 'wide', 'tall'] : kind === 'tall' ? ['tall', 'sq', 'wide']
