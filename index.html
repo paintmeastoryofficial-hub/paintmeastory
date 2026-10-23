@@ -179,6 +179,13 @@
     footer p { font-size: .72rem; color: rgba(245,240,232,.4); letter-spacing: .06em; }
     footer a { color: rgba(245,240,232,.4); text-decoration: none; font-size: .72rem; letter-spacing: .06em; transition: color .2s; }
     footer a:hover { color: var(--accent); }
+    footer { flex-direction: column; justify-content: center; text-align: center; gap: 1.1rem; padding: 2.6rem var(--gap); }
+    footer a { color: #e3c088; }
+    .quote-by { display: block; margin-top: 1rem; font-family: var(--sans); font-style: normal; font-size: .72rem; letter-spacing: .22em; text-transform: uppercase; color: var(--accent); }
+    .about-label { display: flex; align-items: center; gap: .7rem; }
+    .about-mark { width: 34px; height: 34px; border-radius: 8px; display: block; }
+    .connect-mark { width: 48px; height: 48px; border-radius: 11px; display: block; margin: 1.6rem auto; }
+    .foot-mark img { width: 54px; height: 54px; border-radius: 12px; display: block; }
 
     /* LIGHTBOX */
     #lightbox { display: none; position: fixed; inset: 0; background: rgba(28,21,16,.95); z-index: 200; align-items: center; justify-content: center; padding: 2rem; }
@@ -298,7 +305,7 @@
 <!-- ABOUT -->
 <section id="about">
   <div class="about-text reveal">
-    <p class="section-label">About</p>
+    <p class="section-label about-label"><img class="about-mark" src="logo/favicon.svg" alt="" />About</p>
     <h2 class="section-title">Every canvas<br><em>holds a feeling</em></h2>
     <div class="divider"></div>
     <p>I'm Ashwini Iyer — an artist driven by the belief that painting is one of the most intimate forms of human storytelling. Each work begins with an emotion and ends with an invitation for the viewer to enter the story.</p>
@@ -311,6 +318,7 @@
   <div class="reveal" style="animation-delay:.15s">
     <blockquote class="about-quote">
       A painting is never finished — it simply stops in interesting places.
+      <cite class="quote-by">— Someone wise</cite>
     </blockquote>
   </div>
 </section>
@@ -433,9 +441,9 @@
 <section id="connect">
   <div class="connect-inner">
     <p class="section-label">Let's Connect</p>
-    <h2 class="section-title">Find me<br><em>anywhere</em></h2>
-    <div class="divider"></div>
-    <p class="connect-desc">Follow the journey — from painted canvases to written musings... Art finds its way.</p>
+    <h2 class="section-title">You can find me<br><em>somewhere</em></h2>
+    <img class="connect-mark" src="logo/favicon.svg" alt="" />
+    <p class="connect-desc">From painted canvases to written stories.</p>
     <div class="social-grid">
 
       <a href="https://youtube.com/@paintmeastoryofficial" target="_blank" class="social-link">
@@ -493,6 +501,7 @@
 
 <!-- FOOTER -->
 <footer>
+  <a href="#hero" class="foot-mark" aria-label="Paint Me A Story"><img src="logo/favicon.svg" alt="" /></a>
   <p>© 2026 Paint Me A Story. All rights reserved.</p>
   <div style="display:flex; gap:1.5rem; flex-wrap:wrap;">
     <a href="https://youtube.com/@paintmeastoryofficial" target="_blank">YouTube</a>
@@ -733,7 +742,14 @@
 <script>
   (function () {
     var b = document.getElementById('to-top');
-    var onScroll = function () { b.classList.toggle('show', window.scrollY > 700); };
+    var foot = document.querySelector('footer');
+    var onScroll = function () {
+      b.classList.toggle('show', window.scrollY > 700);
+      // lift the floating buttons above the footer so they never cover it
+      var lift = foot ? Math.max(0, window.innerHeight - foot.getBoundingClientRect().top) : 0;
+      document.querySelectorAll('.to-top, .new-fab').forEach(function (el) { el.style.translate = lift ? '0 ' + (-lift) + 'px' : ''; });
+    };
+    window.addEventListener('resize', onScroll);
     window.addEventListener('scroll', onScroll, { passive: true }); onScroll();
     b.addEventListener('click', function () { window.scrollTo({ top: 0, behavior: 'smooth' }); });
   })();
