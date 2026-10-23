@@ -29,7 +29,7 @@
   <link rel="apple-touch-icon" href="/logo/apple-touch-icon.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500&family=Parisienne&display=swap" rel="stylesheet" />
 
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -58,6 +58,11 @@
     h1 { font-family: var(--serif); font-size: clamp(3rem, 8vw, 6rem); font-weight: 300; line-height: 1; }
     h1 em { font-style: italic; color: var(--warm); }
     .intro { color: var(--muted); font-size: 1rem; }
+    .artist-sig { display: flex; align-items: center; gap: .8rem; margin-bottom: 1rem; }
+    .artist-sig img { width: 52px; height: 52px; border-radius: 50%; object-fit: cover; border: 2px solid #fff; box-shadow: 0 0 0 1px #d9c7ad; }
+    .sig-name { font-family: var(--serif); font-size: 1.15rem; color: var(--ink); line-height: 1.1; }
+    .sig-role { font-size: .6rem; letter-spacing: .24em; text-transform: uppercase; color: #8b6f47; margin-top: .25rem; }
+    .subtitle { font-family: 'Parisienne', cursive; font-size: clamp(1.7rem, 3.4vw, 2.4rem); color: var(--accent2, #8b6f47); margin-top: .5rem; line-height: 1.2; }
     .intro strong { color: var(--ink); font-weight: 400; }
 
     /* GRID */
@@ -505,8 +510,12 @@
   <div>
     <p class="label">The Shop</p>
     <h1>Textured <em>Art</em></h1>
+    <p class="subtitle">Original &amp; Handmade</p>
   </div>
-  <p class="intro">Every painting has something to say. <strong>Tap any piece to see it up close</strong>, and enquire to make it yours.</p>
+  <div class="intro-wrap">
+    <div class="artist-sig"><img src="images/photo.png" alt="Ashwini Iyer" /><div><p class="sig-name">Ashwini Iyer</p><p class="sig-role">Artist</p></div></div>
+    <p class="intro">Every painting has something to say. <strong>Tap any piece to see it up close</strong>, and enquire to make it yours.</p>
+  </div>
 </header>
 
 <section class="strip" id="strip" aria-label="Paintings sliding past"></section>
