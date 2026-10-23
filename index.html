@@ -52,6 +52,7 @@
     nav.scrolled { padding: .75rem var(--gap); }
     .nav-logo { font-family: var(--serif); font-size: 1.15rem; font-weight: 400; letter-spacing: .04em; color: var(--ink); text-decoration: none; }
     .logo-img { display: block; }   /* size is set inside logo/logo.svg */
+    @media (max-width: 600px) { .logo-img { transform: scale(.67); transform-origin: left center; } }   /* 2/3 size on phones */
     .nav-links { display: flex; gap: 2rem; list-style: none; }
     .nav-links a { font-size: .72rem; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); text-decoration: none; transition: color .2s; }
     .nav-links a:hover { color: var(--ink); }
