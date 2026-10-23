@@ -248,11 +248,11 @@
 
     .nav-links a.nav-enquire { color: var(--warm); border-bottom: 1px solid var(--accent); padding-bottom: 2px; }
     /* BACK TO TOP */
-    .to-top { position: fixed; right: clamp(1rem, 3vw, 2rem); bottom: clamp(1rem, 3vw, 2rem); z-index: 150; display: flex; align-items: center; gap: .5rem; background: var(--ink); color: var(--cream); border: none; padding: .75rem 1.1rem .75rem .95rem; font-family: var(--sans); font-size: .62rem; letter-spacing: .18em; text-transform: uppercase; cursor: pointer; box-shadow: 0 10px 28px rgba(28,21,16,.25); opacity: 0; visibility: hidden; transform: translateY(12px); transition: opacity .3s, transform .3s, visibility .3s, background .2s; }
+    .to-top { position: fixed; right: clamp(1rem, 3vw, 2rem); bottom: clamp(1rem, 3vw, 2rem); z-index: 150; display: inline-flex; align-items: center; gap: .55rem; background: var(--ink); color: var(--cream); border: 1px solid rgba(196,149,106,.55); border-radius: 999px; padding: .55rem .95rem .55rem .8rem; font: 400 .7rem var(--sans); letter-spacing: .2em; text-transform: uppercase; cursor: pointer; box-shadow: 0 10px 28px rgba(28,21,16,.25); opacity: 0; visibility: hidden; transform: translateY(12px); transition: opacity .3s, transform .3s, visibility .3s, background .2s; }
     .to-top.show { opacity: 1; visibility: visible; transform: none; }
-    .to-top:hover { background: var(--warm); }
-    .to-top svg { width: 14px; height: 14px; }
-    @media (max-width: 640px) { .to-top span { display: none; } .to-top { padding: .8rem; border-radius: 50%; } }
+    .to-top:hover { background: #2b2119; }
+    .to-top .top-mark { width: 18px; height: 18px; border-radius: 4px; display: block; }
+    @media (max-width: 640px) { .to-top { padding: .42rem .7rem .42rem .6rem; gap: .4rem; font-size: .58rem; letter-spacing: .16em; } .to-top .top-mark { width: 15px; height: 15px; } }   /* matches the shop */
   </style>
 </head>
 <body>
@@ -328,7 +328,7 @@
   <div class="tx-inner">
     <div class="tx-head reveal">
       <div>
-        <p class="section-label">New · Textured Art</p>
+        <p class="section-label about-label"><img class="about-mark" src="logo/favicon.svg" alt="" />New · Textured Art</p>
         <h2 class="section-title">Stories in <em>texture</em></h2>
       </div>
       <p class="tx-sub">Layered, hand-sculpted originals — each one ready for a wall, a desk, or a gift.</p>
@@ -442,7 +442,7 @@
   <div class="connect-inner">
     <p class="section-label">Let's Connect</p>
     <h2 class="section-title">You can find me<br><em>somewhere</em></h2>
-    <img class="connect-mark" src="logo/favicon.svg" alt="" />
+    <div class="divider"></div>
     <p class="connect-desc">From painted canvases to written stories.</p>
     <div class="social-grid">
 
@@ -737,7 +737,7 @@
 
 
 <button class="to-top" id="to-top" aria-label="Back to top">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg><span>Top</span>
+  <img class="top-mark" src="logo/favicon.svg" alt="" /><span>Top</span>
 </button>
 <script>
   (function () {
