@@ -368,7 +368,17 @@
     .az-item:hover .th { transform: translateY(-3px); box-shadow: 0 12px 26px rgba(28,21,16,.18); }
     .az-item .nm { display: block; font-family: var(--serif); font-size: .98rem; line-height: 1.2; margin-top: .45rem; }
     .az-item .nm small { display: block; font: 400 .68rem var(--sans); color: var(--muted); letter-spacing: .06em; margin-top: .15rem; }
-    @media (max-width: 640px) { .az-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .9rem .6rem; } .az-item .nm { font-size: .88rem; } }
+    .az-title { display: flex; align-items: center; gap: .8rem; padding-right: 3rem; }
+    .az-mark { width: 40px; height: 40px; border-radius: 9px; flex: 0 0 auto; }
+    @media (max-width: 640px) {
+      #az { padding: 4.5rem 1.1rem 5.5rem; }
+      .az-panel { max-height: 70vh; padding: 1.1rem 1rem 1.2rem; }
+      .az-panel h2 { font-size: 1.45rem; margin-bottom: .9rem; }
+      .az-mark { width: 30px; height: 30px; border-radius: 7px; }
+      .az-close { width: 32px; height: 32px; top: .55rem; right: .55rem; }
+      .az-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .7rem .5rem; }
+      .az-item .nm { font-size: .74rem; margin-top: .3rem; } .az-item .nm small { font-size: .58rem; }
+    }
     .az-close { position: absolute; top: .7rem; right: .7rem; width: 38px; height: 38px; border: none; background: #f3ece2; font-size: 1.3rem; cursor: pointer; }
     .az-close:hover { background: var(--accent); }
 
@@ -664,7 +674,7 @@
 <div id="az" role="dialog" aria-modal="true" aria-label="All paintings A to Z">
   <div class="az-panel">
     <button type="button" class="az-close" id="az-close" aria-label="Close">&times;</button>
-    <h2>All paintings <em>A–Z</em></h2>
+    <h2 class="az-title"><img class="az-mark" src="logo/favicon.svg" alt="" />All paintings <em>A–Z</em></h2>
     <div id="az-list"></div>
   </div>
 </div>
