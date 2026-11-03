@@ -1,0 +1,59 @@
+# Makes a light copy (max 1200px JPG) in textured-art-lite/ for every painting
+# in textured-art/, whenever pictures are uploaded. The website uses these for
+# the small tiles so phones load quickly. Runs on its own — nothing to do.
+name: Make lite copies
+
+on:
+  push:
+    branches: [main]
+    paths: ['textured-art/**']
+  workflow_dispatch:        # "Run workflow" button in the Actions tab
+
+permissions:
+  contents: write
+
+jobs:
+  lite:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install pillow
+      - name: Make missing or changed copies
+        run: |
+          python3 - <<'PY'
+          import os, subprocess
+          from PIL import Image, ImageOps
+          SRC, OUT = 'textured-art', 'textured-art-lite'
+          os.makedirs(OUT, exist_ok=True)
+          try:
+              changed = set(subprocess.run(['git', 'diff', '--name-only', 'HEAD~1', 'HEAD', '--', SRC],
+                                           capture_output=True, text=True).stdout.split())
+          except Exception:
+              changed = set()
+          keep = set()
+          for name in sorted(os.listdir(SRC)):
+              if not name.lower().endswith(('.png', '.jpg', '.jpeg', '.webp')):
+                  continue
+              out = os.path.join(OUT, os.path.splitext(name)[0] + '.jpg')
+              keep.add(os.path.basename(out))
+              if os.path.exists(out) and os.path.join(SRC, name) not in changed:
+                  continue
+              im = ImageOps.exif_transpose(Image.open(os.path.join(SRC, name))).convert('RGB')
+              im.thumbnail((1200, 1200), Image.LANCZOS)
+              im.save(out, 'JPEG', quality=80, optimize=True, progressive=True)
+              print('made', out)
+          for name in os.listdir(OUT):           # painting removed → remove its copy
+              if name not in keep:
+                  os.remove(os.path.join(OUT, name)); print('removed', name)
+          PY
+      - name: Save
+        run: |
+          git config user.name "art-lite bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add textured-art-lite
+          git diff --cached --quiet || (git commit -m "Lite copies for new paintings" && git push)
