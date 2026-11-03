@@ -745,6 +745,9 @@
    ===================================================================== */
 const REPO      = 'paintmeastoryofficial-hub/paintmeastory';
 const FOLDER    = 'textured-art';
+// light copies (same name, .jpg) for tiles — keeps phones from running out of memory.
+// If a copy is missing (e.g. a brand-new upload) the original is used instead.
+const LITE      = 'textured-art-lite';
 const EMAIL     = 'paintmeastoryofficial@gmail.com';
 const WHATSAPP  = '';   // optional, e.g. '919876543210'
 const DEFAULT_MEDIUM = 'Textured art, original';
@@ -838,8 +841,8 @@ function detectColours(it) {
         resolve(Object.entries(count).filter(([, n]) => n / total >= 0.12).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([f]) => f));
       } catch (e) { resolve([]); }
     };
-    img.onerror = () => resolve([]);
-    img.src = it.src;
+    img.onerror = () => { img.onerror = () => resolve([]); img.src = it.src; };   // no lite copy yet: use the original
+    img.src = it.thumb;
   });
 }
 function coloursFor(n) {
@@ -849,6 +852,8 @@ function coloursFor(n) {
 
 let items = [], visible = [], picks = [], sets = [], viewList = [], cur = 0;
 
+// lite picture for tiles, falling back to the original if the lite copy isn't there yet
+const fb = it => ' onerror="this.onerror=null;this.src=\'' + it.src + '\'"';
 function esc(t) { return String(t ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function prettyName(file) {
   return file.replace(IMG_EXT, '').replace(/^\d+[\s._-]*/, '')
@@ -924,9 +929,9 @@ function openEnquiry(item, kind) {
   if (item) {
     piece.hidden = false;
     piece.className = 'enq-piece' + (item.isSet ? ' square' : '');
-    piece.innerHTML = '<img src="' + item.src + '" alt="" /><div><strong>' + esc(item.title) + '</strong><span>' +
+    piece.innerHTML = '<img src="' + item.thumb + '"' + fb(item) + ' alt="" /><div><strong>' + esc(item.title) + '</strong><span>' +
       esc([item.size, item.price].filter(Boolean).join(' · ')) + '</span></div>';
-    $('enq-thumb').src = item.src; $('enq-thumb').hidden = false;
+    $('enq-thumb').onerror = function () { this.onerror = null; this.src = item.src; }; $('enq-thumb').src = item.thumb; $('enq-thumb').hidden = false;
   } else { piece.hidden = true; $('enq-thumb').hidden = true; }
   $('enq-kicker').textContent = enqKind === 'commission' ? 'Commission' : item && item.sold ? 'Something similar' : 'Enquiry';
   $('enq-title').innerHTML = enqKind === 'commission' ? 'Tell me about <em>your painting</em>'
@@ -1037,6 +1042,7 @@ async function init() {
     const sold = String(d.status || '').toLowerCase() === 'sold';
     return {
       file: n, src: FOLDER + '/' + encodeURIComponent(n),
+      thumb: LITE + '/' + encodeURIComponent(n.replace(IMG_EXT, '.jpg')),
       title: d.title || prettyName(n),
       price: sold ? 'Sold' : (d.price || 'Price on request'),
       sizeKey: sizeOf(n, d), size: '', medium: d.medium || DEFAULT_MEDIUM, year: d.year || '',
@@ -1215,7 +1221,7 @@ const stripMotion = { track: null, x: 0, v: 0, dragged: false };
   function frame(now) {
     const dt = Math.min(0.05, (now - last) / 1000); last = now;
     const t = stripMotion.track;
-    if (t && !document.hidden) {
+    if (t && !document.hidden && !coveredUp()) {
       const half = t.scrollWidth / 2;
       if (!drag) {
         boost *= Math.exp(-dt * 1.2);                                        // the push fades out slowly
@@ -1260,6 +1266,9 @@ function markSwipeRows() {
   });
 }
 
+// true while the close-up or full-screen zoom covers the page: pause the moving pictures
+const coveredUp = () => { const v = document.getElementById('viewer'), z = document.getElementById('zoom'); return (v && v.classList.contains('open')) || (z && z.classList.contains('open')); };
+
 /* Sliding strip under the heading (moves left to right, pauses on hover) */
 function renderStrip() {
   const strip = document.getElementById('strip');
@@ -1271,7 +1280,7 @@ function renderStrip() {
     const b = document.createElement('button');
     b.className = 'strip-item';
     b.setAttribute('aria-label', 'View ' + it.title);
-    b.innerHTML = '<img src="' + it.src + '" alt="" loading="lazy" /><span>' + esc(it.title) + '</span>';
+    b.innerHTML = '<img src="' + it.thumb + '"' + fb(it) + ' alt="" loading="lazy" /><span>' + esc(it.title) + '</span>';
     markShape(b.querySelector('img'));
     b.addEventListener('click', e => { if (stripMotion.dragged) { e.preventDefault(); return; } openViewer(i, list); });
     return b;
@@ -1400,7 +1409,7 @@ function sizeCollage(force) {
     t.style.gridColumn = c + ' / span ' + w;
     t.style.gridRow = (r + rowOff) + ' / span ' + h;
     t.setAttribute('aria-label', 'View ' + it.title);
-    t.innerHTML = '<img src="' + it.src + '" alt="" /><span class="col-name">' + esc(it.title) + '</span>';
+    t.innerHTML = '<img src="' + it.thumb + '"' + fb(it) + ' alt="" /><span class="col-name">' + esc(it.title) + '</span>';
     t._item = it;
     if (!whole) cropTo(t, it.file);
     t.addEventListener('click', () => openViewer(all.indexOf(t._item), all));
@@ -1420,7 +1429,7 @@ function sizeCollage(force) {
   fitSide();
   if (!collageSpare.length) return;
   collageTimer = setInterval(() => {
-    if (document.hidden || (canHover() && box.matches(':hover'))) return;
+    if (document.hidden || coveredUp() || (canHover() && box.matches(':hover'))) return;
     const tiles = [...box.children].filter(t => !t.classList.contains('set'));
     if (!tiles.length) return;
     const t = tiles[Math.floor(Math.random() * tiles.length)];
@@ -1436,7 +1445,8 @@ function sizeCollage(force) {
       t.querySelector('.col-name').textContent = next.title;
       const img = t.querySelector('img');
       img.addEventListener('load', () => t.classList.remove('swap'), { once: true });
-      img.src = next.src;
+      img.onerror = () => { img.onerror = null; img.src = next.src; };
+      img.src = next.thumb;
       cropTo(t, next.file);
     }, 600);
   }, 3500);
@@ -1466,7 +1476,7 @@ function showPeek(li, key, label, list) {
   list.forEach((it, i) => {
     const t = document.createElement('button');
     t.className = 'peek-item' + (it.sold ? ' sold' : '');
-    t.innerHTML = '<div class="th"><img src="' + it.src + '" alt="" loading="lazy" /></div>' +
+    t.innerHTML = '<div class="th"><img src="' + it.thumb + '"' + fb(it) + ' alt="" loading="lazy" /></div>' +
                   '<span class="nm">' + esc(it.title) + (it.isSet ? ' · set of ' + it.pieces : '') + (it.sold ? ' · sold' : '') + '</span>';
     t.addEventListener('click', () => { hidePeek(true); openViewer(i, list); });
     grid.appendChild(t);
@@ -1518,7 +1528,7 @@ function makeCard(it, i, list, square) {
   card.style.animationDelay = Math.min(i * 0.05, 0.6) + 's';
   card.innerHTML =
     '<button class="frame' + (square ? ' square' : '') + '" aria-label="View ' + esc(it.title) + '">' +
-      '<img src="' + it.src + '" alt="' + esc(it.title) + '" loading="lazy" />' +
+      '<img src="' + it.thumb + '"' + fb(it) + ' alt="' + esc(it.title) + '" loading="lazy" />' +
       '<span class="badge' + (it.sold ? ' sold' : '') + '">' + (it.sold ? 'Sold' : 'Available') + '</span>' +
       '<span class="hint">View up close</span>' +
     '</button>' +
@@ -1572,7 +1582,7 @@ function renderBySize(onlyAvail) {
       b.className = 'bs-item' + (it.sold ? ' sold' : '');
       b.style.setProperty('--r', whole ? 1 : Math.min(1.6, Math.max(0.55, paintShape(it.file))).toFixed(3));
       b.setAttribute('aria-label', 'View ' + it.title);
-      b.innerHTML = '<div class="th"><img src="' + it.src + '" alt="" loading="lazy" /></div>' +
+      b.innerHTML = '<div class="th"><img src="' + it.thumb + '"' + fb(it) + ' alt="" loading="lazy" /></div>' +
         '<span class="nm">' + esc(it.title) + '<small>' + esc(it.isSet ? 'Set of ' + it.pieces + (it.size ? ' · ' + it.size : '') : (it.sold ? 'Sold' : '')) + '</small></span>';
       if (!whole) cropTo(b.querySelector('.th'), it.file, 1.22);
       b.addEventListener('click', () => openViewer(i, list));
@@ -1645,7 +1655,7 @@ function renderShowcase() {
     b.className = 'show-item';
     b.style.animationDelay = (k * 0.1) + 's';
     b.setAttribute('aria-label', 'View ' + it.title);
-    b.innerHTML = '<div class="show-frame"><img src="' + it.src + '" alt="' + esc(it.title) + '" loading="lazy" /></div>' +
+    b.innerHTML = '<div class="show-frame"><img src="' + it.thumb + '"' + fb(it) + ' alt="' + esc(it.title) + '" loading="lazy" /></div>' +
                   '<p class="show-cap">' + esc(it.title) + '</p>';
     b.addEventListener('click', () => openViewer(k, picks));
     box.appendChild(b);
@@ -1663,22 +1673,30 @@ function shareText(it) {
 // On phones the share button sends the painting's photo with the message as its caption
 // (the phone's own share menu). Elsewhere it opens WhatsApp with the text and link.
 const canShareFiles = !!(navigator.canShare && navigator.share);
+let shareT = null;
 function prepareShareFile(it) {
+  clearTimeout(shareT);
   if (!canShareFiles || it._shareFile) return;
-  it._shareFile = null;
-  // a lighter JPG copy (max 1600px) so it sends quickly
-  const img = new Image();
-  img.onload = () => {
-    const k = Math.min(1, 1600 / Math.max(img.naturalWidth, img.naturalHeight));
-    const c = document.createElement('canvas'); c.width = Math.round(img.naturalWidth * k); c.height = Math.round(img.naturalHeight * k);
-    c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
-    c.toBlob(blob => {
+  // wait until the person stays on this painting (not while swiping through)
+  shareT = setTimeout(() => {
+    const done = blob => {
       if (!blob) return;
       const file = new File([blob], slugOf(it.title) + '.jpg', { type: 'image/jpeg' });
-      if (navigator.canShare({ files: [file] })) it._shareFile = file;
-    }, 'image/jpeg', 0.88);
-  };
-  img.src = it.src;
+      try { if (navigator.canShare({ files: [file] })) it._shareFile = file; } catch (e) {}
+    };
+    // the lite copy is already a light JPG, so it is sent as it is — no redrawing on the phone
+    fetch(it.thumb).then(r => r.ok ? r.blob() : Promise.reject()).then(done).catch(() => {
+      // no lite copy yet: make one from the original (max 1200px), then free the canvas
+      const img = new Image();
+      img.onload = () => {
+        const k = Math.min(1, 1200 / Math.max(img.naturalWidth, img.naturalHeight));
+        const c = document.createElement('canvas'); c.width = Math.round(img.naturalWidth * k); c.height = Math.round(img.naturalHeight * k);
+        c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+        c.toBlob(b => { c.width = c.height = 0; done(b); }, 'image/jpeg', 0.85);
+      };
+      img.src = it.src;
+    });
+  }, 800);
 }
 document.getElementById('v-share').addEventListener('click', e => {
   const it = viewList[cur];
@@ -1717,7 +1735,7 @@ function openViewer(i, list) {
   viewer.classList.add('open'); popOpened('viewer', closeViewer);
   document.body.style.overflow = 'hidden';
 }
-function closeViewer() { viewer.classList.remove('open'); document.body.style.overflow = ''; popClosed('viewer'); }
+function closeViewer() { clearTimeout(shareT); viewer.classList.remove('open'); document.body.style.overflow = ''; popClosed('viewer'); }
 
 /* FULL-SCREEN ZOOM — tap the big picture. Pinch / double-tap / wheel to zoom, drag to move. */
 const zoomEl = $('zoom'), zImg = $('z-img');
@@ -1873,7 +1891,7 @@ function renderSuggest() {
   if (hits.length) {
     html += '<div class="sg-head">Paintings</div>';
     hits.slice(0, 7).forEach((it, i) => {
-      html += '<button type="button" class="sg-row" data-i="' + i + '"><span class="th"><img src="' + it.src + '" alt="" /></span>' +
+      html += '<button type="button" class="sg-row" data-i="' + i + '"><span class="th"><img src="' + it.thumb + '"' + fb(it) + ' alt="" /></span>' +
         '<span>' + hl(it.title) + '</span><small>' + esc(it.isSet ? 'Set' : it.size) + '</small></button>';
     });
     if (hits.length > 7) html += '<div class="sg-empty">+ ' + (hits.length - 7) + ' more shown in the shop</div>';
@@ -1917,7 +1935,7 @@ function openAZ() {
   list.forEach((it, i) => {
     const b = document.createElement('button');
     b.type = 'button'; b.className = 'az-item';
-    b.innerHTML = '<span class="th"><img src="' + it.src + '" alt="" loading="lazy" /></span><span class="nm">' + esc(it.title) + '<small>' + esc(it.isSet ? 'Set of ' + it.pieces : it.size) + '</small></span>';
+    b.innerHTML = '<span class="th"><img src="' + it.thumb + '"' + fb(it) + ' alt="" loading="lazy" /></span><span class="nm">' + esc(it.title) + '<small>' + esc(it.isSet ? 'Set of ' + it.pieces : it.size) + '</small></span>';
     if (shapeOf(it) !== 'set') cropTo(b.querySelector('.th'), it.file, 1.1);   // show the whole painting
     b.addEventListener('click', () => { closeAZ(); openViewer(i, list); });
     grid.appendChild(b);
@@ -1952,7 +1970,7 @@ function renderNew() {
     const b = document.createElement('button');
     b.type = 'button'; b.className = 'new-item';
     b.style.transitionDelay = (0.25 + i * 0.1) + 's';
-    b.innerHTML = '<span class="th"><img src="' + it.src + '" alt="" loading="lazy" /><span class="tag-new">New</span></span>' +
+    b.innerHTML = '<span class="th"><img src="' + it.thumb + '"' + fb(it) + ' alt="" loading="lazy" /><span class="tag-new">New</span></span>' +
       '<span class="nm">' + esc(it.title) + '<small>' + esc(it.isSet ? 'Set of ' + it.pieces + (it.size ? ' · ' + it.size : '') : it.size) + '</small></span>';
     if (shapeOf(it) !== 'set') cropTo(b.querySelector('.th'), it.file, 1.16);
     b.addEventListener('click', () => { closeNew(); openViewer(i, newList); });

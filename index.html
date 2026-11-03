@@ -679,7 +679,10 @@
   async function loadTextured() {
     const files = (await txFiles()).filter(f => txExt.test(f));
     if (!files.length) { document.getElementById('textured').style.display = 'none'; return; }
-    const src = f => TX_FOLDER + '/' + encodeURIComponent(f);
+    const full = f => TX_FOLDER + '/' + encodeURIComponent(f);
+    // light copies (same name, .jpg) in textured-art-lite; the original is used if a copy is missing
+    const src = f => 'textured-art-lite/' + encodeURIComponent(f.replace(txExt, '.jpg'));
+    const fallback = (im, f) => { im.onerror = () => { im.onerror = null; im.src = full(f); }; };
     const link = f => 'shop.html#view=' + encodeURIComponent(f);
     // the sets of three get their own large tiles in the mosaic
     const TX_SETS = ['08', '10'];
@@ -689,7 +692,7 @@
     const pool = txShuffle(files.filter(f => !setFiles.includes(f)));
     // featured: a landscape promo card shows best here
     const feat = document.getElementById('tx-feature'), featImg = feat.querySelector('img');
-    const setFeature = f => { featImg.src = src(f); featImg.alt = txTitle(f); feat.href = link(f); document.getElementById('tx-feature-name').textContent = txTitle(f); };
+    const setFeature = f => { fallback(featImg, f); featImg.src = src(f); featImg.alt = txTitle(f); feat.href = link(f); document.getElementById('tx-feature-name').textContent = txTitle(f); };
     setFeature(pool[0]);
     // mosaic of squares
     const box = document.getElementById('tx-mosaic');
@@ -699,7 +702,7 @@
       a.href = link(f); a.title = txTitle(f); a.setAttribute('aria-label', 'View ' + txTitle(f));
       const im = a.querySelector('img');
       im.onload = () => a.classList.remove('swap');
-      im.src = src(f); a.querySelector('.tx-name').textContent = txTitle(f); a._f = f;
+      fallback(im, f); im.src = src(f); a.querySelector('.tx-name').textContent = txTitle(f); a._f = f;
       if (!a.classList.contains('set')) cropTo(a, f);
     };
     const addTile = (f, cls) => { const a = document.createElement('a'); a.className = 'tx-tile' + (cls ? ' ' + cls : ''); a.innerHTML = '<img alt="" loading="lazy" /><span class="tx-name"></span>'; fill(a, f); box.appendChild(a); return a; };
