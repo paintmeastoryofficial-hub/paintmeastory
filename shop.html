@@ -1307,12 +1307,14 @@ const FOCUS = {
   '21': [0.173, 0.267, 0.361, 0.677], '22': [0.06, 0.37, 0.45, 0.75], '23': [0.067, 0.238, 0.45, 0.856],
   '24': [0.133, 0.194, 0.412, 0.712], '25': [0.15, 0.32, 0.41, 0.8], '26': [0.158, 0.288, 0.425, 0.744],
   '27': [0.16, 0.24, 0.4, 0.73], '28': [0.125, 0.306, 0.446, 0.756], '29': [0.172, 0.263, 0.42, 0.783], '30': [0.179, 0.291, 0.365, 0.723],
-  '31': [0.166, 0.231, 0.376, 0.714], '32': [0.16, 0.262, 0.396, 0.696], '33': [0.171, 0.306, 0.357, 0.698], '34': [0.165, 0.241, 0.397, 0.76]
+  '31': [0.166, 0.231, 0.376, 0.714], '32': [0.16, 0.262, 0.396, 0.696], '33': [0.171, 0.306, 0.357, 0.698], '34': [0.165, 0.241, 0.397, 0.76],
+  '35': [0.113, 0.335, 0.425, 0.79], '36': [0.167, 0.3, 0.383, 0.75], '37': [0.125, 0.21, 0.43, 0.755],
+  '38': [0.092, 0.2, 0.442, 0.725], '39': [0.108, 0.137, 0.4, 0.775], '40': [0.092, 0.187, 0.45, 0.712]
 };
 const FOCUS_DEFAULT = [0.12, 0.25, 0.42, 0.75];
 
 // Zoom a tile's picture onto the painting, whatever shape the tile is
-function cropTo(tile, file, pad) {
+function cropTo(tile, file, pad, lift) {
   const img = tile.querySelector('img');
   const apply = () => {
     const W = img.naturalWidth, H = img.naturalHeight, r = tile.getBoundingClientRect();
@@ -1333,7 +1335,7 @@ function cropTo(tile, file, pad) {
     const maxW = W / H > 1.2 ? W / 2 : W;            // promo cards: stay on the photo side
     if (cw > maxW) { cw = maxW; ch = cw / A; }
     if (ch > H) { ch = H; cw = ch * A; }
-    const x0 = Math.min(Math.max(cx - cw / 2, 0), maxW - cw), y0 = Math.min(Math.max(cy - ch / 2, 0), H - ch);   // painting centred, even space above and below
+    const x0 = Math.min(Math.max(cx - cw / 2, 0), maxW - cw), y0 = Math.min(Math.max(cy - ch / 2 - (lift || 0) * ch, 0), H - ch);   // painting centred (lift: show a bit more above than below)
     Object.assign(img.style, { position: 'absolute', maxWidth: 'none', objectFit: 'fill',
       width: (W / cw * 100) + '%', height: (H / ch * 100) + '%', left: (-x0 / cw * 100) + '%', top: (-y0 / ch * 100) + '%' });
   };
@@ -2014,10 +2016,18 @@ function renderNew() {
     b.style.transitionDelay = (0.25 + i * 0.1) + 's';
     b.innerHTML = '<span class="th"><img src="' + it.thumb + '"' + fb(it) + ' alt="" loading="lazy" /><span class="tag-new">New</span></span>' +
       '<span class="nm">' + esc(it.title) + '<small>' + esc(it.isSet ? 'Set of ' + it.pieces + (it.size ? ' · ' + it.size : '') : it.size) + '</small></span>';
-    if (shapeOf(it) !== 'set') cropTo(b.querySelector('.th'), it.file, 1.16);
+    if (shapeOf(it) !== 'set') { const pd = newPad(it); cropTo(b.querySelector('.th'), it.file, pd, (pd - 1.12) * 0.09); }   // smaller canvases show more of the setting
     b.addEventListener('click', () => { closeNew(); openViewer(i, newList); });
     grid.appendChild(b);
   });
+}
+// how much setting to show around a New thumbnail: small canvases sit further back
+// (more wall around them), bigger ones fill more of the tile
+function newPad(it) {
+  const m = String(it.sizeKey || '').match(/(\d+(?:\.\d+)?)\D+(\d+(?:\.\d+)?)/);
+  if (!m) return 1.25;
+  const big = Math.max(+m[1], +m[2]);
+  return Math.min(1.9, Math.max(1.12, 1.15 * Math.pow(10 / big, 0.6)));
 }
 function openNew() {
   document.querySelectorAll('.new-item').forEach((el, i) => { el.style.transitionDelay = (0.25 + i * 0.1) + 's'; });
