@@ -1679,7 +1679,7 @@ function shareText(it) {
 const canShareFiles = !!(navigator.canShare && navigator.share);
 let shareT = null;
 // WATERMARK for shared pictures only (the site itself shows clean pictures):
-// a very faint "PAINT ME A STORY" pattern over the painting + the P pill bottom left.
+// a very faint "PAINT ME A STORY" pattern over the painting + the P pill bottom right.
 const WM = { text: 'PAINT ME A STORY', font: 'Montserrat', alpha: 0.17, angle: -30 };
 let wmLogo = null;
 function loadImg(src) {
@@ -1709,14 +1709,14 @@ async function watermarked(it) {
   for (let yy = -reach; yy < reach; yy += stepY)
     for (let xx = -reach; xx < reach; xx += stepX) x.fillText(WM.text, xx, yy);
   x.restore();
-  // 2. the P pill, bottom left
+  // 2. the P pill, bottom right
   x.save();
   const q = 0.8 * u;   // pill size
   x.font = '400 ' + (8.5 * q) + 'px Jost, Montserrat, sans-serif';
   if ('letterSpacing' in x) x.letterSpacing = (0.68 * q) + 'px';
   const label = 'paintmeastory.com', ph = 21 * q, icon = 15 * q, pad = 3 * q;
   const pw = pad + icon + 5 * q + x.measureText(label).width + 8 * q;
-  const px = 0.012 * W, py = H - 0.016 * H - ph;
+  const px = W - 0.012 * W - pw, py = H - 0.016 * H - ph;   // bottom right corner
   x.fillStyle = 'rgba(28,21,16,.6)';
   x.beginPath();
   if (x.roundRect) x.roundRect(px, py, pw, ph, ph / 2); else x.rect(px, py, pw, ph);
