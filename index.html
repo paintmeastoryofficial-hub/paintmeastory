@@ -253,6 +253,8 @@
     .to-top:hover { background: #2b2119; }
     .to-top .top-mark { width: 18px; height: 18px; border-radius: 4px; display: block; }
     @media (max-width: 640px) { .to-top { padding: .42rem .7rem .42rem .6rem; gap: .4rem; font-size: .58rem; letter-spacing: .16em; } .to-top .top-mark { width: 15px; height: 15px; } }   /* matches the shop */
+    /* pictures can't be saved with right-click / long-press / drag */
+    img { -webkit-touch-callout: none; -webkit-user-drag: none; user-select: none; -webkit-user-select: none; }
   </style>
 </head>
 <body>
@@ -755,6 +757,11 @@
     window.addEventListener('scroll', onScroll, { passive: true }); onScroll();
     b.addEventListener('click', function () { window.scrollTo({ top: 0, behavior: 'smooth' }); });
   })();
+</script>
+<script>
+/* block right-click, long-press and drag-to-save on pictures (a screenshot is still possible) */
+document.addEventListener('contextmenu', e => { if (e.target.closest('img')) e.preventDefault(); });
+document.addEventListener('dragstart', e => { if (e.target.closest('img')) e.preventDefault(); });
 </script>
 </body>
 </html>

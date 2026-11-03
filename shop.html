@@ -29,7 +29,7 @@
   <link rel="apple-touch-icon" href="/logo/apple-touch-icon.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500&family=Parisienne&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500&family=Montserrat:wght@500&family=Parisienne&display=swap" rel="stylesheet" />
 
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -540,6 +540,8 @@
     .to-top:hover { background: #2b2119; }
     .to-top .top-mark { width: 18px; height: 18px; border-radius: 4px; display: block; }
     @media (max-width: 640px) { .to-top { padding: .42rem .7rem .42rem .6rem; gap: .4rem; font-size: .58rem; letter-spacing: .16em; } .to-top .top-mark { width: 15px; height: 15px; } }   /* matches the New button */
+    /* pictures can't be saved with right-click / long-press / drag */
+    img { -webkit-touch-callout: none; -webkit-user-drag: none; user-select: none; -webkit-user-select: none; }
   </style>
 </head>
 <body>
@@ -1668,34 +1670,74 @@ const imgWrap = document.getElementById('v-imgwrap');
 // WhatsApp message for the share button — edit the wording here
 const slugOf = t => String(t).toLowerCase().replace(/&/g, 'and').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 function shareText(it) {
-  return 'Original handmade textured art | Paint Me A Story\n' + it.title + (it.size ? ' · ' + it.size : '') + '\npaintmeastory.com/shop#' + slugOf(it.title);
+  return 'Paint Me A Story · ' + it.title + '\nHandmade textured art' + (it.size ? ', ' + it.size : '') + '\npaintmeastory.com/shop#' + slugOf(it.title);
 }
 // On phones the share button sends the painting's photo with the message as its caption
 // (the phone's own share menu). Elsewhere it opens WhatsApp with the text and link.
 const canShareFiles = !!(navigator.canShare && navigator.share);
 let shareT = null;
+// WATERMARK for shared pictures only (the site itself shows clean pictures):
+// a very faint "PAINT ME A STORY" pattern over the painting + the P pill bottom left.
+const WM = { text: 'PAINT ME A STORY', font: 'Montserrat', alpha: 0.17, angle: -30 };
+let wmLogo = null;
+function loadImg(src) {
+  return new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = no; i.src = src; });
+}
+async function watermarked(it) {
+  const img = await loadImg(it.thumb).catch(() => loadImg(it.src));
+  try { await document.fonts.load('500 20px ' + WM.font); await document.fonts.load('400 20px Jost'); } catch (e) {}
+  if (!wmLogo) wmLogo = await loadImg('logo/favicon.svg').catch(() => null);
+  const k = Math.min(1, 1200 / Math.max(img.naturalWidth, img.naturalHeight));
+  const W = Math.round(img.naturalWidth * k), H = Math.round(img.naturalHeight * k), u = W / 400;   // u = 1 unit of the 400px design
+  const c = document.createElement('canvas'); c.width = W; c.height = H;
+  const x = c.getContext('2d');
+  x.drawImage(img, 0, 0, W, H);
+  // 1. faint repeated text, only over the painting
+  const [l, t, r, b] = focusBox(it.file);
+  x.save();
+  x.beginPath(); x.rect(l * W, t * H, (r - l) * W, (b - t) * H); x.clip();
+  const fs = 3.9 * u, ls = 0.8 * u;
+  x.font = '500 ' + fs + 'px ' + WM.font + ', Jost, sans-serif';
+  if ('letterSpacing' in x) x.letterSpacing = ls + 'px';
+  const tw = x.measureText(WM.text).width + ('letterSpacing' in x ? 0 : ls * WM.text.length);
+  const stepX = tw + 16 * u, stepY = fs * 3.4;
+  x.fillStyle = 'rgba(255,255,255,' + WM.alpha + ')';
+  x.translate((l + r) / 2 * W, (t + b) / 2 * H); x.rotate(WM.angle * Math.PI / 180);
+  const reach = Math.hypot(W, H);
+  for (let yy = -reach; yy < reach; yy += stepY)
+    for (let xx = -reach; xx < reach; xx += stepX) x.fillText(WM.text, xx, yy);
+  x.restore();
+  // 2. the P pill, bottom left
+  x.save();
+  const q = 0.8 * u;   // pill size
+  x.font = '400 ' + (8.5 * q) + 'px Jost, Montserrat, sans-serif';
+  if ('letterSpacing' in x) x.letterSpacing = (0.68 * q) + 'px';
+  const label = 'paintmeastory.com', ph = 21 * q, icon = 15 * q, pad = 3 * q;
+  const pw = pad + icon + 5 * q + x.measureText(label).width + 8 * q;
+  const px = 0.012 * W, py = H - 0.016 * H - ph;
+  x.fillStyle = 'rgba(28,21,16,.6)';
+  x.beginPath();
+  if (x.roundRect) x.roundRect(px, py, pw, ph, ph / 2); else x.rect(px, py, pw, ph);
+  x.fill();
+  if (wmLogo) {
+    x.save(); x.beginPath(); x.arc(px + pad + icon / 2, py + ph / 2, icon / 2, 0, Math.PI * 2); x.clip();
+    x.drawImage(wmLogo, px + pad, py + (ph - icon) / 2, icon, icon); x.restore();
+  }
+  x.fillStyle = '#f1dfbd'; x.textBaseline = 'middle';
+  x.fillText(label, px + pad + icon + 5 * q, py + ph / 2 + 0.5 * q);
+  x.restore();
+  return new Promise(ok => c.toBlob(bl => { c.width = c.height = 0; ok(bl); }, 'image/jpeg', 0.86));
+}
 function prepareShareFile(it) {
   clearTimeout(shareT);
   if (!canShareFiles || it._shareFile) return;
   // wait until the person stays on this painting (not while swiping through)
   shareT = setTimeout(() => {
-    const done = blob => {
+    watermarked(it).then(blob => {
       if (!blob) return;
       const file = new File([blob], slugOf(it.title) + '.jpg', { type: 'image/jpeg' });
       try { if (navigator.canShare({ files: [file] })) it._shareFile = file; } catch (e) {}
-    };
-    // the lite copy is already a light JPG, so it is sent as it is — no redrawing on the phone
-    fetch(it.thumb).then(r => r.ok ? r.blob() : Promise.reject()).then(done).catch(() => {
-      // no lite copy yet: make one from the original (max 1200px), then free the canvas
-      const img = new Image();
-      img.onload = () => {
-        const k = Math.min(1, 1200 / Math.max(img.naturalWidth, img.naturalHeight));
-        const c = document.createElement('canvas'); c.width = Math.round(img.naturalWidth * k); c.height = Math.round(img.naturalHeight * k);
-        c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
-        c.toBlob(b => { c.width = c.height = 0; done(b); }, 'image/jpeg', 0.85);
-      };
-      img.src = it.src;
-    });
+    }).catch(() => {});
   }, 800);
 }
 document.getElementById('v-share').addEventListener('click', e => {
@@ -2046,6 +2088,11 @@ init();
     window.addEventListener('scroll', onScroll, { passive: true }); onScroll();
     b.addEventListener('click', function () { window.scrollTo({ top: 0, behavior: 'smooth' }); });
   })();
+</script>
+<script>
+/* block right-click, long-press and drag-to-save on pictures (a screenshot is still possible) */
+document.addEventListener('contextmenu', e => { if (e.target.closest('img')) e.preventDefault(); });
+document.addEventListener('dragstart', e => { if (e.target.closest('img')) e.preventDefault(); });
 </script>
 </body>
 </html>
