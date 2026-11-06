@@ -1,6 +1,8 @@
-# Makes a light copy (max 1200px JPG) in textured-art-lite/ for every painting
-# in textured-art/, whenever pictures are uploaded. The website uses these for
-# the small tiles so phones load quickly. Runs on its own — nothing to do.
+# Whenever paintings are uploaded to textured-art/, this:
+#  - makes a light copy (max 1200px JPG) of each one in textured-art-lite/
+#    (the website uses these for the small tiles so phones load quickly)
+#  - updates textured-art-lite/paintings.json, the list the website reads
+# Runs on its own — nothing to do.
 name: Make lite copies
 
 on:
@@ -26,7 +28,7 @@ jobs:
       - name: Make missing or changed copies
         run: |
           python3 - <<'PY'
-          import os, subprocess
+          import os, subprocess, json
           from PIL import Image, ImageOps
           SRC, OUT = 'textured-art', 'textured-art-lite'
           os.makedirs(OUT, exist_ok=True)
@@ -35,10 +37,12 @@ jobs:
                                            capture_output=True, text=True).stdout.split())
           except Exception:
               changed = set()
-          keep = set()
+          keep = {'paintings.json'}
+          names = []
           for name in sorted(os.listdir(SRC)):
               if not name.lower().endswith(('.png', '.jpg', '.jpeg', '.webp')):
                   continue
+              names.append(name)
               out = os.path.join(OUT, os.path.splitext(name)[0] + '.jpg')
               keep.add(os.path.basename(out))
               if os.path.exists(out) and os.path.join(SRC, name) not in changed:
@@ -47,6 +51,9 @@ jobs:
               im.thumbnail((1200, 1200), Image.LANCZOS)
               im.save(out, 'JPEG', quality=80, optimize=True, progressive=True)
               print('made', out)
+          # the list of paintings the website reads (no GitHub request limits)
+          with open(os.path.join(OUT, 'paintings.json'), 'w') as f:
+              json.dump(names, f, indent=0)
           for name in os.listdir(OUT):           # painting removed → remove its copy
               if name not in keep:
                   os.remove(os.path.join(OUT, name)); print('removed', name)
