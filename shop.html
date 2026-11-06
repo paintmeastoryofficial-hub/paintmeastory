@@ -1001,23 +1001,24 @@ const BACKUP_FILES = [
   '43-mystic-gaze-6x6in.png'
 ];
 async function listFolder() {
-  // 1. the list the GitHub step keeps next to the lite copies (no request limits)
+  // Ask GitHub directly AND read the list file, at the same time.
+  // GitHub's answer is the freshest (new uploads show at once) but it stops answering
+  // after ~60 asks an hour per connection; the list file has no limit and is updated
+  // by the GitHub step a minute or two after each upload.
+  const api = fetch('https://api.github.com/repos/' + REPO + '/contents/' + FOLDER + '?t=' + Date.now(), { cache: 'no-store' })
+    .then(r => r.ok ? r.json() : Promise.reject()).then(a => a.filter(f => f.type === 'file').map(f => f.name));
+  const file = fetch('textured-art-lite/paintings.json?t=' + Date.now(), { cache: 'no-store' })
+    .then(r => r.ok ? r.json() : Promise.reject()).then(a => Array.isArray(a) && a.length ? a : Promise.reject());
+  const wait = ms => new Promise((_, no) => setTimeout(no, ms));
   try {
-    const r = await fetch('textured-art-lite/paintings.json?t=' + Date.now(), { cache: 'no-store' });
-    if (r.ok) { const names = await r.json(); if (Array.isArray(names) && names.length) return names; }
-  } catch (e) {}
-  // 2. otherwise ask GitHub directly (limited to ~60 asks an hour per connection)
-  try {
-    const r = await fetch('https://api.github.com/repos/' + REPO + '/contents/' + FOLDER + '?t=' + Date.now(), { cache: 'no-store' });
-    if (!r.ok) throw new Error('list ' + r.status);
-    const files = (await r.json()).filter(f => f.type === 'file').map(f => f.name);
+    const files = await Promise.race([api, wait(4000)]);
     try { localStorage.setItem('pmas-files', JSON.stringify(files)); } catch (e) {}
     return files;
-  } catch (e) {
-    // GitHub busy: use the last list this browser saw, else the backup list
-    try { const saved = JSON.parse(localStorage.getItem('pmas-files') || 'null'); if (saved && saved.length) return saved; } catch (e2) {}
-    return BACKUP_FILES;
-  }
+  } catch (e) {}
+  try { return await file; } catch (e) {}
+  // neither answered: the last list this browser saw, else the backup list
+  try { const saved = JSON.parse(localStorage.getItem('pmas-files') || 'null'); if (saved && saved.length) return saved; } catch (e2) {}
+  return BACKUP_FILES;
 }
 // TAGS — from textured-art/tags.txt ("number: tag, tag, tag"), up to 5 each.
 async function loadTags() {
